@@ -1,0 +1,5 @@
+.beyond
+.vscode
+node_modules
+!docs/modules/node_modules
+!docs/src/modules/node_modules

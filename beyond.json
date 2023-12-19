@@ -1,0 +1,8 @@
+{
+	"packages": [
+		"/src/package.json",
+		"/docs/package.json",
+		"../pragmate-ui/docs/package.json",
+		"../pragmate-ui/library/package.json"
+	]
+}

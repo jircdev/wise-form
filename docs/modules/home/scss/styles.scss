@@ -1,0 +1,12 @@
+.page__container {
+	display: flex;
+	padding: 20px;
+	max-width: 1024px;
+	margin: 20px auto;
+	flex-direction: column;
+	background: var(--surface);
+
+	display: grid;
+	grid-template-columns: 200px 1fr;
+	grid-gap: 1rem;
+}
