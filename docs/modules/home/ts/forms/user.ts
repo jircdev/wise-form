@@ -1,6 +1,21 @@
-export const contactForm = {
-	name: 'contact',
+export const userForm = {
+	name: 'user',
 	fields: [
+		{
+			name: 'name',
+			type: 'text',
+			required: true,
+			label: 'Username',
+			variant: 'floating',
+		},
+		,
+		{
+			name: 'lastname',
+			type: 'text',
+			required: true,
+			label: 'Username',
+			variant: 'floating',
+		},
 		{
 			name: 'email',
 			type: 'email',

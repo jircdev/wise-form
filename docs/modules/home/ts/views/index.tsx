@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactiveForm } from 'wise-form/form';
+import { ReactiveForm } from 'reactive-form/form';
 import { loginForm } from '../forms/login';
 import { Aside } from './aside';
 import { FormContext } from './context';

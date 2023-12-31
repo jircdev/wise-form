@@ -1,22 +1,22 @@
 ## Introduction
 
-Welcome to `wise-form`, a React library designed for building and managing forms dynamically through JSON objects. This
-library streamlines the process of form creation and edition, with features like customizable structure, field ordering,
-and comprehensive validation handling.
+Welcome to `reactive-form`, a React library designed for building and managing forms dynamically through JSON objects.
+This library streamlines the process of form creation and edition, with features like customizable structure, field
+ordering, and comprehensive validation handling.
 
 ## Installation
 
-Install `wise-form` using npm to integrate it into your React project:
+Install `reactive-form` using npm to integrate it into your React project:
 
 ```bash
-npm install wise-form
+npm install reactive-form
 ```
 
 ## Usage
 
 ### Basic Implementation
 
-To use `wise-form`, start by defining a form structure as a JSON object. Here's an example:
+To use `reactive-form`, start by defining a form structure as a JSON object. Here's an example:
 
 ```javascript
 // Define your form structure
@@ -37,11 +37,11 @@ export const form = {
 
 ### Rendering the Form
 
-In your React component, import `ReactiveForm` from `wise-form` and use the defined form structure:
+In your React component, import `ReactiveForm` from `reactive-form` and use the defined form structure:
 
 ```jsx
 import React from 'react';
-import { ReactiveForm } from 'wise-form';
+import { ReactiveForm } from 'reactive-form';
 
 const MyComponent = () => {
 	return <ReactiveForm settings={form} />;
@@ -66,8 +66,8 @@ export default MyComponent;
 
 ## Contributing
 
-Contributions to `wise-form` are welcome. Please refer to our contribution guidelines for more information.
+Contributions to `reactive-form` are welcome. Please refer to our contribution guidelines for more information.
 
 ## License
 
-`wise-form` is released under the MIT License. See the LICENSE file for more details.
+`reactive-form` is released under the MIT License. See the LICENSE file for more details.

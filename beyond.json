@@ -2,6 +2,7 @@
 	"packages": [
 		"/src/package.json",
 		"/docs/package.json",
+		"../reactive-model/library/package.json",
 		"../pragmate-ui/docs/package.json",
 		"../pragmate-ui/library/package.json"
 	]

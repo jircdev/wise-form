@@ -1,5 +1,5 @@
 {
-	"name": "wise-form",
+	"name": "reactive-form",
 	"version": "0.0.1",
 	"title": "",
 	"description": "",
@@ -36,9 +36,10 @@
 	"dependencies": {
 		"@beyond-js/kernel": "~0.1.9",
 		"@beyond-js/react-18-widgets": "~1.0.1",
-		"socket.io-client": "^4.5.4",
+		"@beyond-js/reactive": "^1.1.6",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"socket.io-client": "^4.5.4"
 	},
 	"devDependencies": {
 		"@beyond-js/local": "~0.1.3",
