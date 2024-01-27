@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Textarea, Checkbox, Radio, Select, SelectOption } from 'pragmate-ui/form';
+import { Checkbox, CheckboxGroup, Radio, Select, SelectOption } from 'pragmate-ui/form';
 import { ErrorRenderer } from '../error';
 import { FieldContainer } from './container';
 import { useReactiveFormContext } from '../context';
@@ -19,6 +19,8 @@ export function SelectionField(props) {
 
 	if (props.type === 'select') return <Select {...props} />;
 
+	if (props.type === 'checkbox') return <CheckboxGroup {...props} />;
+	
 	const output = props.options.map((option, key) => {
 		const attributes = { ...option, name: props.name };
 		return <Control {...attributes} key={`${name}.${props.name}.${key}`} />;

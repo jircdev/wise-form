@@ -4,6 +4,8 @@ import type { Model } from './model';
 export interface IFormContext {
 	model?: Model;
 	name?: string;
+	template?: any[];
+	formTypes?: Record<string, React.ElementType>;
 }
 const value: IFormContext = {};
 export const ReactiveFormContext = React.createContext(value);

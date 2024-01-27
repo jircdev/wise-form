@@ -2,16 +2,23 @@ import React from 'react';
 import { Input, Textarea, Checkbox, Radio } from 'pragmate-ui/form';
 import { SelectionField } from './selection';
 import { FieldContainer } from './container';
+import { useReactiveFormContext } from '../context';
 
-export function Control({ field }) {
+export function Control({ field, index }) {
+	const { template, formTypes } = useReactiveFormContext();
+
 	const types = {
-		checkbox: SelectionField,
-		radio: SelectionField,
-		select: SelectionField,
-		textarea: Textarea,
-		text: Input,
-		password: Input,
-		default: Input,
+		...{
+			checkbox: SelectionField,
+			radio: SelectionField,
+			select: SelectionField,
+			textarea: Textarea,
+			text: Input,
+			password: Input,
+			default: Input,
+		},
+
+		...formTypes,
 	};
 
 	const Control = types[field.type] ?? types.default;

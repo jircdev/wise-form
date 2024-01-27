@@ -1,16 +1,37 @@
 export const contactForm = {
 	name: 'Contact',
+	template: '1;1;1x3',
 	fields: [
 		{
+			name: 'Country',
+			label: 'Sex',
+			type: 'pepito',
+			options: [
+				{
+					value: 'arg',
+					label: 'Argentina',
+				},
+				{
+					value: 've',
+					label: 'Venezuela',
+				},
+			],
+		},
+		{
 			name: 'email',
-			type: 'email',
+			type: 'password',
 			required: true,
 			label: 'Username',
-			variant: 'floating',
+		},
+		{
+			name: 'age',
+			pattern: '^[0-9]*$',
+			label: 'Age',
 		},
 		{
 			name: 'sex',
-			type: '+',
+			label: 'Sex',
+			type: 'select',
 			options: [
 				{
 					value: 'M',
@@ -22,9 +43,11 @@ export const contactForm = {
 				},
 			],
 		},
+
 		{
 			name: 'preferences',
 			type: 'checkbox',
+			label: 'Preferences',
 			options: [
 				{
 					value: 'Javascript',

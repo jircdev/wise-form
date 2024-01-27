@@ -6,7 +6,7 @@ import { FormContext } from './context';
 import { Main } from './main';
 export /*bundle*/
 function View({ store }): JSX.Element {
-	const [current, setCurrent] = React.useState(store.forms.login);
+	const [current, setCurrent] = React.useState(store.forms.contact);
 	return (
 		<FormContext.Provider value={{ current, setCurrent, store }}>
 			<div className='page__container'>

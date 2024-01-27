@@ -1,5 +1,6 @@
 export const loginForm = {
 	name: 'login',
+
 	fields: [
 		{
 			name: 'username',

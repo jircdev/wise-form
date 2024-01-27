@@ -1,4 +1,22 @@
 .reactive-form-container {
 	display: grid;
 	grid-gap: 1rem;
+
+	.rf-fields-container {
+		display: grid;
+		grid-gap: 0.5rem;
+
+		// Loop to generate .fr-* classes
+		@for $i from 1 through 6 {
+			&.fr-#{$i} {
+				grid-template-columns: repeat($i, 1fr);
+			}
+		}
+
+		// Media query for mobile devices
+		@media (max-width: 768px) {
+			// 768px is a common breakpoint for mobile devices
+			grid-template-columns: 1fr !important;
+		}
+	}
 }
