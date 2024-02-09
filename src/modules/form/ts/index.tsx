@@ -45,8 +45,6 @@ export /*bundle */ function ReactiveForm({ children, settings, types, data }): J
 		<ReactiveFormContext.Provider value={value}>
 			<form className='reactive-form-container'>
 				{Containers}
-
-				<hr />
 				{children}
 			</form>
 		</ReactiveFormContext.Provider>
