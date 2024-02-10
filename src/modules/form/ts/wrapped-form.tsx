@@ -6,11 +6,11 @@ import { ReactiveFormContext } from './context';
 import { FieldContainer } from './rows/row-container';
 import { useTemplate } from './use-template';
 
-export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.Element {
+export /*bundle */ function WrappedForm({ children, settings, types, data }): JSX.Element {
 	const [ready, model] = useModel(settings, data);
 
-	const { type, styles, items } = useTemplate(settings.template);
-	console.log(21, type, styles, items);
+	const template = useTemplate(settings.template);
+
 	if (!settings.fields) {
 		return <ErrorRenderer error='the form does not have fields' />;
 	}
@@ -19,26 +19,24 @@ export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.E
 		return <ErrorRenderer error='the form does not have a name' />;
 	}
 	const fields = [...settings.fields];
-	const Containers = items.map((num, index) => {
+	const Containers = template.items.map((num, index) => {
 		const items = fields.splice(0, num[0]);
 
-		return <FieldContainer template={num} items={items} key={`rf-row--${index}.${num}`} styles={styles} />;
+		return <FieldContainer template={num} items={items} key={`rf-row--${index}.${num}`} />;
 	});
 
 	const value = {
 		model,
 		name: settings.name,
-		template: { type, styles, items },
+		template,
 		formTypes: types ?? {},
 	};
 
 	return (
 		<ReactiveFormContext.Provider value={value}>
-			<form className='reactive-form-container'>
-				{Containers}
-				<hr />
-				{children}
-			</form>
+			{Containers}
+			<hr />
+			{children}
 		</ReactiveFormContext.Provider>
 	);
 }

@@ -6,4 +6,6 @@ export /*bundle*/ class RFSettings {
 	setFields(specs) {}
 }
 
+
 export /*bundle */ const Settings = new RFSettings();
+.0

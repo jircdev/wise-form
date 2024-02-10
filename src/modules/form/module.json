@@ -1,5 +1,6 @@
 {
 	"name": "form",
+	"platforms": ["web", "android", "ios"],
 	"code": {
 		"scss": {
 			"path": "/scss",

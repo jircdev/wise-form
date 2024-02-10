@@ -6,7 +6,7 @@ export function useModel(settings, data) {
 	const [ready, setReady] = React.useState(false);
 
 	const startup = () => {
-		const model = new Model(settings, data);
+		const model = new Model(settings);
 		setModel(model);
 	};
 

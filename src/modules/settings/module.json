@@ -1,5 +1,6 @@
 {
-  "name": "settings",
-  "bundle": "start",
-  "ts": "*"
+	"name": "settings",
+	"bundle": "start",
+	"platforms": ["web", "android", "ios"],
+	"ts": "*"
 }

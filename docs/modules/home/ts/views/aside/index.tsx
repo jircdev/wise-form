@@ -7,12 +7,10 @@ export function Aside() {
 	const { store } = useFormContext();
 	const items = Object.values(store.forms);
 	// const data = items.map();
-	
+
 	return (
 		<aside className='page__aside'>
 			<List className='list-unstyled' items={items} control={AsideItem} />
 		</aside>
 	);
 }
-
-

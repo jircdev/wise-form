@@ -1,6 +1,6 @@
 {
 	"name": "wise-form",
-	"version": "0.0.1",
+	"version": "0.0.4",
 	"title": "",
 	"description": "",
 	"license": "ISC",
@@ -15,11 +15,6 @@
 	},
 	"modules": {
 		"path": "modules"
-	},
-	"libraries": {
-		"imports": [
-			"pragmate-ui"
-		]
 	},
 	"deployment": {
 		"distributions": [
@@ -36,6 +31,7 @@
 	"dependencies": {
 		"@beyond-js/kernel": "~0.1.9",
 		"@beyond-js/react-18-widgets": "~1.0.1",
+		"pragmate-ui": "^0.0.6",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-select": "^5.8.0",
