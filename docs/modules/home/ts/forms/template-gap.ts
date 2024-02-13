@@ -1,8 +1,10 @@
 export const templateGap = {
 	name: 'Contact',
 	// template: '1;1;1x3',
-	template: ['1', '1x2', [2, '50% 1fr 1fr'], 1],
-	gap: '3rem',
+	template: {
+		structure: ['1', '1x2', [2, '50% 1fr 1fr'], 1],
+		gap: '5rem',
+	},
 	fields: [
 		{
 			name: 'email',
