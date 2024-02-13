@@ -9,12 +9,12 @@ export /*bundle*/
 function Main(): JSX.Element {
 	const { current } = useFormContext();
 	const title = `Form: ${current[0]}`;
+
 	return (
 		<main>
 			<h1>{title}</h1>
 			<WiseForm
 				types={{
-					select: ReactSelect,
 					pepito: ReactSelect,
 					baseWrapper: Wrapper,
 				}}

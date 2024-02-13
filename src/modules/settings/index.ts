@@ -3,9 +3,9 @@ export /*bundle*/ class RFSettings {
 	get types() {
 		return this.#types;
 	}
-	setFields(specs) {}
+	setFields(specs) {
+		this.#types = { ...this.#types, ...specs };
+	}
 }
 
-
-export /*bundle */ const Settings = new RFSettings();
-.0
+export /*bundle */ const WFSettings = new RFSettings();

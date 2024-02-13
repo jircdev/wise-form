@@ -2,7 +2,7 @@ import React from 'react';
 import { Checkbox, CheckboxGroup, Radio, Select } from 'pragmate-ui/form';
 import { ErrorRenderer } from '../error';
 
-import { useReactiveFormContext } from '../context';
+import { useReactiveFormContext } from '../../context';
 
 export function SelectionField(props) {
 	if (!props.options) return <ErrorRenderer error='the field does not have options' />;

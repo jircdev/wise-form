@@ -1,23 +1,31 @@
 import React from 'react';
-import { useModel } from './use-model';
-import { Control } from './field';
-import { ErrorRenderer } from './error';
+import { useModel } from './hooks/use-model';
+
+import { ErrorRenderer } from './components/error';
 import { ReactiveFormContext } from './context';
-import { FieldContainer } from './rows/row-container';
-import { useTemplate } from './use-template';
+import { FieldContainer } from './components/rows/row-container';
+import { useTemplate } from './hooks/use-template';
+
+import { useTypes } from './hooks/use-types';
 
 export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.Element {
 	const [ready, model] = useModel(settings, data);
 
-	const { type, styles, items } = useTemplate(settings.template);
-	console.log(21, type, styles, items);
+	const { type, styles, items } = useTemplate(settings, settings.gap);
+
+	const formTypes = useTypes(types);
+
 	if (!settings.fields) {
-		return <ErrorRenderer error='the form does not have fields' />;
+		throw new Error('the form does not have fields');
+		//return <ErrorRenderer error='the form does not have fields' />;
 	}
 
 	if (!settings.name) {
-		return <ErrorRenderer error='the form does not have a name' />;
+		throw new Error('the form does not have a name');
+		// return <ErrorRenderer error='the form does not have a name' />;
 	}
+
+	if (!ready) return null;
 	const fields = [...settings.fields];
 	const Containers = items.map((num, index) => {
 		const items = fields.splice(0, num[0]);
@@ -27,9 +35,10 @@ export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.E
 
 	const value = {
 		model,
+		values: model.defaultValues,
 		name: settings.name,
 		template: { type, styles, items },
-		formTypes: types ?? {},
+		formTypes: formTypes,
 	};
 
 	return (

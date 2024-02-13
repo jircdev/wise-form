@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReactiveFormContext } from '../context';
+import { useReactiveFormContext } from '../../context';
 export function FormSectionWrapper({ data }) {
 	const { formTypes } = useReactiveFormContext();
 	const types = {

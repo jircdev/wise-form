@@ -1,0 +1,59 @@
+export const templateGap = {
+	name: 'Contact',
+	// template: '1;1;1x3',
+	template: ['1', '1x2', [2, '50% 1fr 1fr'], 1],
+	gap: '3rem',
+	fields: [
+		{
+			name: 'email',
+
+			type: 'text',
+			required: true,
+			label: 'Username',
+		},
+		{
+			name: 'age',
+			pattern: '^[0-9]*$',
+			label: 'Age',
+		},
+		{
+			name: 'sex',
+			label: 'Sex',
+			type: 'select',
+			options: [
+				{
+					value: 'M',
+					label: 'Male',
+				},
+				{
+					value: 'F',
+					label: 'Female',
+				},
+			],
+		},
+
+		{
+			name: 'preferences',
+			type: 'checkbox',
+			label: 'Preferences',
+			options: [
+				{
+					value: 'Javascript',
+					label: 'Javascript',
+				},
+				{
+					value: 'Typescript',
+					label: 'Typescript',
+				},
+			],
+		},
+		{
+			name: 'comments',
+			type: 'textarea',
+			variant: 'floating',
+			placeholder: 'Add your comments',
+			required: true,
+			label: 'Comments',
+		},
+	],
+};

@@ -4,6 +4,7 @@ import type { Model } from './model';
 export interface IFormContext {
 	model?: Model;
 	name?: string;
+	values?: Record<string, any>;
 	template?: {
 		type: string;
 		items: any[];
