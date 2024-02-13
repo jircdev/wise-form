@@ -1,44 +1,44 @@
 import React from 'react';
-import { useModel } from './use-model';
-import { Control } from './field';
-import { ErrorRenderer } from './error';
-import { ReactiveFormContext } from './context';
-import { FieldContainer } from './rows/row-container';
+import { useModel } from './hooks/use-model';
 
-export /*bundle */ function ReactiveForm({ children, settings, types, data }): JSX.Element {
+import { ErrorRenderer } from './components/error';
+import { ReactiveFormContext } from './context';
+import { FieldContainer } from './components/rows/row-container';
+import { useTemplate } from './hooks/use-template';
+
+import { useTypes } from './hooks/use-types';
+
+export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.Element {
 	const [ready, model] = useModel(settings, data);
 
-	function parseTemplate(template) {
-		if (!template) return Array(settings.fields.length).fill(1);
-		return template.split(';').flatMap(part => {
-			const [num, times] = part.split('x').map(Number);
-			return times ? Array(times).fill(num) : [num];
-		});
-	}
+	const { type, styles, items } = useTemplate(settings, settings.gap);
 
-	const template = parseTemplate(settings.template);
+	const formTypes = useTypes(types);
 
 	if (!settings.fields) {
-		return <ErrorRenderer error='the form does not have fields' />;
+		throw new Error('the form does not have fields');
+		//return <ErrorRenderer error='the form does not have fields' />;
 	}
 
 	if (!settings.name) {
-		return <ErrorRenderer error='the form does not have a name' />;
+		throw new Error('the form does not have a name');
+		// return <ErrorRenderer error='the form does not have a name' />;
 	}
+
+	if (!ready) return null;
 	const fields = [...settings.fields];
-	const Containers = template.map((num, index) => {
-		const items = fields.splice(0, num);
-		return <FieldContainer columns={num} items={items} index={`${num}.${index}`} key={`rf-row--${index}.${num}`} />;
-	});
-	const output = settings.fields.map((field, index) => {
-		return <Control index={index} field={field} key={`${settings.name}.${field.name}`} />;
+	const Containers = items.map((num, index) => {
+		const items = fields.splice(0, num[0]);
+
+		return <FieldContainer template={num} items={items} key={`rf-row--${index}.${num}`} styles={styles} />;
 	});
 
 	const value = {
 		model,
+		values: model.defaultValues,
 		name: settings.name,
-		template,
-		formTypes: types ?? {},
+		template: { type, styles, items },
+		formTypes: formTypes,
 	};
 
 	return (

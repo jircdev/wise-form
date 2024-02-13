@@ -1,35 +1,9 @@
-export const contactForm = {
+export const templateGap = {
 	name: 'Contact',
 	// template: '1;1;1x3',
 	template: ['1', '1x2', [2, '50% 1fr 1fr'], 1],
 	gap: '3rem',
 	fields: [
-		{
-			type: 'wrapper',
-			template: {
-				structure: ['1x3'],
-				gap: '3rem',
-			},
-			control: 'baseWrapper',
-			name: 'wrapper-element',
-			fields: [
-				{
-					name: 'Country',
-					label: 'Sex',
-					type: 'select',
-					options: [
-						{
-							value: 'arg',
-							label: 'Argentina',
-						},
-						{
-							value: 've',
-							label: 'Venezuela',
-						},
-					],
-				},
-			],
-		},
 		{
 			name: 'email',
 
