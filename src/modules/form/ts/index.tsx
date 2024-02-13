@@ -45,7 +45,6 @@ export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.E
 		<ReactiveFormContext.Provider value={value}>
 			<form className='reactive-form-container'>
 				{Containers}
-				<hr />
 				{children}
 			</form>
 		</ReactiveFormContext.Provider>
