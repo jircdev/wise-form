@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { WFSettings } from 'wise-form/settings';
+import { WFSettings } from '@bgroup/wise-form/settings';
 import { SelectionField } from '../components/field/selection';
 import { Input, Textarea } from 'pragmate-ui/form';
 

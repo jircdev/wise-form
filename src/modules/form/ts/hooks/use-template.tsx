@@ -14,11 +14,9 @@ export function useTemplate(settings, gap = undefined) {
 	let styles = {};
 
 	if (!template) {
-		console.log(99, settings);
 		return {
 			type: 'grid',
 			styles: {},
-
 			items: settings.fields.map(item => [1, '1fr']),
 		};
 	}

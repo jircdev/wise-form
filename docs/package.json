@@ -15,8 +15,9 @@
 	},
 	"libraries": {
 		"imports": [
-			"wise-form",
-			"pragmate-ui"
+			"@bgroup/wise-form",
+			"pragmate-ui",
+			"@beyond-js/reactive"
 		]
 	},
 	"modules": {
