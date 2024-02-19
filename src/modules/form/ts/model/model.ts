@@ -1,7 +1,7 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 export /*bundle*/
-class Model extends ReactiveModel<Model> {
+class FormModel extends ReactiveModel<Model> {
 	#settings;
 
 	#initialValues: Record<string, string> = {};

@@ -1,23 +1,26 @@
 import React from 'react';
-import { Model } from '../model/model';
+import { FormModel } from '../model/model';
 
-export function useModel(settings) {
+export function useModel(settings, form?: FormModel) {
 	const [model, setModel] = React.useState(null);
 	const [ready, setReady] = React.useState(false);
 	const startup = () => {
 		const properties = settings.fields.map(item => item.name);
 		const values = settings.values || {};
-		const model = new Model(settings, { properties, ...values });
 
-		setModel(model);
+		if (!form) {
+			form = new FormModel(settings, { properties, ...values });
+		}
+
+		setModel(form);
 		const onChange = () => {
-			setReady(model.ready);
+			setReady(form.ready);
 		};
-		model.on('change', onChange);
-		globalThis.model = model;
+		form.on('change', onChange);
+		globalThis.model = form;
 		onChange();
 		return () => {
-			model.off('change', onChange);
+			form.off('change', onChange);
 		};
 	};
 

@@ -9,8 +9,8 @@ import { useTypes } from './hooks/use-types';
 
 import { IWiseFormSpecs } from './interfaces/wise-form-specs';
 
-export /*bundle */ function WiseForm({ children, settings, types }: IWiseFormSpecs): JSX.Element {
-	const [ready, model] = useModel(settings);
+export /*bundle */ function WiseForm({ children, settings, types, model }: IWiseFormSpecs): JSX.Element {
+	const [ready, instance] = useModel(settings, model);
 
 	const { type, styles, items } = useTemplate(settings, settings.gap);
 
@@ -35,8 +35,8 @@ export /*bundle */ function WiseForm({ children, settings, types }: IWiseFormSpe
 	});
 
 	const value = {
-		model,
-		values: model.values,
+		model: instance,
+		values: instance.values,
 		name: settings.name,
 		template: { type, styles, items },
 		formTypes: formTypes,

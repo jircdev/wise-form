@@ -15,6 +15,11 @@ export const EditUserForm = {
 			variant: 'floating',
 		},
 		{
+			name: 'rif',
+			type: 'rif',
+
+		},
+		{
 			name: 'lastname',
 			type: 'text',
 			placeholder: 'Last name',
