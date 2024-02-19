@@ -1,8 +1,11 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 export /*bundle*/
-class FormModel extends ReactiveModel<Model> {
+class FormModel extends ReactiveModel<FormModel> {
 	#settings;
+	get settings() {
+		return this.#settings;
+	}
 
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
@@ -18,7 +21,7 @@ class FormModel extends ReactiveModel<Model> {
 	}
 	#fields: Map<string, FormField> = new Map();
 	get fields() {
-		return this.#settings.fields;
+		return this.#fields;
 	}
 
 	constructor(settings, reactiveProps) {
@@ -35,6 +38,7 @@ class FormModel extends ReactiveModel<Model> {
 			const instance = new FormField(this, { ...item, value: values[item.name] || '' });
 			const onChange = () => {
 				this[item.name] = instance.value;
+				this.triggerEvent();
 			};
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
@@ -43,7 +47,7 @@ class FormModel extends ReactiveModel<Model> {
 		this.ready = true;
 	}
 
-	setField(name, value) {
+	setField(name: string, value) {
 		this.#fields.get(name).set({ value });
 	}
 }

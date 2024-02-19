@@ -2,10 +2,10 @@ import React from 'react';
 import { Input, Textarea } from 'pragmate-ui/form';
 import { SelectionField } from './selection';
 import { FieldContainer } from './container';
-import { useReactiveFormContext } from '../../context';
+import { useWiseFormContext } from '../../context';
 
 export function Control({ field, index }) {
-	const { values, formTypes, model } = useReactiveFormContext();
+	const { values, formTypes, model } = useWiseFormContext();
 
 	const types = {
 		...{

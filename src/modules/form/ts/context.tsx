@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { Model } from './model/model';
+import type { FormModel } from './model/model';
 export interface IFormContext {
-	model?: Model;
+	model?: FormModel;
 	name?: string;
 	values?: Record<string, any>;
 	template?: {
@@ -12,5 +12,5 @@ export interface IFormContext {
 	formTypes?: Record<string, React.ElementType>;
 }
 const value: IFormContext = {};
-export const ReactiveFormContext = React.createContext(value);
-export const useReactiveFormContext = () => React.useContext(ReactiveFormContext);
+export const WiseFormContext = React.createContext(value);
+export /*bundle*/ const useWiseFormContext = () => React.useContext(WiseFormContext);

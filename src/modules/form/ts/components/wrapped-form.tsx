@@ -2,21 +2,20 @@ import React from 'react';
 import { useModel } from '../hooks/use-model';
 import { Control } from './field';
 import { ErrorRenderer } from './error';
-import { ReactiveFormContext } from '../context';
+import { WiseFormContext } from '../context';
 import { FieldContainer } from './rows/row-container';
 import { useTemplate } from '../hooks/use-template';
 
 export /*bundle */ function WrappedForm({ children, settings, types, data }): JSX.Element {
 	const [ready, model] = useModel(settings, data);
-
 	const template = useTemplate(settings);
 
 	if (!settings.fields) {
-		return <ErrorRenderer error='the form does not have fields' />;
+		return <ErrorRenderer error="the form does not have fields" />;
 	}
 
 	if (!settings.name) {
-		return <ErrorRenderer error='the form does not have a name' />;
+		return <ErrorRenderer error="the form does not have a name" />;
 	}
 	if (!ready) return null;
 	const fields = [...settings.fields];
@@ -35,10 +34,9 @@ export /*bundle */ function WrappedForm({ children, settings, types, data }): JS
 	};
 
 	return (
-		<ReactiveFormContext.Provider value={value}>
+		<WiseFormContext.Provider value={value}>
 			{Containers}
-			<hr />
 			{children}
-		</ReactiveFormContext.Provider>
+		</WiseFormContext.Provider>
 	);
 }

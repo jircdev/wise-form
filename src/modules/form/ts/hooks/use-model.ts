@@ -8,9 +8,7 @@ export function useModel(settings, form?: FormModel) {
 		const properties = settings.fields.map(item => item.name);
 		const values = settings.values || {};
 
-		if (!form) {
-			form = new FormModel(settings, { properties, ...values });
-		}
+		if (!form) form = new FormModel(settings, { properties, ...values });
 
 		setModel(form);
 		const onChange = () => {
