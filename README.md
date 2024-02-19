@@ -45,7 +45,7 @@ To render a form, import either `WiseForm` or `WrappedForm` from `wise-form` and
 
 ```jsx
 import React from 'react';
-import { WiseForm, WrappedForm } from 'wise-form';
+import { WiseForm, WrappedForm } from '@bgroup/wise-form';
 
 const MyComponent = () => {
 	return <WiseForm settings={form} />;
@@ -166,7 +166,7 @@ Choose either `WiseForm` or `WrappedForm` for implementation, depending on your 
 `WiseForm`:
 
 ```jsx
-import { WiseForm } from 'wise-form';
+import { WiseForm } from '@bgroup/wise-form';
 
 <WiseForm
 	types={{

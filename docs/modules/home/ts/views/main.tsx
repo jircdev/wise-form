@@ -1,5 +1,5 @@
 import React from 'react';
-import { WiseForm } from 'wise-form/form';
+import { WiseForm } from '@bgroup/wise-form/form';
 import { useFormContext } from './context';
 import { Button } from 'pragmate-ui/components';
 import { ReactSelect } from 'pragmate-ui/form/react-select';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { Model } from './model';
+import type { Model } from './model/model';
 export interface IFormContext {
 	model?: Model;
 	name?: string;

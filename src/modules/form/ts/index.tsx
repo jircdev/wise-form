@@ -5,23 +5,24 @@ import { ErrorRenderer } from './components/error';
 import { ReactiveFormContext } from './context';
 import { FieldContainer } from './components/rows/row-container';
 import { useTemplate } from './hooks/use-template';
-
 import { useTypes } from './hooks/use-types';
 
-export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.Element {
-	const [ready, model] = useModel(settings, data);
+import { IWiseFormSpecs } from './interfaces/wise-form-specs';
+
+export /*bundle */ function WiseForm({ children, settings, types }: IWiseFormSpecs): JSX.Element {
+	const [ready, model] = useModel(settings);
 
 	const { type, styles, items } = useTemplate(settings, settings.gap);
 
 	const formTypes = useTypes(types);
 
 	if (!settings.fields) {
-		throw new Error('the form does not have fields');
+		console.error('the form does not have fields', settings.name);
 		//return <ErrorRenderer error='the form does not have fields' />;
 	}
 
 	if (!settings.name) {
-		throw new Error('the form does not have a name');
+		console.error('the form does not have a name', settings.fields);
 		// return <ErrorRenderer error='the form does not have a name' />;
 	}
 
@@ -35,7 +36,7 @@ export /*bundle */ function WiseForm({ children, settings, types, data }): JSX.E
 
 	const value = {
 		model,
-		values: model.defaultValues,
+		values: model.values,
 		name: settings.name,
 		template: { type, styles, items },
 		formTypes: formTypes,

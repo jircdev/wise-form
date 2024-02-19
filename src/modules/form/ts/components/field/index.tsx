@@ -5,7 +5,7 @@ import { FieldContainer } from './container';
 import { useReactiveFormContext } from '../../context';
 
 export function Control({ field, index }) {
-	const { values, formTypes } = useReactiveFormContext();
+	const { values, formTypes, model } = useReactiveFormContext();
 
 	const types = {
 		...{
@@ -21,8 +21,11 @@ export function Control({ field, index }) {
 	};
 
 	const Control = types[field.type] ?? types.default;
-	const attrs = { value: values[field.name], ...field };
 
+	const onChange = event => {
+		model.setField(field.name, event.target.value);
+	};
+	const attrs = { value: values[field.name], ...field, onChange };
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
