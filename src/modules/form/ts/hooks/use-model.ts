@@ -15,7 +15,7 @@ export function useModel(settings, form?: FormModel) {
 			setReady(form.ready);
 		};
 		form.on('change', onChange);
-		globalThis.model = form;
+
 		onChange();
 		return () => {
 			form.off('change', onChange);

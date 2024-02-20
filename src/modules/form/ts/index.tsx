@@ -39,12 +39,12 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 		values: instance.values,
 		name: settings.name,
 		template: { type, styles, items },
-		formTypes: formTypes,
+		formTypes,
 	};
 
 	return (
 		<WiseFormContext.Provider value={value}>
-			<form className="reactive-form-container" onSubmit={onSubmit}>
+			<form className='reactive-form-container' onSubmit={onSubmit}>
 				{Containers}
 				{children}
 			</form>

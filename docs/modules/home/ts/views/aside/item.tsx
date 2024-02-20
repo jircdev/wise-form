@@ -3,6 +3,7 @@ import { List } from 'pragmate-ui/list';
 import { useFormContext } from '../context';
 import { Button } from 'pragmate-ui/components';
 export function AsideItem({ data }) {
+	
 	const { store, current } = useFormContext();
 	const onClick = () => {
 		store.selected = data;

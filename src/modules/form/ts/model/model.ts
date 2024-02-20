@@ -1,5 +1,7 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
+import { WrapperFormField } from './wrapper';
+import { WrappedFormModel } from './wrapped-form';
 export /*bundle*/
 class FormModel extends ReactiveModel<FormModel> {
 	#settings;
@@ -24,7 +26,7 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#fields;
 	}
 
-	constructor(settings, reactiveProps) {
+	constructor(settings, reactiveProps?) {
 		super(reactiveProps);
 
 		this.#settings = settings;
@@ -35,7 +37,17 @@ class FormModel extends ReactiveModel<FormModel> {
 		const values = settings.values || {};
 
 		this.#settings.fields.map(item => {
-			const instance = new FormField(this, { ...item, value: values[item.name] || '' });
+			let instance;
+			if (item.type === 'wrapper') {
+				console.log(0.2, item);
+				const properties = item.fields.map(item => item.name);
+				const values = item.values || {};
+
+				instance = new WrappedFormModel(this, item, { properties, ...values });
+			} else {
+				instance = new FormField(this, { ...item, value: values[item.name] || '' });
+			}
+
 			const onChange = () => {
 				this[item.name] = instance.value;
 				this.triggerEvent();

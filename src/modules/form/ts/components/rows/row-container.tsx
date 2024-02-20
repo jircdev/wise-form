@@ -1,8 +1,14 @@
 import React from 'react';
 import { Control } from '../field';
 import { FormSectionWrapper } from './wrapper';
+import { IWiseFormField } from '../../interfaces/interfaces';
 
-export function FieldContainer({ template: [totalFields, gridStyle], items, styles }) {
+export interface IFieldContainer {
+	template: [number, string];
+	items: IWiseFormField[];
+	styles?: any; // @todo: add correct type
+}
+export function FieldContainer({ template: [totalFields, gridStyle], items, styles }: IFieldContainer) {
 	const output = items.map((field, index) => {
 		if (field.type === 'wrapper') {
 			return <FormSectionWrapper key={`rf-row__item--${index}`} data={field} />;
