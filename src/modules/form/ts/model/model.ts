@@ -1,6 +1,5 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
-import { WrapperFormField } from './wrapper';
 import { WrappedFormModel } from './wrapped-form';
 export /*bundle*/
 class FormModel extends ReactiveModel<FormModel> {
@@ -26,6 +25,22 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#fields;
 	}
 
+	clear = () => {
+		this.#fields.forEach(field => {
+			field.clear();
+		});
+		this.triggerEvent();
+	};
+
+	getField(name: string): FormField | undefined {
+		if (!name.includes('.')) return this.#fields.get(name);
+		const [wrapperName, ...others] = name.split('.');
+		const currentWrapper = this.#fields.get(wrapperName);
+
+		const otherWrapper = others.join('.');
+		return currentWrapper.getField(otherWrapper);
+	}
+
 	constructor(settings, reactiveProps?) {
 		super(reactiveProps);
 
@@ -37,21 +52,29 @@ class FormModel extends ReactiveModel<FormModel> {
 		const values = settings.values || {};
 
 		this.#settings.fields.map(item => {
-			let instance;
+			let instance: WrappedFormModel | FormField;
+			let externalProperties: string[] = [];
+			let externalValues: Record<string, any> = {};
+			if (Array.isArray(item?.properties)) {
+				externalProperties = item?.properties.map(item => item.name);
+				item?.properties.forEach(item => (externalValues[item.name] = item.value));
+			}
+
 			if (item.type === 'wrapper') {
 				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
-				item.name === 'titleDataCollapsible' && console.log('WRAPPER => ', item);
-				// TODD: VERIFY
-				const propsToIgnore = ['control', 'fields', 'type', 'name', 'template'];
-				const properties = item.fields.map(item => item.name);
-				const values = item.values || {};
-				const finalValues = Object.keys(item).filter(key => !propsToIgnore.includes(key));
-				const finalProperties = [...properties, ...finalValues];
+				const fieldsProperties = item.fields.map(item => item.name);
 
-				instance = new WrappedFormModel(this, item, { properties: finalProperties, ...values });
+				const properties = [...fieldsProperties, ...externalProperties];
+				const values = item.values || {};
+				instance = new WrappedFormModel(this, item, { properties, ...values });
 			} else {
-				instance = new FormField(this, { ...item, value: values[item.name] || '' });
+				instance = new FormField(this, {
+					...item,
+					value: values[item.name] || '',
+					properties: externalProperties,
+				});
 			}
+			if (externalValues && Object.values(externalValues).length) instance.set(externalValues);
 
 			const onChange = () => {
 				this[item.name] = instance.value;

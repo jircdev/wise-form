@@ -26,7 +26,15 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 	const Containers = items.map((num, index) => {
 		const items = fields.splice(0, num[0]);
 
-		return <FieldContainer template={num} items={items} key={`rf-row--${index}.${num}`} styles={styles} />;
+		return (
+			<FieldContainer
+				model={model}
+				template={num}
+				items={items}
+				key={`rf-row--${index}.${num}`}
+				styles={styles}
+			/>
+		);
 	});
 
 	const onSubmit = (event: React.FormEvent) => {
@@ -44,7 +52,7 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 
 	return (
 		<WiseFormContext.Provider value={value}>
-			<form className='reactive-form-container' onSubmit={onSubmit}>
+			<form className="reactive-form-container" onSubmit={onSubmit}>
 				{Containers}
 				{children}
 			</form>

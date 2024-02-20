@@ -21,4 +21,8 @@ export class FormField extends ReactiveModel<IFormField> {
 
 		// this.set(properties);
 	}
+
+	clear = () => {
+		this.set(this.initialValues());
+	};
 }

@@ -4,8 +4,8 @@ import { SelectionField } from './selection';
 import { FieldContainer } from './container';
 import { useWiseFormContext } from '../../context';
 
-export function Control({ field, index }) {
-	const { values, formTypes, model } = useWiseFormContext();
+export function Control({ field, index, model }) {
+	const { formTypes } = useWiseFormContext();
 
 	const types = {
 		...{
@@ -20,12 +20,15 @@ export function Control({ field, index }) {
 		...formTypes,
 	};
 
+	!model?.fields.get(field?.name) && console.log('CONTROL => ', model, field.name, model?.fields.get(field.name));
+
 	const Control = types[field.type] ?? types.default;
 
 	const onChange = event => {
 		model.setField(field.name, event.target.value);
 	};
-	const attrs = { value: values[field.name], ...field, onChange };
+	const value = !model.name ?? '';
+	const attrs = { value: model.value, ...field, onChange };
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
