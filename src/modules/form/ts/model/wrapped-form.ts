@@ -27,6 +27,10 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	}
 
 	getField(name: string): FormField | undefined {
+		if (!name) {
+			console.warn('You need to provide a name to get a field in form ', this.#settings.name);
+			return;
+		}
 		if (!name.includes('.')) return this.#fields.get(name);
 		const [wrapperName, ...others] = name.split('.');
 		const currentWrapper = this.#fields.get(wrapperName);
@@ -40,6 +44,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			field.clear();
 		});
 		this.triggerEvent();
+		this.triggerEvent('clear');
 	};
 
 	#parent: FormModel;
@@ -85,6 +90,10 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	}
 
 	setField(name: string, value) {
+		if (!this.getField(name)) {
+			console.error('Field not found', name, this.#settings.name, this.#fields.keys());
+			return;
+		}
 		this.getField(name).set({ value });
 	}
 }

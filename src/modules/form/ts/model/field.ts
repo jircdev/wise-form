@@ -24,5 +24,7 @@ export class FormField extends ReactiveModel<IFormField> {
 
 	clear = () => {
 		this.set(this.initialValues());
+
+		this.triggerEvent('clear');
 	};
 }

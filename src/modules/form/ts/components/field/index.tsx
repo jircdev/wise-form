@@ -3,9 +3,20 @@ import { Input, Textarea } from 'pragmate-ui/form';
 import { SelectionField } from './selection';
 import { FieldContainer } from './container';
 import { useWiseFormContext } from '../../context';
+import { IWiseForm, IWiseFormField } from '../../interfaces/interfaces';
+import type { FormModel } from '../../model/model';
+import type { WrappedFormModel } from '../../model/wrapped-form';
 
-export function Control({ field, index, model }) {
-	const { formTypes } = useWiseFormContext();
+export function Control({
+	field,
+	index,
+	model,
+}: {
+	field: IWiseFormField;
+	index: number;
+	model: FormModel | WrappedFormModel;
+}) {
+	const { formTypes, values } = useWiseFormContext();
 
 	const types = {
 		...{
@@ -20,14 +31,15 @@ export function Control({ field, index, model }) {
 		...formTypes,
 	};
 
-
+	const fieldModel = model.getField(field?.name);
 	const Control = types[field.type] ?? types.default;
-
 	const onChange = event => {
 		model.setField(field.name, event.target.value);
 	};
-	const value = !model.name ?? '';
-	const attrs = { value: model.value, ...field, onChange };
+
+	const value = fieldModel?.value ?? values[field?.name];
+	const attrs = { model, value, ...field, onChange };
+
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
