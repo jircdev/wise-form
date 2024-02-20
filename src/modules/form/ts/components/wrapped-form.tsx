@@ -9,9 +9,6 @@ export /*bundle */ function WrappedForm({ children, settings, types, data }): JS
 	const { model: parent } = useWiseFormContext();
 	const [ready, model, values] = useModel(settings, data);
 	const template = useTemplate(settings);
-	if (settings.name === 'title-data-collapsible') {
-		console.log('VALUES => ', values);
-	}
 
 	if (!settings.fields) {
 		return <ErrorRenderer error="the form does not have fields" />;

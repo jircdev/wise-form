@@ -20,7 +20,6 @@ export function Control({ field, index, model }) {
 		...formTypes,
 	};
 
-	!model?.fields.get(field?.name) && console.log('CONTROL => ', model, field.name, model?.fields.get(field.name));
 
 	const Control = types[field.type] ?? types.default;
 

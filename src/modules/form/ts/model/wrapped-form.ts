@@ -62,7 +62,6 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 				item?.properties.forEach(item => (externalValues[item.name] = item.value));
 			}
 
-			item.name === 'finance-project-data' && console.log('FINANCE ITEM => ', item);
 			if (item.type === 'wrapper') {
 				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
 				instance = new WrappedFormModel(this, { ...item, value: values[item.name] || '' });

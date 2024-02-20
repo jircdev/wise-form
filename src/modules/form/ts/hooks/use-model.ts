@@ -15,9 +15,6 @@ export function useModel(settings, form?: FormModel) {
 		const onChange = () => {
 			setReady(form.ready);
 			setValues({ ...form.values });
-			if (settings.name === 'title-data-collapsible') {
-				console.log('CHANGED', settings.name, { ...form.values });
-			}
 		};
 		form.on('change', onChange);
 
