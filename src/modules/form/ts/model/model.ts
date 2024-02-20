@@ -39,11 +39,16 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.#settings.fields.map(item => {
 			let instance;
 			if (item.type === 'wrapper') {
-				console.log(0.2, item);
+				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
+				item.name === 'titleDataCollapsible' && console.log('WRAPPER => ', item);
+				// TODD: VERIFY
+				const propsToIgnore = ['control', 'fields', 'type', 'name', 'template'];
 				const properties = item.fields.map(item => item.name);
 				const values = item.values || {};
+				const finalValues = Object.keys(item).filter(key => !propsToIgnore.includes(key));
+				const finalProperties = [...properties, ...finalValues];
 
-				instance = new WrappedFormModel(this, item, { properties, ...values });
+				instance = new WrappedFormModel(this, item, { properties: finalProperties, ...values });
 			} else {
 				instance = new FormField(this, { ...item, value: values[item.name] || '' });
 			}

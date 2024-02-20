@@ -38,11 +38,14 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		const values = settings.values || {};
 
 		this.#settings.fields.map(item => {
+			let instance;
+
 			if (item.type === 'wrapper') {
-				const instance = new WrappedFormModel(this, { ...item, value: values[item.name] || '' });
+				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
+				instance = new WrappedFormModel(this, { ...item, value: values[item.name] || '' });
 				return;
-			}
-			const instance = new FormField(this, { ...item, value: values[item.name] || '' });
+			} else instance = new FormField(this, { ...item, value: values[item.name] || '' });
+
 			const onChange = () => {
 				this[item.name] = instance.value;
 				this.triggerEvent();
