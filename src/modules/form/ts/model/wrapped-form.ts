@@ -69,7 +69,14 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 			if (item.type === 'wrapper') {
 				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
-				instance = new WrappedFormModel(this, { ...item, value: values[item.name] || '' });
+				instance = new WrappedFormModel(
+					this,
+					{
+						...item,
+						value: values[item.name] || '',
+					},
+					{ properties: externalProperties }
+				);
 			} else
 				instance = new FormField(this, {
 					...item,

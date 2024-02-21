@@ -15,7 +15,6 @@ function Main(): JSX.Element {
 	//@ts-ignore
 	const values = settings.values || {};
 	const form = new FormModel(settings, { properties, ...values });
-	globalThis.form = form;
 	return (
 		<main>
 			<h1>{title}</h1>
@@ -26,9 +25,8 @@ function Main(): JSX.Element {
 					appInput: AppInput,
 				}}
 				settings={settings}
-				model={form}
-			>
-				<Button type='submit' variant='primary'>
+				model={form}>
+				<Button type="submit" variant="primary">
 					Enviar
 				</Button>
 			</WiseForm>
