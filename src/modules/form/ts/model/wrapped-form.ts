@@ -77,12 +77,14 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 					},
 					{ properties: externalProperties }
 				);
-			} else
+			} else {
+				item.label === 'Nueva Colección: ' && console.log('ITEM => ', item);
 				instance = new FormField(this, {
 					...item,
 					value: values[item.name] || '',
 					properties: externalProperties,
 				});
+			}
 			if (externalValues && Object.values(externalValues).length) instance.set(externalValues);
 
 			const onChange = () => {

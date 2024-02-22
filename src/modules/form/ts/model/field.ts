@@ -12,10 +12,20 @@ export interface IFormField {
 export class FormField extends ReactiveModel<IFormField> {
 	#parent;
 
-	constructor(parent, properties = {}) {
+	constructor(parent, props = { properties: [] }) {
 		super({
-			...properties,
-			properties: ['name', 'type', 'placeholder', 'required', 'label', 'variant', 'disabled', 'value'],
+			...props,
+			properties: [
+				'name',
+				'type',
+				'placeholder',
+				'required',
+				'label',
+				'variant',
+				'disabled',
+				'value',
+				...props.properties,
+			],
 		});
 		this.#parent = parent;
 
@@ -24,7 +34,6 @@ export class FormField extends ReactiveModel<IFormField> {
 
 	clear = () => {
 		this.set(this.initialValues());
-
 		this.triggerEvent('clear');
 	};
 }

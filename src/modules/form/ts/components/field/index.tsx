@@ -38,7 +38,8 @@ export function Control({
 	};
 
 	const value = fieldModel?.value ?? values[field?.name];
-	const attrs = { value, ...field, onChange, model };
+	const fieldModelProps = fieldModel ? fieldModel.getProperties() : {};
+	const attrs = { value, ...field, ...fieldModelProps, onChange, model };
 
 	return (
 		<FieldContainer>
