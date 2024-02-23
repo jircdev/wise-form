@@ -20,30 +20,9 @@ class FormModel extends ReactiveModel<FormModel> {
 		});
 		return data;
 	}
-	#fields: Map<string, FormField> = new Map();
+	#fields: Map<string, FormField | WrappedFormModel> = new Map();
 	get fields() {
 		return this.#fields;
-	}
-
-	clear = () => {
-		this.#fields.forEach(field => {
-			field.clear();
-		});
-		this.triggerEvent();
-		this.triggerEvent('clear');
-	};
-
-	getField(name: string): FormField | undefined {
-		if (!name) {
-			console.warn('You need to provide a name to get a field in form ', this.#settings.name);
-			return;
-		}
-		if (!name.includes('.')) return this.#fields.get(name);
-		const [wrapperName, ...others] = name.split('.');
-		const currentWrapper = this.#fields.get(wrapperName);
-
-		const otherWrapper = others.join('.');
-		return currentWrapper.getField(otherWrapper);
 	}
 
 	constructor(settings, reactiveProps?) {
@@ -54,32 +33,10 @@ class FormModel extends ReactiveModel<FormModel> {
 	}
 
 	#startup(settings) {
-		const values = settings.values || {};
+		const values = settings?.values || {};
 
 		this.#settings.fields.map(item => {
-			let instance: WrappedFormModel | FormField;
-			let externalProperties: string[] = [];
-			let externalValues: Record<string, any> = {};
-			if (Array.isArray(item?.properties)) {
-				externalProperties = item?.properties.map(item => item.name);
-				item?.properties.forEach(item => (externalValues[item.name] = item.value));
-			}
-
-			if (item.type === 'wrapper') {
-				if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
-				const fieldsProperties = item.fields.map(item => item.name);
-
-				const properties = [...fieldsProperties, ...externalProperties];
-				const values = item.values || {};
-				instance = new WrappedFormModel(this, item, { properties, ...values });
-			} else {
-				instance = new FormField(this, {
-					...item,
-					value: values[item.name] || '',
-					properties: externalProperties,
-				});
-			}
-			if (externalValues && Object.values(externalValues).length) instance.set(externalValues);
+			const instance = this.#getInstance(item, values);
 
 			const onChange = () => {
 				this[item.name] = instance.value;
@@ -92,7 +49,67 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.ready = true;
 	}
 
-	setField(name: string, value) {
-		this.#fields.get(name).set({ value });
+	#getInstance = (item, values: Record<string, unknown>) => {
+		let instance: WrappedFormModel | FormField;
+		let externalValues: Record<string, any> = {};
+		if (Array.isArray(item?.properties)) {
+			item?.properties.forEach(item => (externalValues[item.name] = item.value));
+		}
+
+		if (item.type === 'wrapper') {
+			if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
+			const fieldsProperties = item.fields.map(item => item.name);
+
+			const properties = [...fieldsProperties, ...(item?.properties || [])];
+			const values = item.values || {};
+			instance = new WrappedFormModel({
+				parent: this,
+				settings: item,
+				properties: { externalProperties: properties || [], ...values },
+			});
+
+			if (item?.properties) {
+				let toSet = {};
+				item?.properties.forEach(property => (toSet[property] = item[property] || ''));
+				instance.set(toSet);
+			}
+			return instance;
+		}
+
+		instance = new FormField({
+			parent: this,
+			properties: {
+				...item,
+				value: values[item.name] || item?.value,
+				externalProperties: item?.properties || [],
+			},
+		});
+
+		if (item?.properties) {
+			let toSet = {};
+			item?.properties.forEach(property => (toSet[property] = item[property] || ''));
+			instance.set(toSet);
+		}
+
+		return instance;
+	};
+
+	setField = (name: string, value) => this.#fields.get(name).set({ value });
+
+	getField(name: string) {
+		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
+		if (!name.includes('.')) return this.#fields.get(name);
+
+		const [wrapperName, ...others] = name.split('.');
+		const currentWrapper = this.#fields.get(wrapperName);
+
+		const otherWrapper = others.join('.');
+		return currentWrapper.getField(otherWrapper);
 	}
+
+	clear = () => {
+		this.#fields.forEach(field => field.clear());
+		this.triggerEvent();
+		this.triggerEvent('clear');
+	};
 }

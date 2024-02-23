@@ -12,7 +12,7 @@ export interface IFieldContainer {
 export function FieldContainer({ template: [totalFields, gridStyle], items, styles, model }: IFieldContainer) {
 	const output = items.map((field, index) => {
 		if (field.type === 'wrapper') {
-			return <FormSectionWrapper key={`rf-row__item--${index}`} data={field} />;
+			return <FormSectionWrapper key={`rf-row__item--${index}`} model={model} data={field} />;
 		}
 		return <Control index={index} model={model} field={field} key={`rf-row__item--${index}`} />;
 	});

@@ -9,12 +9,20 @@ export interface IFormField {
 	variant: string;
 	disabled: boolean;
 }
+
+interface IProps {
+	externalProperties: string[];
+	value: string | number | boolean | Object | any[];
+	[key: string]: any;
+}
+
 export class FormField extends ReactiveModel<IFormField> {
 	#parent;
 
-	constructor(parent, props = { properties: [] }) {
+	constructor({ parent, properties }: { parent; properties: IProps }) {
+		const { externalProperties, ...props } = properties;
 		super({
-			...props,
+			...properties,
 			properties: [
 				'name',
 				'type',
@@ -24,12 +32,12 @@ export class FormField extends ReactiveModel<IFormField> {
 				'variant',
 				'disabled',
 				'value',
-				...props.properties,
+				...externalProperties,
 			],
 		});
 		this.#parent = parent;
 
-		// this.set(properties);
+		this.set(props);
 	}
 
 	clear = () => {
