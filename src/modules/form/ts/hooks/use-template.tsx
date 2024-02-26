@@ -9,7 +9,7 @@ import { IFormTemplate } from '../interfaces/template';
  * @returns An object representing the structured layout with type, styles, and items.
  */
 export function useTemplate(settings, gap = undefined) {
-	if (!settings?.template) throw new Error(`${settings.name} Doesnt have a template`);
+	if (!settings?.template) throw new Error(`${settings?.name} Doesn't have a template`);
 
 	let template = settings?.template;
 	let structure = template;

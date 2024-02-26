@@ -18,7 +18,7 @@ export /*bundle*/ const Section = ({ model, ...props }: IProps) => {
 					<h3>{props.data.title}</h3>
 				</header>
 			)}
-			<div className="content">
+			<div className='content'>
 				<WrappedForm data={model} settings={props.data} />
 			</div>
 		</section>

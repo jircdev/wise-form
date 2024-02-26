@@ -1,12 +1,12 @@
 export const dependenciesForm = {
 	name: 'Factiblidad',
-	template: [[4, '1fr 1fr 1fr 1fr'], '1fr', '1fr', '1fr', '1fr', '1fr', '1fr', '1fr', '1fr'],
+	template: [[4, '1fr'], '1x8'],
 	fields: [
 		{
 			type: 'wrapper',
 			control: 'div',
 			name: 'secondSection',
-			template: [[4, '1fr 1fr 1fr 1fr']],
+			template: ['1fr', '1fr', '1fr', '1fr'],
 			fields: [
 				{
 					name: 'plastified',

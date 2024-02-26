@@ -8,15 +8,19 @@ import { useTemplate } from '../hooks/use-template';
 export /*bundle */ function WrappedForm({ children, settings, types, data }): JSX.Element {
 	const { model: parent } = useWiseFormContext();
 	const [ready, model, values] = useModel(settings, data);
-	const template = useTemplate(settings);
 
+	if (!settings) {
+		console.error('the form does not have settings', settings);
+	}
 	if (!settings.fields) {
-		return <ErrorRenderer error="the form does not have fields" />;
+		console.error('the form does not have fields', settings.name);
 	}
 
 	if (!settings.name) {
-		return <ErrorRenderer error="the form does not have a name" />;
+		console.error('the form does not have a name', settings.fields);
 	}
+
+	const template = useTemplate(settings);
 	if (!ready) return null;
 	const fields = [...settings.fields];
 	const Containers = template.items.map((num, index) => {

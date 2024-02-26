@@ -9,17 +9,20 @@ import { IWiseFormSpecs } from './interfaces/wise-form-specs';
 
 export /*bundle */ function WiseForm({ children, settings, types, model }: IWiseFormSpecs): JSX.Element {
 	const [ready, instance] = useModel(settings, model);
-	const { type, styles, items } = useTemplate(settings, settings.gap);
-	const formTypes = useTypes(types);
 
+	if (!settings) {
+		console.error('the form does not have settings', settings);
+	}
 	if (!settings.fields) {
 		console.error('the form does not have fields', settings.name);
 	}
 
 	if (!settings.name) {
 		console.error('the form does not have a name', settings.fields);
-		return null;
 	}
+
+	const { type, styles, items } = useTemplate(settings, settings.gap);
+	const formTypes = useTypes(types);
 
 	if (!ready) return null;
 	const fields = [...settings.fields];
@@ -52,7 +55,7 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 
 	return (
 		<WiseFormContext.Provider value={value}>
-			<form className="reactive-form-container" onSubmit={onSubmit}>
+			<form className='reactive-form-container' onSubmit={onSubmit}>
 				{Containers}
 				{children}
 			</form>

@@ -6,8 +6,8 @@ export /*bundle*/ const Div = ({ data: { model, ...props } }) => {
 
 	const styles: React.CSSProperties = {};
 	return (
-		<div style={styles} className=" separator">
-			<WrappedForm settings={props.data} data={model} />
+		<div style={styles} className=' separator'>
+			<WrappedForm settings={props} data={model} />
 		</div>
 	);
 };

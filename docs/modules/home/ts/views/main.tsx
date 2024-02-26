@@ -6,6 +6,8 @@ import { ReactSelect } from 'pragmate-ui/form/react-select';
 import { Wrapper } from './wrapper';
 import { AppInput } from './components/app-input';
 import { FormModel } from '@bgroup/wise-form/form';
+import { Div } from './components/div';
+import { Section } from './components/section';
 export /*bundle*/
 function Main(): JSX.Element {
 	const { current } = useFormContext();
@@ -20,13 +22,16 @@ function Main(): JSX.Element {
 			<h1>{title}</h1>
 			<WiseForm
 				types={{
-					pepito: ReactSelect,
+					select: ReactSelect,
 					baseWrapper: Wrapper,
 					appInput: AppInput,
+					div: Div,
+					section: Section,
 				}}
 				settings={settings}
-				model={form}>
-				<Button type="submit" variant="primary">
+				model={form}
+			>
+				<Button type='submit' variant='primary'>
 					Enviar
 				</Button>
 			</WiseForm>
