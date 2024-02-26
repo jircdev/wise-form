@@ -40,17 +40,19 @@ class FormModel extends ReactiveModel<FormModel> {
 	#startup(settings) {
 		const values = settings?.values || {};
 
-		this.#settings.fields.map(item => {
+		const createItems = item => {
 			const instance = this.#getInstance(item, values);
 
 			const onChange = () => {
 				this[item.name] = instance.value;
-				this.triggerEvent();
+				//		this.triggerEvent();
 			};
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
-		});
+		};
 
+		this.#settings.fields.map(createItems);
+		this.#configFields();
 		this.ready = true;
 	}
 
@@ -121,4 +123,6 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.triggerEvent();
 		this.triggerEvent('clear');
 	};
+
+	#configFields = () => {};
 }

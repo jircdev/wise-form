@@ -32,16 +32,24 @@ export class FormField extends ReactiveModel<IFormField> {
 				'variant',
 				'disabled',
 				'value',
+				'dependentOn',
 				...properties,
 			],
 		});
 		this.#parent = parent;
 
 		this.set(props);
+		this.checkSettings();
 	}
 
 	clear = () => {
 		this.set(this.initialValues());
 		this.triggerEvent('clear');
 	};
+
+	checkSettings() {
+		if (this.dependentOn) {
+			
+		}
+	}
 }
