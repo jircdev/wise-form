@@ -1,0 +1,64 @@
+.pui-react-select.pui-input {
+	cursor: pointer;
+
+	label {
+		font-weight: bold;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		span {
+			color: var(--on-surface-variant);
+		}
+		.pui-select {
+			cursor: pointer;
+			border: 1px solid var(--outline);
+			border-radius: var(--border-radius-base);
+			font-weight: normal;
+
+			* {
+				border: none;
+
+				&:has(input:disabled) {
+					background: var(--primary-container);
+				}
+			}
+
+			.sgs-react-select__indicator.sgs-react-select__dropdown-indicator.css-1xc3v61-indicatorContainer {
+				color: var(--outline);
+			}
+
+			.sgs-react-select__indicator.sgs-react-select__dropdown-indicator {
+				padding: 5px;
+			}
+
+			.sgs-react-select__indicator-separator.css-1u9des2-indicatorSeparator {
+				display: none;
+			}
+
+			.sgs-react-select__indicators {
+				max-height: 28px;
+			}
+
+			.sgs-react-select__control--is-focused {
+				max-height: unset;
+				height: 28px;
+				min-height: 28px;
+			}
+
+			.css-13cymwt-control {
+				height: 28px;
+				max-height: unset;
+				border: none;
+				min-height: 28px;
+			}
+
+			.pui-react-select__control {
+				background: transparent;
+			}
+
+			.css-1xc3v61-indicatorContainer {
+				padding: 5px;
+			}
+		}
+	}
+}
