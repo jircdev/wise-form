@@ -11,6 +11,9 @@ import { composedWrapper } from './forms/composed-wrapper';
 import { FormModel } from '@bgroup/wise-form/form';
 import { Wrapper } from './views/wrapper';
 import { AppInput } from './views/components/app-input';
+import { dependenciesForm } from './forms/dependencies';
+import { Div } from './views/components/div';
+import { Section } from './views/components/section';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -23,6 +26,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			templateGap: ['Template gap', templateGap],
 			editUserForm: ['Edition Form', EditUserForm],
 			composedWrapper: ['Composed form', composedWrapper],
+			dependenciesForm: ['Dependencies form', dependenciesForm],
 		};
 	}
 
@@ -39,14 +43,14 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 		super();
 
 		this.reactiveProps(['selected']);
-		this.selected = 'composedWrapper';
+		this.selected = 'dependenciesForm';
 		WFSettings.setFields({
 			select: ReactSelect,
 			baseWrapper: Wrapper,
 			appInput: AppInput,
+			div: Div,
+			section: Section,
 		});
-
-		
 	}
 
 	#update(name: string) {

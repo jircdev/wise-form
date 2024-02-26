@@ -1,0 +1,38 @@
+.separator {
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+	hr {
+		display: none;
+	}
+}
+
+.right {
+	width: 100%;
+
+	.rf-fields-container {
+		width: 100%;
+		display: flex;
+		align-items: center;
+
+		justify-content: flex-end;
+	}
+
+	hr {
+		display: none;
+	}
+}
+
+.center {
+	.rf-fields-container {
+		width: 100%;
+		display: flex;
+		align-items: center;
+
+		justify-content: center;
+	}
+
+	hr {
+		display: none;
+	}
+}
