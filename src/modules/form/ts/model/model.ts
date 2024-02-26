@@ -13,6 +13,11 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#initialValues;
 	}
 
+	#wrappers: Map<string, WrappedFormModel> = new Map();
+	get wrappers() {
+		return this.#wrappers;
+	}
+
 	get values() {
 		const data = {};
 		this.#fields.forEach((field, key) => {
@@ -65,23 +70,23 @@ class FormModel extends ReactiveModel<FormModel> {
 			instance = new WrappedFormModel({
 				parent: this,
 				settings: item,
-				properties: { externalProperties: properties || [], ...values },
+				specs: { properties: properties || [], ...values },
 			});
 
-			if (item?.properties) {
-				let toSet = {};
-				item?.properties.forEach(property => (toSet[property] = item[property] || ''));
-				instance.set(toSet);
-			}
+			let toSet = {};
+			Object.keys(instance?.getProperties()).forEach(property => (toSet[property] = item[property] || ''));
+			instance.set(toSet);
+
+			this.registerWrapper(instance);
 			return instance;
 		}
 
 		instance = new FormField({
 			parent: this,
-			properties: {
+			specs: {
 				...item,
 				value: values[item.name] || item?.value,
-				externalProperties: item?.properties || [],
+				properties: item?.properties || [],
 			},
 		});
 
@@ -94,6 +99,10 @@ class FormModel extends ReactiveModel<FormModel> {
 		return instance;
 	};
 
+	registerWrapper = (wrapper: WrappedFormModel) => {
+		this.#wrappers.set(wrapper.name, wrapper);
+	};
+
 	setField = (name: string, value) => this.#fields.get(name).set({ value });
 
 	getField(name: string) {
@@ -101,7 +110,7 @@ class FormModel extends ReactiveModel<FormModel> {
 		if (!name.includes('.')) return this.#fields.get(name);
 
 		const [wrapperName, ...others] = name.split('.');
-		const currentWrapper = this.#fields.get(wrapperName);
+		const currentWrapper = this.#wrappers.get(wrapperName);
 
 		const otherWrapper = others.join('.');
 		return currentWrapper.getField(otherWrapper);

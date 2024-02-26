@@ -5,7 +5,7 @@ import type { FormModel } from './model';
 interface IProps {
 	parent: FormModel | WrappedFormModel;
 	settings;
-	properties: { externalProperties: string[] };
+	specs: { properties: string[] };
 }
 
 export /*bundle*/
@@ -18,6 +18,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
 		return this.#initialValues;
+	}
+
+	#wrappers: Map<string, WrappedFormModel> = new Map();
+	get wrappers() {
+		return this.#wrappers;
 	}
 
 	get values() {
@@ -33,11 +38,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	}
 
 	#parent: FormModel | WrappedFormModel;
-	constructor({ parent, settings, properties }: IProps) {
-		const { externalProperties, ...props } = properties;
+	constructor({ parent, settings, specs }: IProps) {
+		const { properties, ...props } = specs;
 		super({
 			...props,
-			properties: ['name', ...externalProperties],
+			properties: ['name', ...properties],
 		});
 
 		this.#parent = parent;
@@ -75,23 +80,23 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			instance = new WrappedFormModel({
 				parent: this,
 				settings: item,
-				properties: { externalProperties: properties || [], ...values },
+				specs: { properties: properties || [], ...values },
 			});
 
-			if (item?.properties) {
-				let toSet = {};
-				item?.properties.forEach(property => (toSet[property] = item[property] || ''));
-				instance.set(toSet);
-			}
+			let toSet = {};
+			Object.keys(instance?.getProperties()).forEach(property => (toSet[property] = item[property] || ''));
+			instance.set(toSet);
+
+			this.registerWrapper(instance);
 			return instance;
 		}
 
 		instance = new FormField({
 			parent: this,
-			properties: {
+			specs: {
 				...item,
 				value: values[item.name] || item?.value,
-				externalProperties: item?.properties || [],
+				properties: item?.properties || [],
 			},
 		});
 
@@ -104,6 +109,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return instance;
 	};
 
+	registerWrapper = (wrapper: WrappedFormModel) => {
+		this.#wrappers.set(wrapper.name, wrapper);
+		this.#parent.registerWrapper(wrapper);
+	};
+
 	setField(name: string, value) {
 		if (!this.getField(name)) {
 			console.error('Field not found', name, this.#settings.name, this.#fields.keys());
@@ -113,13 +123,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	}
 
 	getField(name: string) {
-		if (!name) {
-			console.warn('You need to provide a name to get a field in form ', this.#settings.name);
-			return;
-		}
+		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
 		if (!name.includes('.')) return this.#fields.get(name);
+
 		const [wrapperName, ...others] = name.split('.');
-		const currentWrapper = this.#fields.get(wrapperName);
+		const currentWrapper = this.#wrappers.get(wrapperName);
 
 		const otherWrapper = others.join('.');
 		return currentWrapper.getField(otherWrapper);
