@@ -4,9 +4,8 @@ import { WrappedForm } from '@bgroup/wise-form/form';
 export /*bundle*/ const Div = ({ data: { model, ...props } }) => {
 	console.log('PROPS => ', props);
 
-	const styles: React.CSSProperties = {};
 	return (
-		<div style={styles} className=' separator'>
+		<div className=' separator'>
 			<WrappedForm settings={props} data={model} />
 		</div>
 	);
