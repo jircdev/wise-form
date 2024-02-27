@@ -15,6 +15,8 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return this.#settings;
 	}
 
+	#callbacks: Record<string, (...args) => void> = {};
+
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
 		return this.#initialValues;
@@ -46,6 +48,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		});
 
 		this.#parent = parent;
+		this.#callbacks = this.#parent.callbacks;
 		this.#settings = settings;
 		this.#startup(settings);
 	}
@@ -62,6 +65,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			this.#fields.set(item.name, instance);
 		});
 
+		// this.#configFields();
 		this.ready = true;
 	}
 
@@ -107,6 +111,24 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		}
 
 		return instance;
+	};
+
+	#configFields = () => {
+		this.#fields.forEach(item => {
+			if (!item?.dependentOn?.length) return;
+			const toListenField = item.dependentOn;
+
+			const dependantItem = this.getField(toListenField.field);
+			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);
+
+			const type = toListenField?.type;
+
+			if (toListenField?.callback || !this.#callbacks[toListenField?.callback])
+				throw new Error(`${toListenField?.callback} isnt an registered callback`);
+
+			const callback = this.#callbacks[toListenField?.callback];
+			dependantItem.on(type, () => callback({ from: dependantItem, to: item }));
+		});
 	};
 
 	registerWrapper = (wrapper: WrappedFormModel) => {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useModel } from '../hooks/use-model';
-import { ErrorRenderer } from './error';
 import { WrappedWiseFormContext, useWiseFormContext } from '../context';
 import { FieldContainer } from './rows/row-container';
 import { useTemplate } from '../hooks/use-template';

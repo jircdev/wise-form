@@ -49,7 +49,6 @@ export class FormField extends ReactiveModel<IFormField> {
 
 	checkSettings() {
 		if (this.dependentOn) {
-			
 		}
 	}
 }

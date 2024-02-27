@@ -22,8 +22,8 @@ export const dependenciesForm = {
 				{
 					field: 'country',
 					type: 'fetch',
-					callback: 'loader'
-				}
+					callback: 'loader',
+				},
 			],
 		},
 		{

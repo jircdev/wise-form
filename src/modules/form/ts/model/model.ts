@@ -8,6 +8,11 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#settings;
 	}
 
+	#callbacks: Record<string, (...args) => void> = {};
+	get callbacks() {
+		return this.#callbacks;
+	}
+
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
 		return this.#initialValues;
@@ -30,10 +35,11 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#fields;
 	}
 
-	constructor(settings, reactiveProps?) {
+	constructor(settings, reactiveProps?, callbacks?) {
 		super(reactiveProps);
 
 		this.#settings = settings;
+		this.#callbacks = callbacks;
 		this.#startup(settings);
 	}
 
@@ -45,16 +51,39 @@ class FormModel extends ReactiveModel<FormModel> {
 
 			const onChange = () => {
 				this[item.name] = instance.value;
-				//		this.triggerEvent();
 			};
+
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
 		};
 
 		this.#settings.fields.map(createItems);
-		this.#configFields();
+		// this.#configFields();
 		this.ready = true;
 	}
+
+	#configFields = () => {
+		globalThis.f = this.#fields;
+		this.#fields.forEach(item => {
+			this.#listenDependencies(item);
+		});
+	};
+
+	#listenDependencies = item => {
+		if (!item?.dependentOn?.length) return;
+		item.dependentOn.forEach(toListenField => {
+			const dependantItem = this.getField(toListenField.field);
+			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);
+
+			const type = toListenField?.type;
+
+			if (toListenField?.callback || !this.#callbacks[toListenField?.callback])
+				throw new Error(`${toListenField?.callback} isnt an registered callback`);
+
+			const callback = this.#callbacks[toListenField?.callback];
+			dependantItem.on(type, () => callback({ from: dependantItem, to: item }));
+		});
+	};
 
 	#getInstance = (item, values: Record<string, unknown>) => {
 		let instance: WrappedFormModel | FormField;
@@ -123,6 +152,4 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.triggerEvent();
 		this.triggerEvent('clear');
 	};
-
-	#configFields = () => {};
 }
