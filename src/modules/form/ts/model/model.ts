@@ -35,24 +35,19 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#fields;
 	}
 
-	constructor(settings, reactiveProps?, callbacks?) {
+	constructor(settings, reactiveProps?) {
 		super(reactiveProps);
 
 		this.#settings = settings;
-		this.#callbacks = callbacks;
+		this.#callbacks = settings.callbacks ?? {};
 		this.#startup(settings);
 	}
 
 	#startup(settings) {
 		const values = settings?.values || {};
-
 		const createItems = item => {
 			const instance = this.#getInstance(item, values);
-
-			const onChange = () => {
-				this[item.name] = instance.value;
-			};
-
+			const onChange = () => (this[item.name] = instance.value);
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
 		};
@@ -67,21 +62,40 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.#fields.forEach(this.#listenDependencies);
 	};
 
-	#listenDependencies = item => {
-		if (!item?.dependentOn?.length) return;
+	/**
+	 * Loop fields to check if they have dependencies and listen to them
+	 *
+	 * @param item
+	 * @returns
+	 */
+	#listenDependencies = instance => {
+		if (!instance?.dependentOn?.length) return;
 
-		item.dependentOn.forEach(toListenField => {
-			const dependantItem = this.getField(toListenField.field);
-			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);
+		const checkField = item => {
+			const DEFAULT = {
+				type: 'change',
+			};
 
-			const type = toListenField?.type;
+			const dependency = this.getField(item.field);
 
-			if (toListenField?.callback || !this.#callbacks[toListenField?.callback])
-				throw new Error(`${toListenField?.callback} isnt an registered callback`);
+			['field', 'callback'].forEach(prop => {
+				if (!item[prop]) throw new Error(`${item?.field} is missing ${prop}`);
+			});
 
-			const callback = this.#callbacks[toListenField?.callback];
-			dependantItem.on(type, () => callback({ from: dependantItem, to: item }));
-		});
+			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
+
+			const type = item.type ?? 'change';
+			const settings = { ...DEFAULT, ...item };
+			if (!this.#callbacks[item.callback]) {
+				throw new Error(`${item.callback} is not  a registered callback`);
+			}
+
+			const callback = this.#callbacks[item.callback];
+			callback({ dependency, settings, field: instance });
+			// dependency.on(type, () => callback({ dependency, settings }));
+		};
+
+		instance.dependentOn.forEach(checkField);
 	};
 
 	#getInstance = (item, values: Record<string, unknown>) => {

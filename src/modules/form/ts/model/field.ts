@@ -33,6 +33,7 @@ export class FormField extends ReactiveModel<IFormField> {
 				'disabled',
 				'value',
 				'dependentOn',
+				'options',
 				...properties,
 			],
 		});

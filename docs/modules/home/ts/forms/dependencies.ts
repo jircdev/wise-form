@@ -22,9 +22,16 @@ export const dependenciesForm = {
 				{
 					field: 'country',
 					type: 'fetch',
-					callback: 'loader',
+					callback: 'onLoad',
 				},
 			],
+			// dependentOn: [
+			// 	{
+			// 		field: 'country',
+			// 		type: 'fetch',
+			// 		// callback: 'loader',
+			// 	},
+			// ],
 		},
 		{
 			name: 'coverColors',

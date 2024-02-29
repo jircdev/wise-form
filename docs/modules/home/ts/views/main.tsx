@@ -8,28 +8,40 @@ import { AppInput } from './components/app-input';
 import { FormModel } from '@bgroup/wise-form/form';
 import { Div } from './components/div';
 import { Section } from './components/section';
+import { Select } from './components/select';
+interface ISettings {
+	[key: string]: any;
+}
 export /*bundle*/
 function Main(): JSX.Element {
-	const { current } = useFormContext();
+	const { current, store } = useFormContext();
 	const title = `Form: ${current[0]}`;
-	const settings = current[1];
+	let settings: ISettings = current[1];
 	const properties = settings.fields.map(item => item.name);
-	//@ts-ignore
+
 	const values = settings.values || {};
+	settings.callbacks = store.callbacks;
 	const form = new FormModel(settings, { properties, ...values });
+
 	return (
 		<main>
 			<h1>{title}</h1>
+			{/* @ts-ignore */}
 			<WiseForm
 				types={{
-					select: ReactSelect,
+					// @ts-ignore
+					select: Select,
+					// @ts-ignore
 					baseWrapper: Wrapper,
+					// @ts-ignore
 					appInput: AppInput,
+					// @ts-ignore
 					div: Div,
+					// @ts-ignore
 					section: Section,
 				}}
-				settings={settings}
 				model={form}
+				settings={settings}
 			>
 				<Button type='submit' variant='primary'>
 					Enviar

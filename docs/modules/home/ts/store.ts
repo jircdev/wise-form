@@ -19,6 +19,7 @@ type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
 	#forms: Map<string, FormModel> = new Map();
 	#active: FormModel;
+
 	get forms(): FormItem {
 		return {
 			login: ['Login', loginForm],
@@ -51,15 +52,32 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			div: Div,
 			section: Section,
 		});
+		this.callbacks = {
+			onLoad: this.loadData,
+		};
 	}
 
+	loadData = async specs => {
+		console.log(-1, specs);
+		specs.dependency.on('change', async () => {
+			const response = await fetch('https://jsonplaceholder.typicode.com/users');
+			const data = await response.json();
+
+			specs.field.set({ options: data.map(item => ({ value: item.id, label: item.name })) });
+		});
+	};
 	#update(name: string) {
 		if (this.#forms.has(name)) {
 			return this.#forms.get(name);
 		}
+
 		const settings: any = this.forms[name][1];
+		settings.callbacks = {
+			onLoad: this.loadData,
+		};
 		const properties = settings.fields.map(item => item.name);
 		const values = settings.values || {};
+		console.log(-2, settings);
 		const form = new FormModel(settings, { properties, ...values });
 
 		this.#forms.set(name, form);
