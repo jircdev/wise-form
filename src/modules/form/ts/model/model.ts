@@ -58,19 +58,18 @@ class FormModel extends ReactiveModel<FormModel> {
 		};
 
 		this.#settings.fields.map(createItems);
-		// this.#configFields();
+		this.#configFields();
 		this.ready = true;
 	}
 
 	#configFields = () => {
 		globalThis.f = this.#fields;
-		this.#fields.forEach(item => {
-			this.#listenDependencies(item);
-		});
+		this.#fields.forEach(this.#listenDependencies);
 	};
 
 	#listenDependencies = item => {
 		if (!item?.dependentOn?.length) return;
+
 		item.dependentOn.forEach(toListenField => {
 			const dependantItem = this.getField(toListenField.field);
 			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);

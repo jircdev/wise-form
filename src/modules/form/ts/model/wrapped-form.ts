@@ -15,7 +15,9 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return this.#settings;
 	}
 
-	#callbacks: Record<string, (...args) => void> = {};
+	get callbacks() {
+		return this.#parent.callbacks;
+	}
 
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
@@ -48,7 +50,6 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		});
 
 		this.#parent = parent;
-		this.#callbacks = this.#parent.callbacks;
 		this.#settings = settings;
 		this.#startup(settings);
 	}
@@ -65,7 +66,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			this.#fields.set(item.name, instance);
 		});
 
-		// this.#configFields();
+		this.#configFields();
 		this.ready = true;
 	}
 
@@ -114,20 +115,23 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	};
 
 	#configFields = () => {
-		this.#fields.forEach(item => {
-			if (!item?.dependentOn?.length) return;
-			const toListenField = item.dependentOn;
+		this.#fields.forEach(this.#listenDependencies);
+	};
 
+	#listenDependencies = item => {
+		if (!item?.dependentOn?.length) return;
+
+		item.dependentOn.forEach(toListenField => {
 			const dependantItem = this.getField(toListenField.field);
 			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);
 
-			const type = toListenField?.type;
+			const type = toListenField?.type || 'change';
 
-			if (toListenField?.callback || !this.#callbacks[toListenField?.callback])
+			if (toListenField?.callback && !this.callbacks[toListenField?.callback])
 				throw new Error(`${toListenField?.callback} isnt an registered callback`);
 
-			const callback = this.#callbacks[toListenField?.callback];
-			dependantItem.on(type, () => callback({ from: dependantItem, to: item }));
+			const callback = this.callbacks[toListenField?.callback];
+			dependantItem.on(type, () => callback({ listeningItem: dependantItem, item }));
 		});
 	};
 
@@ -150,6 +154,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 		const [wrapperName, ...others] = name.split('.');
 		const currentWrapper = this.#wrappers.get(wrapperName);
+		if (!currentWrapper) throw new Error(`Wrapper ${wrapperName} not found in form ${this.#settings.name}`);
 
 		const otherWrapper = others.join('.');
 		return currentWrapper.getField(otherWrapper);

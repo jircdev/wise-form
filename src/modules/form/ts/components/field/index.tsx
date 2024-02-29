@@ -41,8 +41,6 @@ export function Control({
 	const fieldModelProps = fieldModel ? fieldModel.getProperties() : {};
 	const attrs = { value, ...field, ...fieldModelProps, onChange, model };
 
-	attrs.name === 'title' && console.log('INPUT NORMAL => ', attrs);
-
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
