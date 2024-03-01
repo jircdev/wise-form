@@ -171,7 +171,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			}
 
 			const callback = this.callbacks[item.callback];
-			callback({ dependency, settings, field: instance });
+			callback({ dependency, settings, field: instance, form: this.#form });
 		};
 
 		instance.dependentOn.forEach(checkField);

@@ -120,7 +120,7 @@ class FormModel extends ReactiveModel<FormModel> {
 			}
 
 			const callback = this.#callbacks[item.callback];
-			callback({ dependency, settings, field: instance });
+			callback({ dependency, settings, field: instance, form: this });
 		};
 
 		instance.dependentOn.forEach(checkField);
