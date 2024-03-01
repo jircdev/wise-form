@@ -58,7 +58,6 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 	}
 
 	loadData = async specs => {
-		console.log(-1, specs);
 		specs.dependency.on('change', async () => {
 			const response = await fetch('https://jsonplaceholder.typicode.com/users');
 			const data = await response.json();
@@ -77,7 +76,6 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 		};
 		const properties = settings.fields.map(item => item.name);
 		const values = settings.values || {};
-		console.log(-2, settings);
 		const form = new FormModel(settings, { properties, ...values });
 
 		this.#forms.set(name, form);

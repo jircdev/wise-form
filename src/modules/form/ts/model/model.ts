@@ -1,6 +1,8 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
-import { WrappedFormModel } from './wrapped-form';
+import { WrappedFormModel } from './wrapper';
+import { PendingPromise } from '@beyond-js/kernel/core';
+
 export /*bundle*/
 class FormModel extends ReactiveModel<FormModel> {
 	#settings;
@@ -34,6 +36,9 @@ class FormModel extends ReactiveModel<FormModel> {
 	get fields() {
 		return this.#fields;
 	}
+	#loadedPromise: PendingPromise<boolean> = new PendingPromise();
+	#childWrappersReady: number = 0;
+	#childWrappers: number = 0;
 
 	constructor(settings, reactiveProps?) {
 		super(reactiveProps);
@@ -43,7 +48,7 @@ class FormModel extends ReactiveModel<FormModel> {
 		this.#startup(settings);
 	}
 
-	#startup(settings) {
+	#startup = async settings => {
 		const values = settings?.values || {};
 		const createItems = item => {
 			const instance = this.#getInstance(item, values);
@@ -53,12 +58,36 @@ class FormModel extends ReactiveModel<FormModel> {
 		};
 
 		this.#settings.fields.map(createItems);
-		this.#configFields();
 		this.ready = true;
-	}
+		await this.#checkReady();
+		globalThis.f = this;
+		this.#configFields();
+	};
+
+	#checkReady = () => {
+		const onReady = () => {
+			const areAllWrappersLoaded = this.#childWrappersReady === this.#childWrappers;
+
+			if (!areAllWrappersLoaded) {
+				this.#childWrappersReady = this.#childWrappersReady + 1;
+				return;
+			}
+			this.loaded = true;
+			this.#loadedPromise.resolve(true);
+			this.off('wrappers.children.loaded', onReady);
+		};
+
+		if (this.loaded) return this.loaded;
+		if (!this.#wrappers.size) {
+			onReady();
+			return this.loaded;
+		}
+
+		this.on('wrappers.children.loaded', onReady);
+		return this.#loadedPromise;
+	};
 
 	#configFields = () => {
-		globalThis.f = this.#fields;
 		this.#fields.forEach(this.#listenDependencies);
 	};
 
@@ -92,7 +121,6 @@ class FormModel extends ReactiveModel<FormModel> {
 
 			const callback = this.#callbacks[item.callback];
 			callback({ dependency, settings, field: instance });
-			// dependency.on(type, () => callback({ dependency, settings }));
 		};
 
 		instance.dependentOn.forEach(checkField);
@@ -113,7 +141,7 @@ class FormModel extends ReactiveModel<FormModel> {
 			const values = item.values || {};
 			instance = new WrappedFormModel({
 				parent: this,
-				settings: item,
+				settings: { ...item, form: this },
 				specs: { properties: properties || [], ...values },
 			});
 
@@ -122,6 +150,7 @@ class FormModel extends ReactiveModel<FormModel> {
 			instance.set(toSet);
 
 			this.registerWrapper(instance);
+			this.#childWrappers = this.#childWrappers + 1;
 			return instance;
 		}
 

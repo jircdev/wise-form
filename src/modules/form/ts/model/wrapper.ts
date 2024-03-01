@@ -1,6 +1,7 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 import type { FormModel } from './model';
+import { PendingPromise } from '@beyond-js/kernel/core';
 
 interface IProps {
 	parent: FormModel | WrappedFormModel;
@@ -18,6 +19,8 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	get callbacks() {
 		return this.#parent.callbacks;
 	}
+
+	#form: FormModel;
 
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
@@ -41,6 +44,9 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return this.#fields;
 	}
 
+	#loadedPromise: PendingPromise<boolean> = new PendingPromise();
+	#childWrappersReady: number = 0;
+
 	#parent: FormModel | WrappedFormModel;
 	constructor({ parent, settings, specs }: IProps) {
 		const { properties, ...props } = specs;
@@ -51,10 +57,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 		this.#parent = parent;
 		this.#settings = settings;
+		this.#form = this.#settings.form;
 		this.#startup(settings);
 	}
 
-	#startup(settings) {
+	#startup = async settings => {
 		const values = settings.values || {};
 		this.#settings.fields.map(item => {
 			const instance = this.#getInstance(item, values);
@@ -66,9 +73,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			this.#fields.set(item.name, instance);
 		});
 
+		this.#parent.triggerEvent('wrappers.children.loaded');
+		await this.#checkReady();
 		this.#configFields();
 		this.ready = true;
-	}
+	};
 
 	#getInstance = (item, values: Record<string, unknown>) => {
 		let instance: WrappedFormModel | FormField;
@@ -84,7 +93,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			const values = item.values || {};
 			instance = new WrappedFormModel({
 				parent: this,
-				settings: item,
+				settings: { ...item, form: this.#form },
 				specs: { properties: properties || [], ...values },
 			});
 
@@ -114,30 +123,63 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return instance;
 	};
 
+	#checkReady = () => {
+		const onReady = () => {
+			const areAllWrappersLoaded = this.#childWrappersReady === this.#wrappers.size;
+
+			if (!areAllWrappersLoaded) return (this.#childWrappersReady = this.#childWrappersReady + 1);
+			this.loaded = true;
+			this.#parent.triggerEvent('wrappers.children.loaded');
+			this.#loadedPromise.resolve(true);
+			this.off('wrappers.children.loaded', onReady);
+		};
+
+		if (this.loaded) return this.loaded;
+		if (!this.#wrappers.size) {
+			onReady();
+			return this.loaded;
+		}
+
+		this.on('wrappers.children.loaded', onReady);
+		return this.#loadedPromise;
+	};
+
 	#configFields = () => {
 		this.#fields.forEach(this.#listenDependencies);
 	};
 
-	#listenDependencies = item => {
-		if (!item?.dependentOn?.length) return;
+	#listenDependencies = instance => {
+		if (!instance?.dependentOn?.length) return;
 
-		item.dependentOn.forEach(toListenField => {
-			const dependantItem = this.getField(toListenField.field);
-			if (!dependantItem) throw new Error(`${toListenField?.field} isnt a registered field`);
+		const checkField = item => {
+			const DEFAULT = {
+				type: 'change',
+			};
 
-			const type = toListenField?.type || 'change';
+			const dependency = this.#form.getField(item.field);
 
-			if (toListenField?.callback && !this.callbacks[toListenField?.callback])
-				throw new Error(`${toListenField?.callback} isnt an registered callback`);
+			['field', 'callback'].forEach(prop => {
+				if (!item[prop]) throw new Error(`${item?.field} is missing ${prop}`);
+			});
 
-			const callback = this.callbacks[toListenField?.callback];
-			dependantItem.on(type, () => callback({ listeningItem: dependantItem, item }));
-		});
+			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
+
+			const type = item.type ?? 'change';
+			const settings = { ...DEFAULT, ...item };
+			if (!this.callbacks[item.callback]) {
+				throw new Error(`${item.callback} is not  a registered callback`);
+			}
+
+			const callback = this.callbacks[item.callback];
+			callback({ dependency, settings, field: instance });
+		};
+
+		instance.dependentOn.forEach(checkField);
 	};
 
 	registerWrapper = (wrapper: WrappedFormModel) => {
 		this.#wrappers.set(wrapper.name, wrapper);
-		this.#parent.registerWrapper(wrapper);
+		this.#form.registerWrapper(wrapper);
 	};
 
 	setField(name: string, value) {

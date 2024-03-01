@@ -5,7 +5,7 @@ import { FieldContainer } from './container';
 import { useWiseFormContext } from '../../context';
 import { IWiseForm, IWiseFormField } from '../../interfaces/interfaces';
 import type { FormModel } from '../../model/model';
-import type { WrappedFormModel } from '../../model/wrapped-form';
+import type { WrappedFormModel } from '../../entities/wrappers/WrappedFormModel';
 
 export function Control({
 	field,
