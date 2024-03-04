@@ -192,11 +192,19 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 	getField(name: string) {
 		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
-		if (!name.includes('.')) return this.#fields.get(name);
+		if (!name.includes('.')) {
+			let field = this.#fields.get(name);
+			if (!field) {
+				this.#wrappers.forEach(item => {
+					const foundField = item.getField(name);
+					if (foundField) field = foundField;
+				});
+			}
+			return field;
+		}
 
 		const [wrapperName, ...others] = name.split('.');
 		const currentWrapper = this.#wrappers.get(wrapperName);
-		if (!currentWrapper) throw new Error(`Wrapper ${wrapperName} not found in form ${this.#settings.name}`);
 
 		const otherWrapper = others.join('.');
 		return currentWrapper.getField(otherWrapper);
