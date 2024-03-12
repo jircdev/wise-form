@@ -39,7 +39,7 @@ export class FormField extends ReactiveModel<IFormField> {
 
 					return value !== fieldValue;
 				}
-				return !this.#parent.getField(field).value;
+				return !this.#parent.form.getField(field).value;
 			};
 			return this.#disabled.fields.some(validate);
 		}
@@ -60,7 +60,7 @@ export class FormField extends ReactiveModel<IFormField> {
 		const props = this.getProperties();
 		return {
 			...props,
-			disabled: this.#disabled,
+			disabled: this.disabled,
 		};
 	}
 	#listeningItems = new Map();
@@ -87,8 +87,11 @@ export class FormField extends ReactiveModel<IFormField> {
 		this.#parent = parent;
 		this.__instance = Math.random();
 		this.set(props);
-		this.checkSettings(props);
 	}
+
+	initialize = () => {
+		this.checkSettings(this.#specs);
+	};
 
 	clear = () => {
 		this.set(this.initialValues());
@@ -96,8 +99,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	};
 
 	#listenSiblings = () => {
-		console.log('NYA +> ');
-		this.trigger('change');
+		this.triggerEvent('change');
 	};
 
 	checkSettings(props) {
@@ -118,10 +120,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			props.disabled.fields.forEach(item => {
 				const name = typeof item === 'string' ? item : item.name;
 
-				console.log('THIS.#PARENT= > ', name, this.#parent.form);
 				const instance = this.#parent.form.getField(name);
-				console.log('INSTANCE => ', name, instance);
-
 				allValid = instance;
 				if (!allValid) return;
 				instance.on('change', this.#listenSiblings);

@@ -89,6 +89,7 @@ class FormModel extends ReactiveModel<FormModel> {
 
 	#configFields = () => {
 		this.#fields.forEach(this.#listenDependencies);
+		this.#fields.forEach(field => field.initialize());
 	};
 
 	/**

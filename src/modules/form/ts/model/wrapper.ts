@@ -21,6 +21,9 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	}
 
 	#form: FormModel;
+	get form() {
+		return this.#form;
+	}
 
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
@@ -146,6 +149,10 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 	#configFields = () => {
 		this.#fields.forEach(this.#listenDependencies);
+	};
+
+	initialize = () => {
+		this.#fields.forEach(field => field.initialize());
 	};
 
 	#listenDependencies = instance => {
