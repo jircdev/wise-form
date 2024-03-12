@@ -7,6 +7,13 @@ import { IWiseForm, IWiseFormField } from '../../interfaces/interfaces';
 import type { FormModel } from '../../model/model';
 import type { WrappedFormModel } from '../../entities/wrappers/WrappedFormModel';
 
+/**
+ *
+ * @param props.field WiseForm Json config
+ * @param props.index Index of the field
+ * @param props.model Field or Wrapper Model.
+ * @returns
+ */
 export function Control({
 	field,
 	index,
@@ -17,7 +24,8 @@ export function Control({
 	model: FormModel | WrappedFormModel;
 }) {
 	const { formTypes, values } = useWiseFormContext();
-
+	const fieldModel = model.getField(field?.name);
+	const [attributes, setAttributes] = React.useState(fieldModel.attributes);
 	const types = {
 		...{
 			checkbox: SelectionField,
@@ -31,16 +39,31 @@ export function Control({
 		...formTypes,
 	};
 
-	const fieldModel = model.getField(field?.name);
+	React.useEffect(() => {
+		if (!fieldModel) return;
+		const onChange = () => {
+			setAttributes(fieldModel.attributes);
+		};
+		fieldModel.on('change', onChange);
+		const cleanUp = () => {
+			fieldModel.off('change', onChange);
+			fieldModel.cleanUp();
+		};
+		return cleanUp;
+	}, [fieldModel]);
+
 	const Control = types[field.type] ?? types.default;
 	const onChange = event => {
 		model.setField(field.name, event.target.value);
 	};
 
 	const value = fieldModel?.value ?? values[field?.name];
-	const fieldModelProps = fieldModel ? fieldModel.getProperties() : {};
-	const attrs = { value, ...field, ...fieldModelProps, onChange, model };
 
+	/**
+	 * It's necessary to change the field spread.
+	 */
+	const attrs = { value, ...field, ...attributes, onChange, model };
+	if (field.type === 'button') console.log(11, attrs, model.__instance, model);
 	return (
 		<FieldContainer>
 			<Control {...attrs} />

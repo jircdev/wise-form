@@ -39,6 +39,7 @@ function Main(): JSX.Element {
 					div: Div,
 					// @ts-ignore
 					section: Section,
+					button: Button,
 				}}
 				model={form}
 				settings={settings}

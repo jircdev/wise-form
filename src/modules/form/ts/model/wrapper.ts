@@ -192,6 +192,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 
 	getField(name: string) {
 		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
+
 		if (!name.includes('.')) {
 			let field = this.#fields.get(name);
 			if (!field) {

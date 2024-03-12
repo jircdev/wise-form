@@ -25,13 +25,6 @@ export const dependenciesForm = {
 					callback: 'onLoad',
 				},
 			],
-			// dependentOn: [
-			// 	{
-			// 		field: 'country',
-			// 		type: 'fetch',
-			// 		// callback: 'loader',
-			// 	},
-			// ],
 		},
 		{
 			name: 'coverColors',
@@ -45,6 +38,21 @@ export const dependenciesForm = {
 			name: 'thirdSection',
 			template: [],
 			fields: [],
+		},
+		{
+			type: 'button',
+			name: 'tu-madre',
+			children: 'Prueba',
+			variant: 'primary',
+			disabled: {
+				fields: [
+					{
+						name: 'country',
+						value: '4',
+					},
+					'city',
+				],
+			},
 		},
 	],
 };
