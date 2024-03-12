@@ -60,7 +60,7 @@ export class FormField extends ReactiveModel<IFormField> {
 		const props = this.getProperties();
 		return {
 			...props,
-			disabled: this.disabled,
+			disabled: this.#disabled,
 		};
 	}
 	#listeningItems = new Map();
@@ -96,39 +96,43 @@ export class FormField extends ReactiveModel<IFormField> {
 	};
 
 	#listenSiblings = () => {
+		console.log('NYA +> ');
 		this.trigger('change');
 	};
 
 	checkSettings(props) {
 		if (props.hasOwnProperty('disabled')) {
-			console.log(1, this, typeof props.disabled === 'boolean', this.__instance);
 			if (typeof props.disabled === 'boolean') {
 				this.#disabled = props.disabled;
 				return;
 			}
 
 			if (typeof props.disabled !== 'object') {
-				throw new Error(`the disabled property of the field ${props.name} must be a boolean or an object`);
+				throw new Error(`The disabled property of the field ${props.name} must be a boolean or an object`);
 			}
 			if (!props.disabled.fields) {
-				throw new Error(`the disabled property of the field ${props.name} must have a fields property`);
+				throw new Error(`The disabled property of the field ${props.name} must have a fields property`);
 			}
 
-			let invalid;
+			let allValid;
 			props.disabled.fields.forEach(item => {
 				const name = typeof item === 'string' ? item : item.name;
-				const instance = this.#parent.getField(name);
-				invalid = !instance;
-				if (invalid) return;
+
+				console.log('THIS.#PARENT= > ', name, this.#parent.form);
+				const instance = this.#parent.form.getField(name);
+				console.log('INSTANCE => ', name, instance);
+
+				allValid = instance;
+				if (!allValid) return;
 				instance.on('change', this.#listenSiblings);
 				this.#listeningItems.set(name, { item: instance, listener: this.#listenSiblings });
 			});
 
-			if (invalid) {
+			if (!allValid) {
 				throw new Error(
-					`the field ${invalid} does not exist in the form ${
+					`the field ${allValid} does not exist in the form ${
 						this.#parent.name
-					}, field passed in invalid settings of  field ${this.name}`,
+					}, field passed in invalid settings of field "${this.name}"`
 				);
 			}
 

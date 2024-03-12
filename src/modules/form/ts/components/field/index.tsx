@@ -25,7 +25,7 @@ export function Control({
 }) {
 	const { formTypes, values } = useWiseFormContext();
 	const fieldModel = model.getField(field?.name);
-	const [attributes, setAttributes] = React.useState(fieldModel.attributes);
+	const [attributes, setAttributes] = React.useState(fieldModel?.attributes || {});
 	const types = {
 		...{
 			checkbox: SelectionField,
@@ -42,7 +42,7 @@ export function Control({
 	React.useEffect(() => {
 		if (!fieldModel) return;
 		const onChange = () => {
-			setAttributes(fieldModel.attributes);
+			setAttributes({ ...fieldModel.attributes });
 		};
 		fieldModel.on('change', onChange);
 		const cleanUp = () => {
@@ -63,7 +63,6 @@ export function Control({
 	 * It's necessary to change the field spread.
 	 */
 	const attrs = { value, ...field, ...attributes, onChange, model };
-	if (field.type === 'button') console.log(11, attrs, model.__instance, model);
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
