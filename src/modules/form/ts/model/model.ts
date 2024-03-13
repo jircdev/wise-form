@@ -51,7 +51,7 @@ class FormModel extends ReactiveModel<FormModel> {
 	#startup = async settings => {
 		const values = settings?.values || {};
 		const createItems = item => {
-			const instance = this.#getInstance(item, values);
+			const instance = this.#getFieldModel(item, values);
 			const onChange = () => (this[item.name] = instance.value);
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
@@ -127,33 +127,25 @@ class FormModel extends ReactiveModel<FormModel> {
 		instance.dependentOn.forEach(checkField);
 	};
 
-	#getInstance = (item, values: Record<string, unknown>) => {
-		let instance: WrappedFormModel | FormField;
+	/**
+	 * Returns a new instance of a field or a wrapper
+	 *
+	 *
+	 * @param item
+	 * @param values
+	 * @returns
+	 */
+	#getFieldModel = (item, values: Record<string, unknown>) => {
 		let externalValues: Record<string, any> = {};
+
+		// @todo: @veD-tnayrB: Review this code and document it
 		if (Array.isArray(item?.properties)) {
 			item?.properties.forEach(item => (externalValues[item.name] = item.value));
 		}
 
-		if (item.type === 'wrapper') {
-			if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
-			const fieldsProperties = item.fields.map(item => item.name);
-			const properties = [...fieldsProperties, ...(item?.properties || [])];
-			const values = item.values || {};
-			instance = new WrappedFormModel({
-				parent: this,
-				settings: { ...item, form: this },
-				specs: { properties: properties || [], ...values },
-			});
+		if (item.type === 'wrapper') return this.#getWrapper(item);
 
-			let toSet = {};
-			Object.keys(instance?.getProperties()).forEach(property => (toSet[property] = item[property] || ''));
-			instance.set(toSet);
-
-			this.registerWrapper(instance);
-			return instance;
-		}
-
-		instance = new FormField({
+		const instance = new FormField({
 			parent: this,
 			specs: {
 				...item,
