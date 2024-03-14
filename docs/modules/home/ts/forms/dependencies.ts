@@ -44,15 +44,15 @@ export const dependenciesForm = {
 			name: 'tu-madre',
 			children: 'Prueba',
 			variant: 'primary',
-			disabled: {
-				fields: [
-					{
-						name: 'country',
-						value: '4',
-					},
-					'city',
-				],
-			},
+			// disabled: {
+			// 	fields: [
+			// 		{
+			// 			name: 'country',
+			// 			value: '4',
+			// 		},
+			// 		'city',
+			// 	],
+			// },
 		},
 	],
 };

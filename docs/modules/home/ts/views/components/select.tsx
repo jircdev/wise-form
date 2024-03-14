@@ -7,9 +7,9 @@ export /*bundle*/ const Select = ({ ...props }) => {
 	const { model: generalModel } = useWiseFormContext();
 	const instance = generalModel.getField(props.name);
 	const [options, setOptions] = React.useState(props.options);
-	useBinder([instance], () => {
-		setOptions(instance.options);
-	});
+	// useBinder([instance], () => {
+	// 	setOptions(instance.options);
+	// });
 	const attributes = { ...props, options };
 	return <ReactSelect {...attributes} />;
 };

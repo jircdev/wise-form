@@ -14,6 +14,7 @@ import { AppInput } from './views/components/app-input';
 import { dependenciesForm } from './forms/dependencies';
 import { Div } from './views/components/div';
 import { Section } from './views/components/section';
+import { formulasForm } from './forms/formulas';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -28,6 +29,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			editUserForm: ['Edition Form', EditUserForm],
 			composedWrapper: ['Composed form', composedWrapper],
 			dependenciesForm: ['Dependencies form', dependenciesForm],
+			formulasForm: ['Formulas Form', formulasForm]
 		};
 	}
 
