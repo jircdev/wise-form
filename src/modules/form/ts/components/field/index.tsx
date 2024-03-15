@@ -63,7 +63,6 @@ export function Control({
 	 * It's necessary to change the field spread.
 	 */
 	const attrs = { value, ...field, ...attributes, onChange, model };
-	field.name === 'simulatProductionModal' && console.log('ATTRS => ', attributes);
 	return (
 		<FieldContainer>
 			<Control {...attrs} />
