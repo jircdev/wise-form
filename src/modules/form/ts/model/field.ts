@@ -94,7 +94,9 @@ export class FormField extends ReactiveModel<IFormField> {
 	};
 
 	clear = () => {
-		this.set(this.initialValues());
+		const initValues = this.initialValues();
+		this.set(initValues);
+		if (initValues.hasOwnProperty('disabled')) this.disabled = initValues.disabled;
 		this.triggerEvent('clear');
 	};
 
