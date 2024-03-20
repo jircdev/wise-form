@@ -144,7 +144,6 @@ class FormModel extends ReactiveModel<FormModel> {
 		}
 
 		if (item.type === 'wrapper') return this.#getWrapper(item);
-		item.name === 'codigoPlanEditorial' && console.log('codigoPlanEditorial wiseeeeeeee => ', item);
 		const instance = new FormField({
 			parent: this,
 			specs: {
