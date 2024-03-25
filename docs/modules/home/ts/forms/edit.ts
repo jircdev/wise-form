@@ -1,5 +1,7 @@
 export const EditUserForm = {
 	name: 'edit',
+	title: 'Edit user',
+	template: ['1', '1'],
 	values: {
 		name: 'Julio  Isaac',
 		lastname: 'Rodriguez',
@@ -17,7 +19,6 @@ export const EditUserForm = {
 		{
 			name: 'rif',
 			type: 'rif',
-
 		},
 		{
 			name: 'lastname',
@@ -40,4 +41,3 @@ export const EditUserForm = {
 		},
 	],
 };
-	

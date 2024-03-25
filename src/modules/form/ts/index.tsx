@@ -6,39 +6,19 @@ import { useTemplate } from './hooks/use-template';
 import { useTypes } from './hooks/use-types';
 
 import { IWiseFormSpecs } from './interfaces/wise-form-specs';
+import { Containers } from './components/containers';
 
 export /*bundle */ function WiseForm({ children, settings, types, model }: IWiseFormSpecs): JSX.Element {
-	const [ready, instance] = useModel(settings, model);
+	const { ready, model: instance, type, styles, items } = useModel(settings, model);
 
-	if (!settings) {
-		console.error('the form does not have settings', settings);
-	}
-	if (!settings.fields) {
-		console.error('the form does not have fields', settings.name);
-	}
-
-	if (!settings.name) {
-		console.error('the form does not have a name', settings.fields);
-	}
-
-	const { type, styles, items } = useTemplate(settings, settings.gap);
 	const formTypes = useTypes(types);
+	console.log(0.1, ready, instance, type, styles, items);
 
 	if (!ready) return null;
-	const fields = [...settings.fields];
-	const Containers = items.map((num, index) => {
-		const items = fields.splice(0, num[0]);
 
-		return (
-			<FieldContainer
-				model={model}
-				template={num}
-				items={items}
-				key={`rf-row--${index}.${num}`}
-				styles={styles}
-			/>
-		);
-	});
+	if (!settings && !model) {
+		console.error('the form does not have settings or model defined', settings);
+	}
 
 	const onSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -47,8 +27,9 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 
 	const value = {
 		model: instance,
+		items,
 		values: instance.values,
-		name: settings.name,
+		name: instance.name,
 		template: { type, styles, items },
 		formTypes,
 	};
@@ -56,7 +37,7 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 	return (
 		<WiseFormContext.Provider value={value}>
 			<form className='reactive-form-container' onSubmit={onSubmit}>
-				{Containers}
+				<Containers />
 				{children}
 			</form>
 		</WiseFormContext.Provider>

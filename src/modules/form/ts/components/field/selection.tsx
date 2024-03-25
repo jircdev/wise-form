@@ -5,7 +5,8 @@ import { ErrorRenderer } from '../error';
 import { useWiseFormContext } from '../../context';
 
 export function SelectionField(props) {
-	if (!props.options) return <ErrorRenderer error="the field does not have options" />;
+	console.log(10, props);
+	if (!props.options) return <ErrorRenderer error='the field does not have options' />;
 
 	const { name } = useWiseFormContext();
 	const types = {
@@ -14,7 +15,7 @@ export function SelectionField(props) {
 		select: SelectionField,
 	};
 
-	if (!types.hasOwnProperty(props.type)) return <ErrorRenderer error="the props type is not supported" />;
+	if (!types.hasOwnProperty(props.type)) return <ErrorRenderer error='the props type is not supported' />;
 	const Control = types[props.type];
 
 	if (props.type === 'select') return <Select {...props} />;

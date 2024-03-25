@@ -21,32 +21,23 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 	#forms: Map<string, FormModel> = new Map();
 	#active: FormModel;
 
-	get forms(): FormItem {
+	get forms() {
 		return {
-			login: ['Login', loginForm],
-			contact: ['Contact', contactForm],
-			templateGap: ['Template gap', templateGap],
-			editUserForm: ['Edition Form', EditUserForm],
-			composedWrapper: ['Composed form', composedWrapper],
-			dependenciesForm: ['Dependencies form', dependenciesForm],
-			formulasForm: ['Formulas Form', formulasForm]
+			loginForm,
+			contactForm,
+			templateGap,
+			EditUserForm,
+			composedWrapper,
+			dependenciesForm,
+			formulasForm,
 		};
 	}
 
-	// #selected;
-	// get selected() {
-	// 	return this.#selected;
-	// }
-	// set selected(name) {
-	// 	if (name === this.#selected.name) return;
-	// 	this.#selected = this.#update(name);
-	// 	this.triggerEvent();
-	// }
 	constructor() {
 		super();
 
 		this.reactiveProps(['selected']);
-		this.selected = 'dependenciesForm';
+		this.selected = this.forms.loginForm;
 		WFSettings.setFields({
 			select: ReactSelect,
 			baseWrapper: Wrapper,
@@ -67,6 +58,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			specs.field.set({ options: data.map(item => ({ value: item.id, label: item.name })) });
 		});
 	};
+
 	#update(name: string) {
 		if (this.#forms.has(name)) {
 			return this.#forms.get(name);

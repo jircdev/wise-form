@@ -1,6 +1,7 @@
 export const loginForm = {
 	name: 'login',
-
+	title: 'Login',
+	template: ['1', '1'],
 	fields: [
 		{
 			name: 'username',

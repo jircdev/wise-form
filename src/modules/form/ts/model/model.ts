@@ -25,6 +25,9 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#wrappers;
 	}
 
+	get template() {
+		return this.#settings.template;
+	}
 	get values() {
 		const data = {};
 		this.#fields.forEach((field, key) => {

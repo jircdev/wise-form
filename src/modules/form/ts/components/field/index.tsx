@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Textarea } from 'pragmate-ui/form';
 import { SelectionField } from './selection';
-import { FieldContainer } from './container';
+import { ControlFieldContainer, FieldContainer } from './container';
 import { useWiseFormContext } from '../../context';
 import { IWiseForm, IWiseFormField } from '../../interfaces/interfaces';
 import type { FormModel } from '../../model/model';
@@ -63,9 +63,10 @@ export function Control({
 	 * It's necessary to change the field spread.
 	 */
 	const attrs = { value, ...field, ...attributes, onChange, model };
+	console.log(30, attrs);
 	return (
-		<FieldContainer>
+		<ControlFieldContainer>
 			<Control {...attrs} />
-		</FieldContainer>
+		</ControlFieldContainer>
 	);
 }
