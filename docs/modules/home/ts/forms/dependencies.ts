@@ -1,5 +1,6 @@
 export const dependenciesForm = {
 	name: 'Factiblidad',
+	title: 'Factibilidad',
 	template: [[4, '1fr'], '1x8'],
 	fields: [
 		{

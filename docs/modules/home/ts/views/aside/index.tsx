@@ -6,7 +6,6 @@ import { useBinder } from '@beyond-js/react-18-widgets/hooks';
 export function Aside() {
 	const { store } = useFormContext();
 	const items = Object.values(store.forms);
-	const [update, setUpdate] = React.useState();
 
 	return (
 		<aside className='page__aside'>

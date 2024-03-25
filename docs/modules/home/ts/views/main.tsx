@@ -14,36 +14,36 @@ interface ISettings {
 }
 export /*bundle*/
 function Main(): JSX.Element {
-	const { current, store } = useFormContext();
-	const title = `Form: ${current[0]}`;
-	let settings: ISettings = current[1];
+	const { store } = useFormContext();
+
+	const current = store.selected;
+	const title = `Form: ${current.title}`;
+	let settings: ISettings = current;
 	const properties = settings.fields.map(item => item.name);
 
 	const values = settings.values || {};
 	settings.callbacks = store.callbacks;
 	const form = new FormModel(settings, { properties, ...values });
 
+	const types = {
+		// @ts-ignore
+		select: Select,
+		// @ts-ignore
+		baseWrapper: Wrapper,
+		// @ts-ignore
+		appInput: AppInput,
+		// @ts-ignore
+		div: Div,
+		// @ts-ignore
+		section: Section,
+		// @ts-ignore
+		button: Button,
+	};
 	return (
 		<main>
 			<h1>{title}</h1>
 			{/* @ts-ignore */}
-			<WiseForm
-				types={{
-					// @ts-ignore
-					select: Select,
-					// @ts-ignore
-					baseWrapper: Wrapper,
-					// @ts-ignore
-					appInput: AppInput,
-					// @ts-ignore
-					div: Div,
-					// @ts-ignore
-					section: Section,
-					button: Button,
-				}}
-				model={form}
-				settings={settings}
-			>
+			<WiseForm types={types} model={form}>
 				<Button type='submit' variant='primary'>
 					Enviar
 				</Button>

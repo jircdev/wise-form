@@ -5,8 +5,10 @@ export interface IFormContext {
 	model?: FormModel;
 	name?: string;
 	values?: Record<string, any>;
+	items?: any;
 	template?: {
 		type: string;
+		styles: any;
 		items: any[];
 	};
 	formTypes?: Record<string, React.ElementType>;

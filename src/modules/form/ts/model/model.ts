@@ -25,6 +25,9 @@ class FormModel extends ReactiveModel<FormModel> {
 		return this.#wrappers;
 	}
 
+	get template() {
+		return this.#settings.template;
+	}
 	get values() {
 		const data = {};
 		this.#fields.forEach((field, key) => {
@@ -144,7 +147,6 @@ class FormModel extends ReactiveModel<FormModel> {
 		}
 
 		if (item.type === 'wrapper') return this.#getWrapper(item);
-
 		const instance = new FormField({
 			parent: this,
 			specs: {

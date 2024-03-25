@@ -55,7 +55,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		const { properties, ...props } = specs;
 		super({
 			...props,
-			properties: ['name', ...properties],
+			properties: ['name', 'dependentOn', ...properties],
 		});
 
 		this.#parent = parent;
