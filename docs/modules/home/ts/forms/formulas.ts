@@ -1,4 +1,4 @@
-export const aformulasForm = {
+export const formulasForm = {
 	name: 'Contact',
 	title: 'Formulas Form',
 	// template: '1;1;1x3',
@@ -10,17 +10,16 @@ export const aformulasForm = {
 		{ formula: 'discountPercentGraphic * discountAuthorGraphic', name: 'formula2' },
 		{
 			formula: {
-				conditional: ['a', 'b', 'c','d'],
+				conditional: ['a', 'b', 'c', 'd'],
 				value: '',
 
 				values: {
 					'0': 'discountPercentGraphic + netGraphic',
 					'1': 'totalGraphic * discountAuthorGraphic',
 					'2': 'totalDigital * netDigital',
-				}
-			}
-		}
-		
+				},
+			},
+		},
 	],
 	fields: [
 		{
@@ -55,7 +54,6 @@ export const aformulasForm = {
 					name: 'discountPercentGraphic',
 					label: '% de descuento grafico',
 					type: 'text',
-					type: 'text',
 				},
 				{
 					name: 'discountAuthorGraphic',
@@ -89,14 +87,12 @@ export const aformulasForm = {
 					name: 'discountPercentDigital',
 					label: '% de descuento digital',
 					type: 'text',
-					type: 'text',
 				},
 				{
 					name: 'discountAuthorDigital',
 					label: 'Porcentaje de autor digital',
 					type: 'text',
 				},
-			],
 			],
 		},
 		/// SECCION DE FORMULAS Deben estar deshabilitados, se pasa disabled true y dan error
@@ -121,15 +117,11 @@ export const aformulasForm = {
 					type: 'text',
 					required: true,
 					label: 'formula 2',
-					formula: 'formula2'
-					
-						
+					formula: 'formula2',
 				},
 				{
 					name: 'formula3',
 					label: 'formula 3',
-					type: 'text',
-					formula: 'totalGraphic * discountPercentGraphic', // Si hay almenos 1 campo lleno en digitales
 					type: 'text',
 					formula: 'totalGraphic * discountPercentGraphic', // Si hay almenos 1 campo lleno en digitales
 					//	formula: "discountPercentGraphic + netGraphic" Si no hay campos llenos en digitales
@@ -139,19 +131,17 @@ export const aformulasForm = {
 					label: 'formula 4',
 					type: 'text',
 					formula: 'A + B + C + / discountPercentGraphic', // B Viene de bd al seleccionar un sello con un select se busca,
-					formula: 'A + B + C + / discountPercentGraphic', // B Viene de bd al seleccionar un sello con un select se busca,
+
 					// A = al maximo entre totalGraphic * discountAuthorGraphic y totalDigital * netDigital
 					// C = Se tienen 3 tabs
 					// si se esta en tab 1 C = minimo ente totalGraphic * totalDigital y discountPercentGraphic * discountAuthorGraphic
 					// si esta tab 2 0 3 totalGraphic
 				},
 			],
-			],
 		},
 	],
 };
-};
 
-//'((totalGraphic * netGraphic) + 
-// (discountPercentGraphic * discountAuthorGraphic)) - 
+//'((totalGraphic * netGraphic) +
+// (discountPercentGraphic * discountAuthorGraphic)) -
 //((totalDigital * netDigital) * discountPercentDigital)',

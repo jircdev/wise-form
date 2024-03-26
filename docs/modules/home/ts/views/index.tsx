@@ -1,6 +1,4 @@
 import React from 'react';
-import { ReactiveForm } from '@bgroup/wise-form/form';
-import { loginForm } from '../forms/login';
 import { Aside } from './aside';
 import { FormContext } from './context';
 import { Main } from './main';
@@ -11,7 +9,7 @@ function View({ store }): JSX.Element {
 	useBinder([store], () => useForm(store.selected));
 	return (
 		<FormContext.Provider value={{ current: form, store }}>
-			<div className="page__container">
+			<div className='page__container'>
 				<Aside />
 				<Main />
 			</div>

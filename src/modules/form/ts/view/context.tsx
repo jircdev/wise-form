@@ -1,11 +1,12 @@
 import React from 'react';
 
-import type { FormModel } from './model/model';
+import type { FormModel } from '../model/model';
 export interface IFormContext {
 	model?: FormModel;
 	name?: string;
 	values?: Record<string, any>;
 	items?: any;
+	rows: [number, string][];
 	template?: {
 		type: string;
 		styles: any;

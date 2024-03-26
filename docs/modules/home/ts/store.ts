@@ -37,7 +37,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 		super();
 
 		this.reactiveProps(['selected']);
-		this.selected = this.forms.loginForm;
+		this.selected = this.forms.formulasForm;
 		WFSettings.setFields({
 			select: ReactSelect,
 			baseWrapper: Wrapper,

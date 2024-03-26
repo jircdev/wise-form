@@ -1,20 +1,21 @@
 import React from 'react';
 import { useWiseFormContext } from '../../context';
-import { FieldContainer } from '../rows/row-container';
+import { RowFieldContainer } from '../rows/row-container';
 
 export function Containers() {
 	const {
 		items,
+		rows,
 		model,
 		template: { styles },
 	} = useWiseFormContext();
 
 	const fields = [...model.fields.values()];
-	return items.map((num, index) => {
+	return rows.map((num, index) => {
 		const items = fields.splice(0, num[0]);
 
 		return (
-			<FieldContainer
+			<RowFieldContainer
 				model={model}
 				template={num}
 				items={items}

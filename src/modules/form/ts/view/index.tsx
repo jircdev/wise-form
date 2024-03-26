@@ -1,18 +1,15 @@
 import React from 'react';
 import { useModel } from './hooks/use-model';
 import { WiseFormContext } from './context';
-import { FieldContainer } from './components/rows/row-container';
 import { useTemplate } from './hooks/use-template';
 import { useTypes } from './hooks/use-types';
 
-import { IWiseFormSpecs } from './interfaces/wise-form-specs';
+import { IWiseFormSpecs } from '../interfaces/wise-form-specs';
 import { Containers } from './components/containers';
 
 export /*bundle */ function WiseForm({ children, settings, types, model }: IWiseFormSpecs): JSX.Element {
 	const { ready, model: instance, type, styles, items } = useModel(settings, model);
-
 	const formTypes = useTypes(types);
-	console.log(0.1, ready, instance, type, styles, items);
 
 	if (!ready) return null;
 
@@ -28,6 +25,7 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 	const value = {
 		model: instance,
 		items,
+		rows: items,
 		values: instance.values,
 		name: instance.name,
 		template: { type, styles, items },

@@ -1,4 +1,4 @@
-import { IFormTemplate } from '../interfaces/template';
+import { IFormTemplate } from '../../interfaces/template';
 
 /**
  * Applies a template to create a structured layout, optionally using a gap between elements.

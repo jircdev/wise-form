@@ -1,12 +1,10 @@
 import React from 'react';
 import { Checkbox, CheckboxGroup, Radio, Select } from 'pragmate-ui/form';
 import { ErrorRenderer } from '../error';
-
 import { useWiseFormContext } from '../../context';
 
 export function SelectionField(props) {
-	console.log(10, props);
-	if (!props.options) return <ErrorRenderer error='the field does not have options' />;
+	if (!props.options) return <ErrorRenderer error={`the field does not have options, field: ${props.name}`} />;
 
 	const { name } = useWiseFormContext();
 	const types = {

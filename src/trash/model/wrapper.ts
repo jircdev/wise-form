@@ -2,7 +2,12 @@ import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 import type { FormModel } from './model';
 import { PendingPromise } from '@beyond-js/kernel/core';
-import { IWrapperFormModelProps } from './types/wrapped-form-model-props';
+
+interface IProps {
+	parent: FormModel | WrappedFormModel;
+	settings;
+	specs: { properties: string[] };
+}
 
 export /*bundle*/
 class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
@@ -11,25 +16,10 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		return this.#settings;
 	}
 
-	get type() {
-		return 'wrapper';
-	}
-
 	get callbacks() {
 		return this.#parent.callbacks;
 	}
 
-	get control() {
-		return this.settings.control;
-	}
-
-	get template() {
-		return this.settings.template;
-	}
-
-	get name() {
-		return this.#settings.name;
-	}
 	#form: FormModel;
 	get form() {
 		return this.#form;
@@ -61,11 +51,11 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	#childWrappersReady: number = 0;
 
 	#parent: FormModel | WrappedFormModel;
-	constructor({ parent, settings, specs }: IWrapperFormModelProps) {
+	constructor({ parent, settings, specs }: IProps) {
 		const { properties, ...props } = specs;
 		super({
 			...props,
-			properties: ['name', ...properties],
+			properties: ['name', 'dependentOn', ...properties],
 		});
 
 		this.#parent = parent;
@@ -104,7 +94,6 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			const fieldsProperties = item.fields.map(item => item.name);
 			const properties = [...fieldsProperties, ...(item?.properties || [])];
 			const values = item.values || {};
-
 			instance = new WrappedFormModel({
 				parent: this,
 				settings: { ...item, form: this.#form },

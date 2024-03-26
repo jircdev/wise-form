@@ -1,7 +1,14 @@
 import React from 'react';
 import { useWiseFormContext } from '../../context';
+/**
+ *
+ * @param data {WrappedFormModel}
+ * @param model {FormModel} parent.
+ * @returns
+ */
 export function FormSectionWrapper({ data, model }) {
 	const { formTypes } = useWiseFormContext();
+
 	const types = {
 		...formTypes,
 	};

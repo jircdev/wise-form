@@ -1,15 +1,54 @@
+import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 import { WrappedFormModel } from './wrapper';
-import { BaseWiseModel } from './base';
+import { PendingPromise } from '@beyond-js/kernel/core';
 
 export /*bundle*/
-class FormModel extends BaseWiseModel {
+class FormModel extends ReactiveModel<FormModel> {
+	#settings;
+	get settings() {
+		return this.#settings;
+	}
+
+	#callbacks: Record<string, (...args) => void> = {};
+	get callbacks() {
+		return this.#callbacks;
+	}
+
+	#initialValues: Record<string, string> = {};
+	get originalValues() {
+		return this.#initialValues;
+	}
+
+	#wrappers: Map<string, WrappedFormModel> = new Map();
+	get wrappers() {
+		return this.#wrappers;
+	}
+
+	get template() {
+		return this.#settings.template;
+	}
+	get values() {
+		const data = {};
+		this.#fields.forEach((field, key) => {
+			data[key] = field.value;
+		});
+		return data;
+	}
+	#fields: Map<string, FormField | WrappedFormModel> = new Map();
+	get fields() {
+		return this.#fields;
+	}
+	#loadedPromise: PendingPromise<boolean> = new PendingPromise();
+	#childWrappersReady: number = 0;
 	#childWrappers: number = 0;
 
 	constructor(settings, reactiveProps?) {
-		super(settings, reactiveProps);
+		super(reactiveProps);
+
+		this.#settings = settings;
+		this.#callbacks = settings.callbacks ?? {};
 		this.#startup(settings);
-		console.log(0.2, this.settings.observers);
 	}
 
 	#startup = async settings => {
@@ -18,45 +57,42 @@ class FormModel extends BaseWiseModel {
 			const instance = this.#getFieldModel(item, values);
 			const onChange = () => (this[item.name] = instance.value);
 			instance.on('change', onChange);
-			this.fields.set(item.name, instance);
+			this.#fields.set(item.name, instance);
 		};
 
-		this.settings.fields.map(createItems);
-
-		await this.#checkReady();
-		this.#configFields();
+		this.#settings.fields.map(createItems);
 		this.ready = true;
-		this.trigger('change');
+		await this.#checkReady();
+		globalThis.f = this;
+		this.#configFields();
 	};
 
 	#checkReady = () => {
 		const onReady = () => {
-			const areAllWrappersLoaded = this.childWrappersReady === this.#childWrappers;
+			const areAllWrappersLoaded = this.#childWrappersReady === this.#childWrappers;
 
 			if (!areAllWrappersLoaded) {
-				this.childWrappersReady = this.childWrappersReady + 1;
+				this.#childWrappersReady = this.#childWrappersReady + 1;
 				return;
 			}
-
 			this.loaded = true;
-			this.loadedPromise.resolve(true);
+			this.#loadedPromise.resolve(true);
 			this.off('wrappers.children.loaded', onReady);
 		};
 
 		if (this.loaded) return this.loaded;
-
-		if (!this.wrappers.size) {
+		if (!this.#wrappers.size) {
 			onReady();
 			return this.loaded;
 		}
 
 		this.on('wrappers.children.loaded', onReady);
-		return this.loadedPromise;
+		return this.#loadedPromise;
 	};
 
 	#configFields = () => {
-		this.fields.forEach(this.#listenDependencies);
-		this.fields.forEach(field => field.initialize());
+		this.#fields.forEach(this.#listenDependencies);
+		this.#fields.forEach(field => field.initialize());
 	};
 
 	/**
@@ -83,11 +119,11 @@ class FormModel extends BaseWiseModel {
 
 			const type = item.type ?? 'change';
 			const settings = { ...DEFAULT, ...item };
-			if (!this.callbacks[item.callback]) {
-				throw new Error(`${item.callback} is not  a registered callback ${item.name}`);
+			if (!this.#callbacks[item.callback]) {
+				throw new Error(`${item.callback} is not  a registered callback`);
 			}
 
-			const callback = this.callbacks[item.callback];
+			const callback = this.#callbacks[item.callback];
 			callback({ dependency, settings, field: instance, form: this });
 		};
 
@@ -130,7 +166,19 @@ class FormModel extends BaseWiseModel {
 	};
 
 	/**
+	 * 
+	 
 
+	{
+
+		fields: [
+			{
+				name: 'country',
+				value: 'Colombia',
+				label: 'Country'
+			}
+		]
+	}
 	 * @param item 
 	 * @param values 
 	 * @returns 
@@ -143,7 +191,6 @@ class FormModel extends BaseWiseModel {
 
 		const properties = [...fieldsProperties, ...(item?.properties || [])];
 		const defaultValues = item.values || {};
-
 		instance = new WrappedFormModel({
 			parent: this,
 			settings: { ...item, form: this },
@@ -156,22 +203,21 @@ class FormModel extends BaseWiseModel {
 
 		this.registerWrapper(instance);
 		this.#childWrappers = this.#childWrappers + 1;
-
 		return instance;
 	};
 
 	registerWrapper = (wrapper: WrappedFormModel) => {
-		this.wrappers.set(wrapper.name, wrapper);
+		this.#wrappers.set(wrapper.name, wrapper);
 	};
 
-	setField = (name: string, value) => this.fields.get(name).set({ value });
+	setField = (name: string, value) => this.#fields.get(name).set({ value });
 
 	getField(name: string) {
-		if (!name) return console.warn('You need to provide a name to get a field in form ', this.settings.name);
+		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
 		if (!name.includes('.')) {
-			let field = this.fields.get(name);
+			let field = this.#fields.get(name);
 			if (!field) {
-				this.wrappers.forEach(item => {
+				this.#wrappers.forEach(item => {
 					const foundField = item.getField(name);
 					if (foundField) field = foundField;
 				});
@@ -180,23 +226,15 @@ class FormModel extends BaseWiseModel {
 		}
 
 		const [wrapperName, ...others] = name.split('.');
-		const currentWrapper = this.wrappers.get(wrapperName);
+		const currentWrapper = this.#wrappers.get(wrapperName);
 
 		const otherWrapper = others.join('.');
 		return currentWrapper.getField(otherWrapper);
 	}
 
 	clear = () => {
-		this.fields.forEach(field => field.clear());
+		this.#fields.forEach(field => field.clear());
 		this.triggerEvent();
 		this.triggerEvent('clear');
-	};
-
-	static create = settings => {
-		const properties = settings.fields.map(item => item.name);
-		const values = settings.values || {};
-		const instance = new FormModel(settings, { ...properties, ...values });
-
-		return instance;
 	};
 }
