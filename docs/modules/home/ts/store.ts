@@ -14,6 +14,7 @@ import { dependenciesForm } from './forms/dependencies';
 import { Div } from './views/components/div';
 import { Section } from './views/components/section';
 import { formulasForm } from './forms/formulas';
+import { callbacksTesting } from './forms/callbacks-testing';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -60,6 +61,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 
 		const callbacks = {
 			onLoad: this.loadData,
+			copyValue: this.copyValue,
 		};
 		const form = await FormModel.create({ ...item, callbacks });
 		this.#instances.set(item.name, form);

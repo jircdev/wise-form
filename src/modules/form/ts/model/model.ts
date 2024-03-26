@@ -6,6 +6,13 @@ export /*bundle*/
 class FormModel extends BaseWiseModel {
 	#childWrappers: number = 0;
 
+	/**
+	 * Initializes a new instance of the `FormModel`, setting up the initial state, including field configurations,
+	 * callbacks, and reactive properties. This constructor also triggers the asynchronous setup process for the form.
+	 *
+	 * @param {Object} settings The configuration settings for the form, including fields, default values, and callbacks.
+	 * @param {Object} [reactiveProps] Optional reactive properties to enhance the form's reactivity.
+	 */
 	constructor(settings, reactiveProps?) {
 		super(settings, reactiveProps);
 		this.#startup(settings);
@@ -29,6 +36,10 @@ class FormModel extends BaseWiseModel {
 		this.trigger('change');
 	};
 
+	/**
+	 * Checks if all wrappers and fields within the form are loaded and sets the form to a loaded state. This method ensures that the form is fully operational before any interaction.
+	 * Its used for the start to listen the dependencies
+	 */
 	#checkReady = () => {
 		const onReady = () => {
 			const areAllWrappersLoaded = this.childWrappersReady === this.#childWrappers;
@@ -54,16 +65,17 @@ class FormModel extends BaseWiseModel {
 		return this.loadedPromise;
 	};
 
+	/**
+	 * Configures all fields by initializing them and setting up dependencies. This method ensures that each field is ready for interaction and that any field dependencies are respected.
+	 */
 	#configFields = () => {
 		this.fields.forEach(this.#listenDependencies);
 		this.fields.forEach(field => field.initialize());
 	};
 
 	/**
-	 * Loop fields to check if they have dependencies and listen to them
-	 *
-	 * @param item
-	 * @returns
+	 * Examines each field for dependencies and sets up listeners to respond to changes in dependent fields. This ensures dynamic interactions within the form based on field dependencies.
+	 * @param {FormField|WrappedFormModel} instance - The field or wrapper instance to check for dependencies.
 	 */
 	#listenDependencies = instance => {
 		if (!instance?.dependentOn?.length) return;
@@ -81,7 +93,6 @@ class FormModel extends BaseWiseModel {
 
 			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
 
-			const type = item.type ?? 'change';
 			const settings = { ...DEFAULT, ...item };
 			if (!this.callbacks[item.callback]) {
 				throw new Error(`${item.callback} is not  a registered callback ${item.name}`);
@@ -95,12 +106,10 @@ class FormModel extends BaseWiseModel {
 	};
 
 	/**
-	 * Returns a new instance of a field or a wrapper
-	 *
-	 *
-	 * @param item
-	 * @param values
-	 * @returns
+	 * Creates a new instance of a field or a wrapper based on the provided item configuration. It initializes the field or wrapper with specified values and properties.
+	 * @param {Object} item - The field or wrapper configuration.
+	 * @param {Object} values - The initial values for the fields.
+	 * @returns {FormField|WrappedFormModel} A new field or wrapper instance.
 	 */
 	#getFieldModel = (item, values: Record<string, unknown>) => {
 		let externalValues: Record<string, any> = {};
@@ -160,12 +169,24 @@ class FormModel extends BaseWiseModel {
 		return instance;
 	};
 
+	/**
+	 * Registers a wrapper model within the form model, allowing for nested form structures.
+	 * This method is crucial for managing complex forms where fields might be grouped into sections or wrappers.
+	 * @param {WrappedFormModel} wrapper - The wrapper instance to register.
+	 */
 	registerWrapper = (wrapper: WrappedFormModel) => {
 		this.wrappers.set(wrapper.name, wrapper);
 	};
 
 	setField = (name: string, value) => this.fields.get(name).set({ value });
 
+	/**
+	 * Retrieves a field or wrapper instance by its name. If the name includes a dot notation, it attempts to find a nested field within a wrapper.
+	 * This method facilitates access to any field or wrapper, supporting complex nested structures.
+	 *
+	 * @param {string} name - The name of the field or wrapper to retrieve, supporting dot notation for nested fields.
+	 * @returns {FormField|WrappedFormModel|undefined} The field or wrapper instance, or undefined if not found.
+	 */
 	getField(name: string) {
 		if (!name) return console.warn('You need to provide a name to get a field in form ', this.settings.name);
 		if (!name.includes('.')) {
@@ -186,6 +207,10 @@ class FormModel extends BaseWiseModel {
 		return currentWrapper.getField(otherWrapper);
 	}
 
+	/**
+	 * Clears all fields in the form, resetting their values. This method is useful for reset operations,
+	 * ensuring that the form can be cleared programmatically.
+	 */
 	clear = () => {
 		this.fields.forEach(field => field.clear());
 		this.triggerEvent();
