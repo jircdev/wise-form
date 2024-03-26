@@ -1,5 +1,5 @@
 export const formulasForm = {
-	name: 'Contact',
+	name: 'formulas-form',
 	title: 'Formulas Form',
 	// template: '1;1;1x3',
 	template: ['1fr', '1fr', '1fr'],
@@ -34,6 +34,7 @@ export const formulasForm = {
 				{
 					name: 'country',
 					type: 'select',
+					label: 'Country',
 					options: [
 						{ value: 1, label: 'Argentina' },
 						{ value: 2, label: 'Brasil' },

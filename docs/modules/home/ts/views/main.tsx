@@ -9,41 +9,35 @@ import { FormModel } from '@bgroup/wise-form/form';
 import { Div } from './components/div';
 import { Section } from './components/section';
 import { Select } from './components/select';
+import { useBinder } from '@beyond-js/react-18-widgets/hooks';
 interface ISettings {
 	[key: string]: any;
 }
+
 export /*bundle*/
 function Main(): JSX.Element {
 	const { store } = useFormContext();
 
+	const [active, setActive] = React.useState<FormModel>(store.active);
 	const current = store.selected;
-	const title = `Form: ${current.title}`;
+	const title = `Form: ${active.name}`;
 	let settings: ISettings = current;
-	const properties = settings.fields.map(item => item.name);
-
-	const values = settings.values || {};
+	useBinder([store], () => setActive(store.active));
 	settings.callbacks = store.callbacks;
-	const form = new FormModel(settings, { properties, ...values });
 
 	const types = {
-		// @ts-ignore
 		select: Select,
-		// @ts-ignore
 		baseWrapper: Wrapper,
-		// @ts-ignore
 		appInput: AppInput,
-		// @ts-ignore
 		div: Div,
-		// @ts-ignore
 		section: Section,
-		// @ts-ignore
 		button: Button,
 	};
 	return (
 		<main>
 			<h1>{title}</h1>
 			{/* @ts-ignore */}
-			<WiseForm types={types} model={form}>
+			<WiseForm types={types} model={active}>
 				<Button type='submit' variant='primary'>
 					Enviar
 				</Button>

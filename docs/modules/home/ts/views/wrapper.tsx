@@ -5,15 +5,14 @@ import { AppInput } from './components/app-input';
 import { useWiseFormContext } from '@bgroup/wise-form/form';
 export function Wrapper({ data }) {
 	const { model } = useWiseFormContext();
-	console.log(10, data);
+
 	return (
 		<WrappedForm
 			types={{
-				pepito: ReactSelect,
 				baseWrapper: Wrapper,
 				appInput: AppInput,
 			}}
-			settings={data}
+			settings={data.settings}
 		/>
 	);
 }

@@ -1,5 +1,5 @@
 export const templateGap = {
-	name: 'Contact',
+	name: 'template-gap',
 	title: 'Template Gap',
 	// template: '1;1;1x3',
 	template: {

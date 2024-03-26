@@ -1,4 +1,3 @@
-import type { IWidgetStore } from '@beyond-js/widgets/controller';
 import { loginForm } from './forms/login';
 import { contactForm } from './forms/contact';
 import { IForm } from './interfaces/form';
@@ -20,6 +19,10 @@ type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
 	#forms: Map<string, FormModel> = new Map();
 	#active: FormModel;
+	get active() {
+		return this.#active;
+	}
+	#instances = new Map();
 
 	get forms() {
 		return {
@@ -38,6 +41,8 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 
 		this.reactiveProps(['selected']);
 		this.selected = this.forms.formulasForm;
+		this.setForm(this.forms.formulasForm);
+		// this.setForm(this.forms.contactForm);
 		WFSettings.setFields({
 			select: ReactSelect,
 			baseWrapper: Wrapper,
@@ -45,11 +50,22 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			div: Div,
 			section: Section,
 		});
-		this.callbacks = {
-			onLoad: this.loadData,
-		};
 	}
 
+	async setForm(item) {
+		if (this.#instances.has(item.name)) {
+			this.#active = this.#instances.get(item.name);
+			return this.trigger('change');
+		}
+
+		const callbacks = {
+			onLoad: this.loadData,
+		};
+		const form = await FormModel.create({ ...item, callbacks });
+		this.#instances.set(item.name, form);
+		this.#active = form;
+		this.trigger('change');
+	}
 	loadData = async specs => {
 		specs.dependency.on('change', async () => {
 			const response = await fetch('https://jsonplaceholder.typicode.com/users');
@@ -58,21 +74,4 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			specs.field.set({ options: data.map(item => ({ value: item.id, label: item.name })) });
 		});
 	};
-
-	#update(name: string) {
-		if (this.#forms.has(name)) {
-			return this.#forms.get(name);
-		}
-
-		const settings: any = this.forms[name][1];
-		settings.callbacks = {
-			onLoad: this.loadData,
-		};
-		const properties = settings.fields.map(item => item.name);
-		const values = settings.values || {};
-		const form = new FormModel(settings, { properties, ...values });
-
-		this.#forms.set(name, form);
-		return form;
-	}
 }

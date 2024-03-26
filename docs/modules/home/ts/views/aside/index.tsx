@@ -6,7 +6,7 @@ import { AsideItem } from './item';
 export function Aside() {
 	const { store } = useFormContext();
 	const items = Object.values(store.forms);
-	console.log(20, items);
+
 	return (
 		<aside className='page__aside'>
 			<List className='list-unstyled' items={items} control={AsideItem} />

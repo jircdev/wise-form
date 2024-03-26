@@ -5,7 +5,7 @@ import { Button } from 'pragmate-ui/components';
 export function AsideItem({ item }) {
 	const { store, current } = useFormContext();
 	const onClick = () => {
-		store.selected = item;
+		store.setForm(item);
 	};
 
 	const attrs = { variant: 'primary', bordered: true, onClick };
