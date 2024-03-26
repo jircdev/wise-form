@@ -15,6 +15,7 @@ import { dependenciesForm } from './forms/dependencies';
 import { Div } from './views/components/div';
 import { Section } from './views/components/section';
 import { formulasForm } from './forms/formulas';
+import { callbacksTesting } from './forms/callbacks-testing';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -29,7 +30,8 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			editUserForm: ['Edition Form', EditUserForm],
 			composedWrapper: ['Composed form', composedWrapper],
 			dependenciesForm: ['Dependencies form', dependenciesForm],
-			formulasForm: ['Formulas Form', formulasForm]
+			formulasForm: ['Formulas Form', formulasForm],
+			callbacksTesting: ['Callbacks testing', callbacksTesting],
 		};
 	}
 
@@ -56,6 +58,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 		});
 		this.callbacks = {
 			onLoad: this.loadData,
+			copyValue: this.copyValue,
 		};
 	}
 
@@ -67,6 +70,12 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			specs.field.set({ options: data.map(item => ({ value: item.id, label: item.name })) });
 		});
 	};
+
+	copyValue = ({ dependency, field }) => {
+		console.log('DEPDENCY', dependency, field);
+		dependency.on('change', () => field.set({ value: dependency.value }));
+	};
+
 	#update(name: string) {
 		if (this.#forms.has(name)) {
 			return this.#forms.get(name);

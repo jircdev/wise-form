@@ -26,10 +26,23 @@ interface IDisabled {
 	fields: string[] | TDisabledSettings[];
 }
 
+/**
+ * Represents a single form field within a `FormModel` or `WrappedFormModel`, providing mechanisms for data binding, validation, and interaction.
+ * This class extends `ReactiveModel` to enable reactive updates and interactions within the form's lifecycle.
+ *
+ * @extends ReactiveModel<IFormField>
+ */
 export class FormField extends ReactiveModel<IFormField> {
+	// The parent model, either FormModel or WrappedFormModel, containing this field.
 	#parent: WrappedFormModel | FormModel;
 
+	// Can be a boolean or an object specifying dynamic disabling logic based on other fields' values.
 	#disabled: boolean | IDisabled = false;
+
+	/**
+	 * Evaluates and returns the disabled state of the field. If `#disabled` is an object, it checks the specified fields' values to determine the disabled state dynamically.
+	 * @returns {boolean} The disabled state of the field.
+	 */
 	get disabled() {
 		if (typeof this.#disabled === 'object' && this.#disabled?.fields) {
 			const validate = field => {
@@ -51,7 +64,8 @@ export class FormField extends ReactiveModel<IFormField> {
 		this.triggerEvent();
 	}
 
-	#specs;
+	// Field specifications including its type, validation rules, and other metadata.
+	#specs: Record<string, any>;
 	get specs() {
 		return this.#specs;
 	}
@@ -63,8 +77,14 @@ export class FormField extends ReactiveModel<IFormField> {
 			disabled: this.disabled,
 		};
 	}
+
+	// Tracks other fields this field listens to for changes, enabling reactive behavior and allowing the cleanup of event listeners.
 	#listeningItems = new Map();
 
+	/**
+	 * Constructs a FormField instance with specified properties and parent form model.
+	 * @param {Object} params - Construction parameters including the parent form model and field specifications.
+	 */
 	constructor({ parent, specs }: { parent; specs: IProps }) {
 		const { properties, ...props } = specs;
 
@@ -89,10 +109,16 @@ export class FormField extends ReactiveModel<IFormField> {
 		this.set(props);
 	}
 
+	/**
+	 * Performs initial setup based on the field's specifications, setting up validation, default values, and any specified dynamic behavior.
+	 */
 	initialize = () => {
 		this.checkSettings(this.#specs);
 	};
 
+	/**
+	 * Resets the field to its initial value and state, including resetting the disabled state if it's statically defined.
+	 */
 	clear = () => {
 		const initValues = this.initialValues();
 		this.set(initValues);
@@ -100,10 +126,17 @@ export class FormField extends ReactiveModel<IFormField> {
 		this.triggerEvent('clear');
 	};
 
+	/**
+	 * Listens to changes in sibling fields (specified in dynamic disabling logic) and updates its state accordingly.
+	 */
 	#listenSiblings = () => {
 		this.triggerEvent('change');
 	};
 
+	/**
+	 * Checks and applies the field's settings, particularly for dynamic disabling, establishing listeners on related fields as necessary.
+	 * @param {Object} props - The field's properties and settings to check and apply.
+	 */
 	checkSettings(props) {
 		if (props.hasOwnProperty('disabled')) {
 			if (typeof props.disabled === 'boolean') {
@@ -141,6 +174,9 @@ export class FormField extends ReactiveModel<IFormField> {
 		}
 	}
 
+	/**
+	 * Cleans up any established listeners and internal state when the field is removed or the form is reset, ensuring no memory leaks or stale data.
+	 */
 	cleanUp() {
 		this.#listeningItems.forEach(({ item, listener }) => item.off('change', listener));
 		// todo: remove all events
