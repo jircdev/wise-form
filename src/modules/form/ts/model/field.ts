@@ -1,30 +1,8 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import type { WrappedFormModel } from './wrapper';
 import type { FormModel } from './model';
-
-export interface IFormField {
-	name: string;
-	type: string;
-	placeholder: string;
-	required: boolean;
-	label: string;
-	variant: string;
-	disabled: boolean;
-}
-
-interface IProps {
-	propertiea: string[];
-	value: string | number | boolean | Object | any[];
-	[key: string]: any;
-}
-
-type TDisabledSettings = {
-	name: string;
-	value: any;
-};
-interface IDisabled {
-	fields: string[] | TDisabledSettings[];
-}
+import { IFormField, IFormFieldProps } from './types/form-field';
+import { IDisabled } from './types/disabled';
 
 /**
  * Represents a single form field within a `FormModel` or `WrappedFormModel`, providing mechanisms for data binding, validation, and interaction.
@@ -36,7 +14,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	// The parent model, either FormModel or WrappedFormModel, containing this field.
 	#parent: WrappedFormModel | FormModel;
 
-	// Can be a boolean or an object specifying dynamic disabling logic based on other fields' values.
+	// Can be a boolean or an object specifying dynamic disablingvas logic based on other fields' values.
 	#disabled: boolean | IDisabled = false;
 
 	/**
@@ -44,20 +22,18 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @returns {boolean} The disabled state of the field.
 	 */
 	get disabled() {
-		if (typeof this.#disabled === 'object' && this.#disabled?.fields) {
-			const validate = field => {
-				if (typeof field === 'object') {
-					const { name, value } = field;
-					const { value: fieldValue } = this.#parent.getField(name);
+		if (typeof this.#disabled !== 'object' || !this.#disabled?.fields) return this.#disabled;
 
-					return value !== fieldValue;
-				}
-				return !this.#parent.form.getField(field).value;
-			};
-			return this.#disabled.fields.some(validate);
-		}
-		return this.#disabled;
+		const validate = field => {
+			if (typeof field !== 'object') return !this.#parent.form.getField(field).value;
+			const { name, value } = field;
+			const { value: fieldValue } = this.#parent.getField(name);
+			return value !== fieldValue;
+		};
+
+		return this.#disabled.fields.some(validate);
 	}
+
 	set disabled(value) {
 		if (value === this.#disabled) return;
 		this.#disabled = value;
@@ -85,7 +61,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * Constructs a FormField instance with specified properties and parent form model.
 	 * @param {Object} params - Construction parameters including the parent form model and field specifications.
 	 */
-	constructor({ parent, specs }: { parent; specs: IProps }) {
+	constructor({ parent, specs }: { parent; specs: IFormFieldProps }) {
 		const { properties, ...props } = specs;
 
 		super({

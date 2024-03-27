@@ -1,6 +1,7 @@
 import { FormField } from './field';
 import { WrappedFormModel } from './wrapper';
 import { BaseWiseModel } from './base';
+import { PluginsManager } from './plugins';
 
 export /*bundle*/
 class FormModel extends BaseWiseModel {
@@ -16,7 +17,6 @@ class FormModel extends BaseWiseModel {
 	constructor(settings, reactiveProps?) {
 		super(settings, reactiveProps);
 		this.#startup(settings);
-		console.log(0.2, this.settings.observers);
 	}
 
 	#startup = async settings => {
@@ -32,6 +32,7 @@ class FormModel extends BaseWiseModel {
 
 		await this.#checkReady();
 		this.#configFields();
+		PluginsManager.validate(this);
 		this.ready = true;
 		this.trigger('change');
 	};

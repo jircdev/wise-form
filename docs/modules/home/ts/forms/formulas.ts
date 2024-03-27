@@ -9,6 +9,7 @@ export const formulasForm = {
 		{ formula: 'totalGraphic * netGraphic', name: 'formula1' },
 		{ formula: 'discountPercentGraphic * discountAuthorGraphic', name: 'formula2' },
 		{
+			name: 'formula3',
 			formula: {
 				conditional: ['a', 'b', 'c', 'd'],
 				value: '',

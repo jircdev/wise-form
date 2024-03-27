@@ -3,13 +3,13 @@ import { Input, Textarea } from 'pragmate-ui/form';
 import { SelectionField } from './selection';
 import { ControlFieldContainer } from './container';
 import { useWiseFormContext } from '../../context';
-import { IWiseForm, IWiseFormField } from '../../../interfaces/interfaces';
+import { WiseFormField } from '../../../interfaces/interfaces';
 import type { FormModel } from '../../../model/model';
 import type { WrappedFormModel } from '../../../model/wrapper';
 import { useField } from './use-field';
 
 type WiseFormFieldControlProps = {
-	field: IWiseFormField;
+	field: WiseFormField;
 	index: number;
 	model: FormModel | WrappedFormModel;
 };
