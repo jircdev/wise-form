@@ -36,7 +36,7 @@ export class FormulaBasic {
 		return formula.conditions;
 	}
 
-	#emptyValue: undefined;
+	#emptyValue: string | number;
 	#variables: string[] = [];
 	get variables() {
 		return this.#variables;

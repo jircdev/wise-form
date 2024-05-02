@@ -4,7 +4,7 @@ import { ReactiveModel } from '@beyond-js/reactive/model';
 import { Lexer } from './helpers/lexer';
 import { Parser } from './helpers/parser';
 import { Token } from './helpers/token';
-import { IComplexCondition, IConditionalFormula, FormulaObserver, FormulaType } from './types/formulas';
+import { IComplexCondition, IConditionalFormula, FormulaObserver, FormulaType, FormulaFields } from './types/formulas';
 import { FormulaBasic } from './variants/basic';
 import { FormulaConditional } from './variants/conditional';
 import { FormulaPerValue } from './variants/per-value';
@@ -112,7 +112,7 @@ export /*bundle */ class FormulaManager extends ReactiveModel<FormulaManager> {
 	 * @param variables
 	 * @returns
 	 */
-	getModels(variables: string[]) {
+	getModels(variables: FormulaFields) {
 		return variables.map(name => {
 			if (this.#plugin.formulas.has(name)) return this.#plugin.formulas.get(name);
 			return this.#plugin.form.getField(name);

@@ -1,3 +1,5 @@
+import { BindlessInput } from '../views/components/bindless-input';
+
 export const bindlessForm = {
 	name: 'Bindless form',
 	title: 'Bindless form',
@@ -13,6 +15,15 @@ export const bindlessForm = {
 					name: 'bindless',
 					label: 'Bindless Input',
 					type: 'bindlessInput',
+					events: {
+						onChange: {
+							url: 'http://localhost:3000',
+							params: {
+								fields: ['bindless'],
+								specs: ['bindlessInput'],
+							},
+						},
+					},
 				},
 				{
 					type: 'percentageInput',

@@ -2,6 +2,8 @@ import { FormField } from './field';
 import { WrappedFormModel } from './wrapper';
 import { BaseWiseModel } from './base';
 import { PluginsManager } from './plugins';
+import { CallbackFunction } from './types/callbacks';
+import { CallbackManager } from './callback-manager';
 
 export /*bundle*/
 class FormModel extends BaseWiseModel {
@@ -23,6 +25,7 @@ class FormModel extends BaseWiseModel {
 		return this.#mode;
 	}
 	#update: boolean;
+	#callbackManagers: CallbackManager[];
 	get update() {
 		return this.#update;
 	}
@@ -113,6 +116,7 @@ class FormModel extends BaseWiseModel {
 			item?.properties.forEach(item => (externalValues[item.name] = item.value));
 		}
 		if (item.type === 'wrapper') return this.#getWrapper(item);
+
 		const instance = new FormField({
 			parent: this,
 			specs: {
@@ -122,6 +126,9 @@ class FormModel extends BaseWiseModel {
 			},
 		});
 
+		/**
+		 * @todo: review it. why we need it.?
+		 */
 		if (item?.properties) {
 			let toSet = {};
 			item?.properties.forEach(property => (toSet[property] = item[property] || ''));
@@ -137,29 +144,7 @@ class FormModel extends BaseWiseModel {
 	 */
 	#listenDependencies = instance => {
 		if (!instance?.specs?.dependentOn?.length) return;
-		const checkField = item => {
-			const DEFAULT = {
-				type: 'change',
-			};
-
-			const dependency = this.getField(item.field);
-
-			['field', 'callback'].forEach(prop => {
-				if (!item[prop]) throw new Error(`${item?.field} is missing ${prop}`);
-			});
-
-			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
-
-			const settings = { ...DEFAULT, ...item };
-			if (!this.callbacks[item.callback]) {
-				throw new Error(`${item.callback} is not  a registered callback ${item.name}`);
-			}
-
-			const callback = this.callbacks[item.callback];
-			callback({ dependency, settings, field: instance, form: this });
-		};
-
-		instance?.specs?.dependentOn.forEach(checkField);
+		const manager = new CallbackManager(this, instance);
 	};
 
 	/**

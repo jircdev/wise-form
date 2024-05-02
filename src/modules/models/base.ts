@@ -2,6 +2,8 @@ import { ReactiveModel } from '@beyond-js/reactive/model';
 import type { WrappedFormModel } from './wrapper';
 import { FormField } from './field';
 import { PendingPromise } from '@beyond-js/kernel/core';
+import { FieldOrAlias } from './types/callbacks';
+import { IFormModelProps } from './types/model';
 
 export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 	#settings;
@@ -58,12 +60,15 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 		this.#specs = value;
 	}
 
+	#params = {};
+
 	protected loadedPromise: PendingPromise<boolean> = new PendingPromise();
 	protected childWrappersReady: number = 0;
 
-	constructor(settings, reactiveProps?) {
+	constructor(settings: IFormModelProps, reactiveProps?) {
 		super(settings);
 
+		this.#params = settings.params ?? {};
 		this.#settings = settings;
 		this.#callbacks = settings.callbacks ?? {};
 	}
@@ -79,7 +84,8 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 			return;
 		}
 
-		this.getField(name).set({ value });
+		const field = this.getField(this.getFieldName(name));
+		field.setValue(value);
 	}
 
 	/**
@@ -141,6 +147,28 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 	}
 
 	/**
+	 * Extracts the field name from a FieldOrAlias type. The input can either be a string directly representing
+	 * the field name or an object where the key is the field name and the value is an alias.
+	 * This function returns the field name if it is a string, or the first key (field name) if it is an object,
+	 * assuming the object contains exactly one key-value pair.
+	 *
+	 * @param {FieldOrAlias} field - The field identifier which could be a string or an object with one key-value pair.
+	 * @returns {string} - The field name extracted from the input.
+	 * @throws {Error} - Throws an error if the input is an object that does not contain exactly one key.
+	 */
+	getFieldName(field: FieldOrAlias): string {
+		if (typeof field === 'object' && Object.keys(field).length !== 1) {
+			throw new Error('Field object must contain exactly one key.');
+		}
+
+		if (typeof field === 'string') {
+			return field;
+		}
+
+		return Object.keys(field)[0];
+	}
+
+	/**
 	 * Clears all fields within the wrapper, resetting their values to their initial state.
 	 */
 	clear = () => {
@@ -148,4 +176,8 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 		this.triggerEvent();
 		this.triggerEvent('clear');
 	};
+
+	getParams(param) {
+		return this.#params[param];
+	}
 }

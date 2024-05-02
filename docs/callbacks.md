@@ -1,101 +1,89 @@
-# Callbacks
+### Documento: Implementación de Callbacks en WiseForm
 
-Callbacks are a set of methods that are "registered" in `wise-form` at the time of instantiating the `FormModel`.
-They're intended to be used in the flow of forms to handle different scenarios efficiently.
+#### Introducción
 
-The purpose of these callbacks is to offer common functionalities that can be utilized to manage various situations
-throughout a form's lifecycle. These callbacks are typically employed when implementing dependencies between
-fields/wrappers.
+Los callbacks en WiseForm permiten una interacción avanzada dentro de los formularios dinámicos, facilitando la
+ejecución de funciones específicas basadas en acciones o cambios en los datos del formulario. Este documento explica
+cómo implementar y utilizar los callbacks dentro de WiseForm para mejorar la funcionalidad y la interactividad de los
+formularios.
 
-Let's explore how to integrate a callback into a form in a typical case:
+#### Definición y Uso de Callbacks
 
-### Integrating a Callback into a Form
+Los callbacks en WiseForm se definen como métodos que se registran al instanciar el `FormModel`. Estos métodos están
+diseñados para manejar diversas situaciones durante el ciclo de vida de un formulario, como dependencias entre campos o
+acciones específicas tras ciertos eventos.
 
-#### action-manager.ts
+##### **Interfaz de Parámetros de Callback**
+
+Cada callback recibe un objeto de parámetros con la siguiente interfaz:
 
 ```typescript
-export class ActionManager {
-	/**
-	 * Copies the value from one field to another upon change.
-	 *
-	 * @param {Object} params - The parameters passed to the callback function.
-	 * @param {FormField} params.dependency - The instance of the field that triggers the callback.
-	 * @param {Object} params.settings - An object encapsulating any additional properties specified in the `dependentOn`.
-	 * @param {FormField} params.field - The instance of the field that listens to the dependency and acts upon it.
-	 * @param {FormModel} params.form - Represents the instance of `FormModel`, the general form instance.
-	 */
-	static copyValue = ({ dependency, settings, field, form }) => {
-		dependency.on('change', () => field.set({ value: dependency.value }));
-	};
+interface CallbackParams {
+	form: FormModel; // Instancia del modelo de formulario
+	field: FieldOrAlias; // Campo o alias afectado
+	[string: string]: any; // Propiedades adicionales dinámicas
+	fields?: Record<string, any>; // Campos adicionales pasados al callback
+	specs?: Record<string, any>; // Datos adicionales registrados en la configuración de WiseForm
 }
 ```
 
-In the example above, we define the `copyValue` callback within an object called `ActionManager`. This approach helps in
-organizing all our callback functions cleanly, although regular functions can also be used if preferred.
+##### **Registro de Callbacks**
 
-#### Registering the Callback
-
-Now, let's register our callback:
-
-#### store.ts
+Los callbacks se deben registrar en la instancia del formulario de la siguiente manera:
 
 ```typescript
-import { form } from './form';
-import { FormModel } from 'wise-form/form';
-import { ActionManager } from './action-manager';
+const form = new FormModel({
+	...form,
+	callbacks: {
+		copyValue: ActionManager.copyValue, // Definición del callback
+	},
+});
+```
 
-export class Store {
-	#formInstance: FormModel;
+#### Ejemplo Práctico: Uso de Callbacks
 
-	constructor() {
-		this.#formInstance = new FormModel({
-			...form,
-			callbacks: {
-				copyValue: ActionManager.copyValue, // Here, we define our callbacks. The key specified acts as the `identifier`, which means we will refer to it by this name.
-			},
-		});
-	}
+Consideremos un formulario con campos dependientes que utilizan el callback `fetchData` para cargar datos dinámicamente
+basados en la selección de un usuario:
+
+```typescript
+{
+    name: 'state',
+    type: 'select',
+    label: 'Select State',
+    options: [],
+    dependentOn: [
+        {
+            field: 'country',
+            callback: 'fetchData',
+            url: '/states',
+            fields: ['passport'],
+        },
+    ],
+},
+{
+    name: 'city',
+    type: 'select',
+    label: 'Select City',
+    options: [],
+    dependentOn: [
+        {
+            field: 'state',
+            callback: 'fetchData',
+            url: '/cities',
+            fields: ['passport'],
+            params: ['token'], // Usando 'token' como un parámetro global
+        },
+    ],
 }
 ```
 
-That's how we register our callbacks. Now, let's put it to use:
+En este ejemplo, el campo `state` depende del valor del campo `country` para cargar sus opciones a través del callback
+`fetchData`. Similarmente, `city` depende de `state` para cargar sus propias opciones.
 
-We'll have a select field, and when we change the selected value, we'll copy that value and set it in a different input
-called `selectedCountry`. Simple and effective.
+#### Beneficios de Usar Callbacks
 
-#### form.ts
-
-```typescript
-export const form = {
-	name: 'Callbacks testing',
-	template: [[4, '1fr'], '1x8'],
-	fields: [
-		{
-			name: 'country',
-			type: 'select',
-			label: 'Country: ',
-			options: [
-				{ value: 'Colombia', label: 'Colombia' },
-				{ value: 'Ecuador', label: 'Ecuador' },
-				{ value: 'Peru', label: 'Peru' },
-				{ value: 'Venezuela', label: 'Venezuela' },
-			],
-		},
-		{
-			name: 'selectedCountry',
-			label: 'Country Copy',
-			disabled: true,
-			dependentOn: [
-				{
-					field: 'country',
-					callback: 'copyValue',
-				},
-			],
-		},
-	],
-};
-```
-
-In this setup, whenever the `country` field changes, the `selectedCountry` field will automatically update to reflect
-the new value. This demonstrates a straightforward yet powerful way to leverage callbacks within your form logic,
-enhancing dynamic interactivity and data flow between fields.
+1. **Flexibilidad**: Permite a los desarrolladores crear formularios que responden dinámicamente a la interacción del
+   usuario.
+2. **Reusabilidad**: Los callbacks se pueden reutilizar en diferentes partes del formulario o en formularios diferentes.
+3. **Integración de Servicios Externos**: Facilita la integración con APIs externas para la carga de datos y otras
+   funcionalidades.

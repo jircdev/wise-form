@@ -17,6 +17,8 @@ import { formulasForm } from './forms/formulas';
 import { bindlessForm } from './forms/bindless-form';
 import { BindlessInput } from './views/components/bindless-input';
 import { PercentageInput } from './views/components/percentage-input';
+import { dependentOnForm } from './forms/dependent-on';
+import { fetchData } from './callbacks/fetch-data';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -37,6 +39,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			dependenciesForm,
 			formulasForm,
 			bindlessForm,
+			dependentOnForm,
 		};
 	}
 
@@ -45,7 +48,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 
 		this.reactiveProps(['selected']);
 		this.selected = this.forms.formulasForm;
-		this.setForm(this.forms.formulasForm);
+		this.setForm(this.forms.dependentOnForm);
 		// this.setForm(this.forms.contactForm);
 		WFSettings.setFields({
 			select: ReactSelect,
@@ -67,8 +70,15 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 		const callbacks = {
 			onLoad: this.loadData,
 			copyValue: this.copyValue,
+			fetchData,
 		};
-		const form = await FormModel.create({ ...item, callbacks });
+		const form = await FormModel.create({
+			...item,
+			callbacks,
+			params: {
+				token: '18935170',
+			},
+		});
 		this.#instances.set(item.name, form);
 		this.#active = form;
 		this.trigger('change');

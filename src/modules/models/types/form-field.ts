@@ -1,15 +1,15 @@
 export interface IFormField {
-	name: string;
-	type: string;
-	placeholder: string;
-	required: boolean;
-	label: string;
-	variant: string;
-	disabled: boolean;
+	name?: string;
+	type?: string;
+	placeholder?: string;
+	required?: boolean;
+	label?: string;
+	variant?: string;
+	disabled?: boolean;
+	value?: any;
 }
 
-export interface IFormFieldProps {
-	propertiea: string[];
-	value: string | number | boolean | Object | any[];
+export interface IFormFieldProps extends IFormField {
+	properties: string[];
 	[key: string]: any;
 }

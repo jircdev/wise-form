@@ -47,20 +47,20 @@ export /*bundle*/ const PercentageInput = (props: IProps) => {
 	return (
 		<div className={cls}>
 			<input
-				className="percetange-input"
-				id="percetange"
-				type="text"
+				className='percetange-input'
+				id='percetange'
+				type='text'
 				{...properties}
 				onChange={onChange}
 				onBlur={onBlur}
 				value={value}
 			/>
 			{instance.specs.label && (
-				<label className="pui-input__label" htmlFor="percetange">
+				<label className='pui-input__label' htmlFor='percetange'>
 					{instance.specs.label}
 				</label>
 			)}
-			{!!value && <span className="symbol-percent">%</span>}
+			{!!value && <span className='symbol-percent'>%</span>}
 		</div>
 	);
 };

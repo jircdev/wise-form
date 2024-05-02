@@ -73,6 +73,9 @@ export class FormField extends ReactiveModel<IFormField> {
 				'required',
 				'label',
 				'variant',
+				/**
+				 * the value property must be setted using the setValue method
+				 */
 				'value',
 				'options',
 				'className',
@@ -90,6 +93,9 @@ export class FormField extends ReactiveModel<IFormField> {
 		this.__instance = Math.random();
 
 		const toSet: Record<string, any> = {};
+		/**
+		 * @todo:  review this code
+		 */
 		Object.keys(props).forEach(key => {
 			if (key === 'properties') return;
 
@@ -102,7 +108,21 @@ export class FormField extends ReactiveModel<IFormField> {
 			toSet[key] = props[key];
 		});
 		//	this.#disabled = disabled
-		this.set(toSet);
+		// this.set(toSet);
+		this.set(specs);
+	}
+
+	/**
+	 *  This method is used to set the value property of the field and fire the value.change event
+	 *
+	 * @param value
+	 * @returns
+	 */
+	setValue(value) {
+		if (value === this.value) return;
+		this.value = value;
+		this.trigger('change');
+		this.trigger('value.change');
 	}
 	generateRandomNumber = () => {
 		return Math.floor(Math.random() * (1000000 - 10000 + 1)) + 10000;
@@ -148,7 +168,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			}
 			if (!props.disabled.fields && !props.disabled.mode) {
 				throw new Error(
-					`The disabled property of the field ${props.name} must have a fields property or a mode defined`
+					`The disabled property of the field ${props.name} must have a fields property or a mode defined`,
 				);
 			}
 
@@ -173,7 +193,7 @@ export class FormField extends ReactiveModel<IFormField> {
 				throw new Error(
 					`the field ${allValid} does not exist in the form ${
 						this.#parent.name
-					}, field passed in invalid settings of field "${this.name}"`
+					}, field passed in invalid settings of field "${this.name}"`,
 				);
 			}
 			this.#disabled = props.disabled;

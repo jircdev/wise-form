@@ -1,0 +1,19 @@
+{
+	"name": "repeat-wrapper",
+	"widget": {
+		"route": "/repeat-wrapper",
+		"is": "page",
+
+		"scss": {
+			"path": "/scss",
+			"files": ["*"]
+		},
+		"ts": {
+			"path": "/ts",
+			"files": ["*"]
+		},
+		"element": {
+			"name": "wf-repeaat-wrapper-page"
+		}
+	}
+}
