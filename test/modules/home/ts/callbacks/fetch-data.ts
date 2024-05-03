@@ -37,7 +37,6 @@ function getCities({ state }: { state: string }): ItemOption[] {
 }
 
 export /*bundle */ async function fetchData(specs: ICallbackProps) {
-	console.log('SPECS => ', specs);
 	const URLS = { '/cities': getCities, '/states': getStates };
 	const callback = URLS[specs.url];
 	if (!callback) throw new Error('url to call not found');

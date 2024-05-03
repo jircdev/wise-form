@@ -12,6 +12,12 @@ export const dependentWrapperCase = {
 			template: [1, 1, 1, 1],
 			fields: [
 				{
+					name: 'passport',
+					value: 'passport-value',
+					label: 'Passport',
+					type: 'text',
+				},
+				{
 					name: 'country',
 					type: 'select',
 					label: 'Select Country',
