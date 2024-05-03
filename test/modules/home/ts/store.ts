@@ -19,6 +19,7 @@ import { BindlessInput } from './views/components/bindless-input';
 import { PercentageInput } from './views/components/percentage-input';
 import { dependentOnForm } from './forms/dependent-on';
 import { fetchData } from './callbacks/fetch-data';
+import { dependentWrapperCase } from './forms/dependent-on-wrapper-case';
 
 type FormItem = Record<string, [string, IForm]>;
 export class StoreManager extends ReactiveModel<StoreManager> {
@@ -40,6 +41,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 			formulasForm,
 			bindlessForm,
 			dependentOnForm,
+			dependentWrapperCase,
 		};
 	}
 
