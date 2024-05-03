@@ -1,5 +1,5 @@
-import type { Parser } from '../helpers/parser';
-import type { Token } from '../helpers/token';
+import type {Parser} from "../helpers/parser";
+import type {Token} from "../helpers/token";
 
 export interface ISimpleFormula {
 	name: string;
@@ -10,7 +10,7 @@ export interface ISimpleFormula {
 }
 
 export interface IFormulaCondition {
-	condition: 'hasValue' | 'upper' | 'lower' | 'equal' | 'different' | 'between' | 'lessOrEqual' | 'greaterOrEqual';
+	condition: "hasValue" | "upper" | "lower" | "equal" | "different" | "between" | "lessOrEqual" | "greaterOrEqual";
 	value?: string | number | [number, number];
 	formula: string;
 	conditions?: IConditionalField[];
@@ -18,7 +18,7 @@ export interface IFormulaCondition {
 }
 
 export type FormulaFields = string | string[];
-export type EvaluatedFormula = { value?: string | number; formula: string; condition?: string };
+export type EvaluatedFormula = {value?: string | number; formula: string; condition?: string};
 export interface IConditionalFormula {}
 
 export interface IConditionalField {
@@ -35,7 +35,8 @@ export interface IConditionalField {
 export interface IComplexCondition {
 	fields: FormulaFields;
 	base?: string;
-	conditions: IConditionalField[];
+	conditions: IConditionalField;
+	condition?: string;
 }
 
 export interface IConditionalFormula {
@@ -53,6 +54,6 @@ export type ParserData = {
 	[key: string]: any;
 };
 
-export type FormulaType = 'basic' | 'base-conditional' | 'value-conditions' | undefined;
+export type FormulaType = "basic" | "base-conditional" | "value-conditions" | undefined;
 
 export type FormulaObserver = ISimpleFormula | IConditionalFormula;

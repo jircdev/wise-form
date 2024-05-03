@@ -1,9 +1,9 @@
-import type { FormulaManager } from '..';
-import { EvaluationsManager } from '../helpers/evaluations';
+import type {FormulaManager} from "..";
+import {EvaluationsManager} from "../helpers/evaluations";
 
-import { Token } from '../helpers/token';
-import { FormulaObserver, IComplexCondition, IConditionalField } from '../types/formulas';
-import { number, parse } from 'mathjs';
+import {Token} from "../helpers/token";
+import {FormulaObserver, IComplexCondition, IConditionalField} from "../types/formulas";
+import {number, parse} from "mathjs";
 
 export class FormulaComparison {
 	#plugin: any;
@@ -29,11 +29,11 @@ export class FormulaComparison {
 	 */
 	get fields() {
 		const formula = <IComplexCondition>this.formula;
-		return typeof formula?.fields === 'string' ? [formula?.fields] : formula?.fields;
+		return typeof formula?.fields === "string" ? [formula?.fields] : formula?.fields;
 	}
 
 	get conditions() {
-		if (typeof this.#specs.formula === 'string') return;
+		if (typeof this.#specs.formula === "string") return;
 		const formula = this.#specs.formula as IComplexCondition;
 		return formula.conditions;
 	}
@@ -52,25 +52,25 @@ export class FormulaComparison {
 
 	initialize() {
 		if (!Array.isArray(this.#specs.fields)) {
-			throw new Error('The fields property must be an array');
+			throw new Error("The fields property must be an array");
 		}
 		const models = this.#parent.getModels(this.#specs.fields);
-		models.forEach(model => model.on('change', this.calculate.bind(this)));
+		models.forEach(model => model.on("change", this.calculate.bind(this)));
 	}
 
-	start() { }
+	start() {}
 
 	evaluate() {
 		const formula = <IComplexCondition>this.#specs.formula;
 
-		if (typeof formula === 'string' || !formula.conditions) {
-			console.error('Invalid formula configuration');
+		if (typeof formula === "string" || !formula.conditions) {
+			console.error("Invalid formula configuration");
 			return null;
 		}
 		const models = this.#parent.getModels(this.#specs.fields);
 		let fieldValues = models.map(fieldModel => {
-			if (!fieldModel) return
-			return { name: fieldModel.name, value: fieldModel ? fieldModel.value : null };
+			if (!fieldModel) return;
+			return {name: fieldModel.name, value: fieldModel ? fieldModel.value : null};
 		});
 
 		// Utilizar reduce para comparar cada par de valores consecutivos y determinar cuál cumple la condición
@@ -94,7 +94,6 @@ export class FormulaComparison {
 		}
 	}
 
-
 	calculate() {
 		let applied = this.evaluate();
 		if (!applied) {
@@ -106,21 +105,24 @@ export class FormulaComparison {
 		 * Get the formula analyzer
 		 */
 
-		const formulaString = this.#specs.formula.conditions[applied.name];
-		const formula = this.#parent.getParser({ formula: formulaString });
-		const variables = formula.tokens.filter(token => token.type === 'variable').map(item => item.value);
+		const specsFormula = this.#specs.formula as IComplexCondition;
+		const formulaString = specsFormula.conditions[applied.name];
+		const formula = this.#parent.getParser({formula: formulaString});
+		const variables = formula.tokens.filter(token => token.type === "variable").map(item => item.value);
 		const params = this.#parent.getParams(variables);
 
 		try {
 			const keys = Object.keys(params);
 			const result = keys.length === 1 ? params[keys[0]] : parse(this.formula as string).evaluate(params);
 
-			this.#value = [-Infinity, Infinity, undefined, null, NaN].includes(result) ? this.#emptyValue : Number(result.toFixed(2));;
-			this.#parent.trigger('change');
+			this.#value = [-Infinity, Infinity, undefined, null, NaN].includes(result)
+				? this.#emptyValue
+				: Number(result.toFixed(2));
+			this.#parent.trigger("change");
 			return this.#value;
 		} catch (e) {
-			console.log('formula', this.name, this.formula, params);
-			throw new Error('Error calculating the formula');
+			console.log("formula", this.name, this.formula, params);
+			throw new Error("Error calculating the formula");
 		}
 	}
 
