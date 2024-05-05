@@ -3,6 +3,7 @@ import { FormField } from './field';
 import type { FormModel } from './model';
 import { PendingPromise } from '@beyond-js/kernel/core';
 import { IWrapperFormModelProps } from './types/wrapped-form-model-props';
+import { CallbackManager } from './callback-manager';
 
 export /*bundle*/
 class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
@@ -207,31 +208,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	 */
 	#listenDependencies = instance => {
 		if (!instance?.specs?.dependentOn?.length) return;
-
-		const checkField = item => {
-			const DEFAULT = {
-				type: 'change',
-			};
-
-			const dependency = this.#form.getField(item.field);
-
-			['field', 'callback'].forEach(prop => {
-				if (!item[prop]) throw new Error(`${item?.field} is missing ${prop}`);
-			});
-
-			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
-
-			const type = item.type ?? 'change';
-			const settings = { ...DEFAULT, ...item };
-			if (!this.callbacks[item.callback]) {
-				throw new Error(`${item.callback} is not  a registered callback`);
-			}
-
-			const callback = this.callbacks[item.callback];
-			callback({ dependency, settings, field: instance, form: this.#form });
-		};
-
-		instance?.specs?.dependentOn.forEach(checkField);
+		new CallbackManager(this.#form, instance)
 	};
 
 	/**

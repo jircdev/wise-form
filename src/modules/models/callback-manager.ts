@@ -19,7 +19,8 @@ export class CallbackManager {
 		const checkField = settings => {
 			const dependency = this.#model.getField(this.#model.getFieldName(settings.field));
 
-			['field', 'callback'].forEach(prop => {
+			const required = ['field', 'callback'];
+			required.forEach(prop => {
 				if (!settings[prop]) throw new Error(`${settings?.field} is missing ${prop}`);
 			});
 
@@ -65,16 +66,15 @@ export class CallbackManager {
 		if (settings.hasOwnProperty('params')) {
 			const specs = {};
 			settings.params.forEach(param => {
-				if (!this.#model.getParam(param)) {
+				if (!this.#model?.getParams(param)) {
 					console.warn(`param ${param} is not registered in the form`);
 					return;
 				}
 
-				specs[param] = this.#model.getParam(param);
+				specs[param] = this.#model.getParams(param);
 			});
 			params.specs = specs;
 		}
-		console.log(`settings`, params);
 		callback(params);
 	};
 }
