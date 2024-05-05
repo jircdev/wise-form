@@ -34,6 +34,7 @@ export class CallbackManager {
 			const caller = () => this.executeCallback(settings);
 			this.#listeners.push(caller);
 			dependency.on('value.change', caller);
+			
 
 			//callback({ dependency, settings, field: instance, form: this });
 		};

@@ -42,7 +42,7 @@ export const dependentOnForm = {
 					},
 					url: '/cities',
 					callback: 'fetchData',
-					fields: ['passport'],
+					fields: [{passsport: 'pas'}],
 					params: ['token'], // Asume que 'token' es un parámetro global configurado en WiseForm
 				},
 			],

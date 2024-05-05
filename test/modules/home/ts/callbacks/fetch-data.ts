@@ -1,4 +1,4 @@
-//@ts-ignore // this line generates error because we need to generate the declarations.
+
 import { ICallbackProps } from '@bgroup/wise-form/models';
 import { countries } from '../hardcoded/countries';
 type ItemOption = {
