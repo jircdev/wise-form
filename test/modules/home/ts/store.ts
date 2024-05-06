@@ -50,7 +50,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 
 		this.reactiveProps(['selected']);
 		this.selected = this.forms.formulasForm;
-		this.setForm(this.forms.dependentOnForm);
+		this.setForm(this.forms.dependentWrapperCase);
 		// this.setForm(this.forms.contactForm);
 		WFSettings.setFields({
 			select: ReactSelect,

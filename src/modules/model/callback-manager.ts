@@ -35,7 +35,6 @@ export class CallbackManager {
 			const caller = () => this.executeCallback(settings);
 			this.#listeners.push(caller);
 			dependency.on('value.change', caller);
-			
 
 			//callback({ dependency, settings, field: instance, form: this });
 		};
@@ -48,7 +47,7 @@ export class CallbackManager {
 		if (!settings) {
 			console.warn('the field does not have dependentOn settings');
 		}
-
+		console.log(14, 'i am chainging', settings);
 		const callback: CallbackFunction = this.#callbacks[settings.callback];
 
 		const dependency = this.#model.getField(this.#model.getFieldName(settings.field));

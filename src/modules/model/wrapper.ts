@@ -208,7 +208,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	 */
 	#listenDependencies = instance => {
 		if (!instance?.specs?.dependentOn?.length) return;
-		new CallbackManager(this.#form, instance)
+		new CallbackManager(this.#form, instance);
 	};
 
 	/**
