@@ -1,5 +1,5 @@
 import type { IWidgetStore } from '@beyond-js/widgets/controller';
-import { FormModel } from '@bgroup/wise-form/models';
+import { FormModel } from '@bgroup/wise-form/model';
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import { WFSettings } from '@bgroup/wise-form/settings';
 import { WrapperForm } from './views/wrapper';

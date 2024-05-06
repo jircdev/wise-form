@@ -43,12 +43,12 @@ export class FormulaConditional {
 
 	#parent: FormulaManager;
 
-	#round: boolean
+	#round: boolean;
 	constructor(parent, plugin, specs) {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
-		this.#round = specs.round
+		this.#round = specs.round;
 	}
 
 	initialize() {
@@ -67,7 +67,7 @@ export class FormulaConditional {
 				}
 				field.on('change', this.calculate.bind(this));
 			});
-		} catch (e) { }
+		} catch (e) {}
 	}
 
 	evaluate() {
@@ -78,26 +78,29 @@ export class FormulaConditional {
 				let conditionMet = false;
 				if (condition.conditions) {
 					// If there are nested conditions, all must be met
-					conditionMet = condition.conditions.every((subCondition) => {
+					conditionMet = condition.conditions.every(subCondition => {
 						const fieldValues = subCondition.fields.map(fieldName => {
 							const field = this.#fields.find(f => f.name === fieldName);
 							return field ? field.value : this.#emptyValue;
 						});
-						return EvaluationsManager.validateAll(subCondition.condition, fieldValues, subCondition.value)
+						return EvaluationsManager.validateAll(subCondition.condition, fieldValues, subCondition.value);
 					});
 				} else {
 					const fieldValues = condition.fields.map(fieldName => {
 						const field = this.#fields.find(f => f.name === fieldName);
 						return field ? field.value : this.#emptyValue;
 					});
-					const conditionType = !!condition.type && conditionsTypes[condition.type] ? conditionsTypes[condition.type] : conditionsTypes.some;
+					const conditionType =
+						!!condition.type && conditionsTypes[condition.type]
+							? conditionsTypes[condition.type]
+							: conditionsTypes.some;
 					// Check if any of the specified fields meet the condition
 					conditionMet = EvaluationsManager[conditionType](condition.condition, fieldValues, condition.value);
 				}
 
 				if (conditionMet) {
 					evaluatedFormula.formula = condition.formula;
-					evaluatedFormula.fi = condition
+					evaluatedFormula.fi = condition;
 					break;
 				}
 			}
@@ -107,7 +110,6 @@ export class FormulaConditional {
 	}
 
 	calculate() {
-
 		/**
 		 * the formula is taken from the evaluate method since the conditions are evaluated there and
 		 * can change the formula to be applied
@@ -121,10 +123,10 @@ export class FormulaConditional {
 		try {
 			const keys = Object.keys(params);
 			let result = keys.length === 1 ? params[keys[0]] : parse(formula.formula as string).evaluate(params);
-			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result)
-			if (this.#round && !isInvalidResult) result = Math.round(result)
+			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
+			if (this.#round && !isInvalidResult) result = Math.round(result);
 
-			this.#value = isInvalidResult || typeof result === "object" ? this.#emptyValue : Number(result.toFixed(2));
+			this.#value = isInvalidResult || typeof result === 'object' ? this.#emptyValue : Number(result.toFixed(2));
 
 			this.#parent.trigger('change');
 

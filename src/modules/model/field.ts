@@ -59,6 +59,16 @@ export class FormField extends ReactiveModel<IFormField> {
 		};
 	}
 
+	#value: string;
+	get value() {
+		return this.#value;
+	}
+
+	set value(value) {
+		console.log('VALUE SETTER => ', value);
+		this.setValue(value);
+	}
+
 	// Tracks other fields this field listens to for changes, enabling reactive behavior and allowing the cleanup of event listeners.
 	#listeningItems = new Map();
 
@@ -78,10 +88,6 @@ export class FormField extends ReactiveModel<IFormField> {
 				'required',
 				'label',
 				'variant',
-				/**
-				 * the value property must be setted using the setValue method
-				 */
-				'value',
 				'options',
 				'className',
 				'checked',
@@ -90,6 +96,7 @@ export class FormField extends ReactiveModel<IFormField> {
 				...properties,
 			],
 		});
+		console.log('INITIAL VALUYES => ', specs, this.getProperties());
 
 		this.__instanceID = `${specs.name}.${this.generateRandomNumber()}`;
 
@@ -114,7 +121,13 @@ export class FormField extends ReactiveModel<IFormField> {
 		});
 		//	this.#disabled = disabled
 		// this.set(toSet);
+
 		this.set(specs);
+	}
+
+	getProperties() {
+		const properties = super.getProperties();
+		return { ...properties, value: this.#value };
 	}
 
 	/**
@@ -123,9 +136,9 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @param value
 	 * @returns
 	 */
-	setValue(value) {
+	setValue(value: string) {
 		if (value === this.value) return;
-		this.value = value;
+		this.#value = value;
 		this.trigger('change');
 		this.trigger('value.change');
 	}
@@ -175,7 +188,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			}
 			if (!props.disabled.fields && !props.disabled.mode) {
 				throw new Error(
-					`The disabled property of the field ${props.name} must have a fields property or a mode defined`,
+					`The disabled property of the field ${props.name} must have a fields property or a mode defined`
 				);
 			}
 
@@ -200,7 +213,7 @@ export class FormField extends ReactiveModel<IFormField> {
 				throw new Error(
 					`the field ${allValid} does not exist in the form ${
 						this.#parent.name
-					}, field passed in invalid settings of field "${this.name}"`,
+					}, field passed in invalid settings of field "${this.name}"`
 				);
 			}
 			this.#disabled = props.disabled;
@@ -301,7 +314,8 @@ export class FormField extends ReactiveModel<IFormField> {
 		let updated = false;
 		try {
 			Object.keys(properties).forEach(prop => {
-				if (!this.properties || !this.properties.includes(prop)) return;
+				const currentProperties = Object.keys(this.getProperties());
+				if (!currentProperties || !currentProperties.includes(prop)) return;
 				const sameObject =
 					typeof properties[prop] === 'object' &&
 					JSON.stringify(properties[prop]) === JSON.stringify(this[prop]);

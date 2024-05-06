@@ -1,80 +1,26 @@
-import { ReactiveModel } from '@beyond-js/reactive/model';
 import { FormField } from './field';
 import type { FormModel } from './model';
-import { PendingPromise } from '@beyond-js/kernel/core';
 import { IWrapperFormModelProps } from './types/wrapped-form-model-props';
 import { CallbackManager } from './callback-manager';
+import { BaseWiseModel } from './base';
 
 export /*bundle*/
-class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
-	// Holds the wrapper's specific settings.
-	#settings;
-	get settings() {
-		return this.#settings;
-	}
-
+class WrappedFormModel extends BaseWiseModel {
 	get type() {
 		return 'wrapper';
-	}
-
-	get callbacks() {
-		return this.#parent.callbacks;
 	}
 
 	get control() {
 		return this.settings.control;
 	}
 
-	get template() {
-		return this.settings.template;
-	}
-
-	get name() {
-		return this.#settings.name;
-	}
 	#form: FormModel;
 	get form() {
 		return this.#form;
 	}
 
-	// Stores the original values of the fields within the wrapper for reset purposes.
-	#initialValues: Record<string, string> = {};
-	get originalValues() {
-		return this.#initialValues;
-	}
-
-	// A map of child wrapper models, allowing nested wrappers.
-	#wrappers: Map<string, WrappedFormModel> = new Map();
-	get wrappers() {
-		return this.#wrappers;
-	}
-
-	get values() {
-		const data = {};
-		this.#fields.forEach((field, key) => {
-			data[key] = field.value;
-		});
-		return data;
-	}
-
-	// A map of FormField and WrappedFormModel instances representing the wrapper's content.
-	#fields: Map<string, FormField | WrappedFormModel> = new Map();
-	get fields() {
-		return this.#fields;
-	}
-
-	// Utilized to track the loading state of the wrapper and its children.
-	#loadedPromise: PendingPromise<boolean> = new PendingPromise();
-
-	// Counter for tracking the readiness of nested wrappers.
-	#childWrappersReady: number = 0;
-
 	// Reference to the parent FormModel or WrappedFormModel.
 	#parent: FormModel | WrappedFormModel;
-	#specs;
-	get specs() {
-		return this.#specs;
-	}
 	constructor({ parent, settings, specs }: IWrapperFormModelProps) {
 		const { properties, ...props } = specs;
 		super({
@@ -83,8 +29,9 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 		});
 
 		this.#parent = parent;
-		this.#settings = settings;
-		this.#form = this.#settings.form;
+		this.callbacks = this.#parent.callbacks;
+		this.settings = settings;
+		this.#form = this.settings.form;
 		this.#startup(settings);
 	}
 
@@ -98,18 +45,18 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			const instance = this.#getInstance(item, values);
 			const onChange = () => {
 				this[item.name] = instance.value;
-				this.triggerEvent();
+				this.triggerEvent(); // Posible performance improvement.
 			};
 			instance.on('change', onChange);
-			this.#fields.set(item.name, instance);
+			this.fields.set(item.name, instance);
 		};
-		this.#settings.fields.map(createItems);
+		this.settings.fields.map(createItems);
 
 		this.#parent.triggerEvent('wrappers.children.loaded');
 		await this.#checkReady();
 		this.#configFields();
 		this.ready = true;
-		this.#specs = settings;
+		this.specs = settings;
 		this.set(settings);
 	};
 
@@ -166,41 +113,68 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	};
 
 	/**
+	 * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.
+	 * @param {string} name - The name of the field or nested wrapper to retrieve.
+	 * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
+	 */
+	getField(name: string) {
+		if (!name) return console.warn('You need to provide a name to get a field in form ', this.settings.name);
+
+		if (!name.includes('.')) {
+			let field = this.fields.get(name);
+
+			if (!field) {
+				this.wrappers.forEach(item => {
+					const foundField = item.getField(name);
+					if (foundField) field = foundField;
+				});
+			}
+			return field;
+		}
+
+		const [wrapperName, ...others] = name.split('.');
+		const currentWrapper = this.wrappers.get(wrapperName);
+
+		const otherWrapper = others.join('.');
+		return currentWrapper.getField(otherWrapper);
+	}
+
+	/**
 	 * Checks whether all nested wrappers within this wrapper are loaded and sets the wrapper's state to loaded if so.
 	 */
 	#checkReady = () => {
 		const onReady = () => {
-			const areAllWrappersLoaded = this.#childWrappersReady === this.#wrappers.size;
+			const areAllWrappersLoaded = this.childWrappersReady === this.wrappers.size;
 
-			if (!areAllWrappersLoaded) return (this.#childWrappersReady = this.#childWrappersReady + 1);
+			if (!areAllWrappersLoaded) return (this.childWrappersReady = this.childWrappersReady + 1);
 			this.loaded = true;
 			this.#parent.triggerEvent('wrappers.children.loaded');
-			this.#loadedPromise.resolve(true);
+			this.loadedPromise.resolve(true);
 			this.off('wrappers.children.loaded', onReady);
 		};
 
 		if (this.loaded) return this.loaded;
-		if (!this.#wrappers.size) {
+		if (!this.wrappers.size) {
 			onReady();
 			return this.loaded;
 		}
 
 		this.on('wrappers.children.loaded', onReady);
-		return this.#loadedPromise;
+		return this.loadedPromise;
 	};
 
 	/**
 	 * Configures the fields within the wrapper, setting up any dependencies they might have.
 	 */
 	#configFields = () => {
-		this.#fields.forEach(this.#listenDependencies);
+		this.fields.forEach(this.#listenDependencies);
 	};
 
 	/**
 	 * Initializes all fields within the wrapper, preparing them for user interaction. Its used to know when the fields can start to listen for events or dependencies
 	 */
 	initialize = () => {
-		this.#fields.forEach(field => field.initialize());
+		this.fields.forEach(field => field.initialize());
 	};
 
 	/**
@@ -217,57 +191,8 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	 * @param {WrappedFormModel} wrapper - The child wrapper to register.
 	 */
 	registerWrapper = (wrapper: WrappedFormModel) => {
-		this.#wrappers.set(wrapper.name, wrapper);
+		this.wrappers.set(wrapper.name, wrapper);
 		this.#form.registerWrapper(wrapper);
-	};
-
-	/**
-	 * Sets the value of a specified field within the wrapper. If the field exists, its value is updated.
-	 * @param {string} name - The name of the field to update.
-	 * @param {any} value - The new value for the field.
-	 */
-	setField(name: string, value) {
-		if (!this.getField(name)) {
-			console.error('Field not found', name, this.#settings.name, this.#fields.keys());
-			return;
-		}
-
-		this.getField(name).set({ value });
-	}
-
-	/**
-	 * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.
-	 * @param {string} name - The name of the field or nested wrapper to retrieve.
-	 * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
-	 */
-	getField(name: string) {
-		if (!name) return console.warn('You need to provide a name to get a field in form ', this.#settings.name);
-
-		if (!name.includes('.')) {
-			let field = this.#fields.get(name);
-			if (!field) {
-				this.#wrappers.forEach(item => {
-					const foundField = item.getField(name);
-					if (foundField) field = foundField;
-				});
-			}
-			return field;
-		}
-
-		const [wrapperName, ...others] = name.split('.');
-		const currentWrapper = this.#wrappers.get(wrapperName);
-
-		const otherWrapper = others.join('.');
-		return currentWrapper.getField(otherWrapper);
-	}
-
-	/**
-	 * Clears all fields within the wrapper, resetting their values to their initial state.
-	 */
-	clear = () => {
-		this.#fields.forEach(field => field.clear());
-		this.triggerEvent();
-		this.triggerEvent('clear');
 	};
 
 	cleanUp = this.clear;

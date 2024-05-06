@@ -1,6 +1,6 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import type { WrappedFormModel } from './wrapper';
-import { FormField } from './field';
+import type { FormField } from './field';
 import { PendingPromise } from '@beyond-js/kernel/core';
 import { FieldOrAlias } from './types/callbacks';
 import { IFormModelProps } from './types/model';
@@ -19,6 +19,11 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 	get callbacks() {
 		return this.#callbacks;
 	}
+
+	set callbacks(value) {
+		this.#callbacks = value;
+	}
+
 	#initialValues: Record<string, string> = {};
 	get originalValues() {
 		return this.#initialValues;
@@ -87,38 +92,6 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 		const field = this.getField(this.getFieldName(name));
 		field.setValue(value);
 	}
-
-	
-	/**
-	 * Examines each field for dependencies and sets up listeners to respond to changes in dependent fields. This ensures dynamic interactions within the form based on field dependencies.
-	 * @param {FormField|WrappedFormModel} instance - The field or wrapper instance to check for dependencies.
-	 */
-	listenDependencies = instance => {
-		if (!instance?.specs?.dependentOn?.length) return;
-		const checkField = item => {
-			const DEFAULT = {
-				type: 'change',
-			};
-
-			const dependency = this.getField(item.field);
-
-			['field', 'callback'].forEach(prop => {
-				if (!item[prop]) throw new Error(`${item?.field} is missing ${prop}`);
-			});
-
-			if (!dependency) throw new Error(`${item?.field} is not a registered field`);
-
-			const settings = { ...DEFAULT, ...item };
-			if (!this.callbacks[item.callback]) {
-				throw new Error(`${item.callback} is not  a registered callback ${item.name}`);
-			}
-
-			const callback = this.callbacks[item.callback];
-			callback({ dependency, settings, field: instance, form: this });
-		};
-
-		instance?.specs?.dependentOn.forEach(checkField);
-	};
 
 	/**
 	 * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.

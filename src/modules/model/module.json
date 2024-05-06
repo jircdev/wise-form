@@ -1,9 +1,7 @@
 {
-  "name": "models",
-  "ts": {
-    "path": "./",
-    "files": [
-      "*"
-    ]
-  }
+	"name": "model",
+	"ts": {
+		"path": "./",
+		"files": ["*"]
+	}
 }

@@ -2,7 +2,6 @@ import { FormField } from './field';
 import { WrappedFormModel } from './wrapper';
 import { BaseWiseModel } from './base';
 import { PluginsManager } from './plugins';
-import { CallbackFunction } from './types/callbacks';
 import { CallbackManager } from './callback-manager';
 
 export /*bundle*/
@@ -45,7 +44,6 @@ class FormModel extends BaseWiseModel {
 		this.#mode = this.#update ? 'update' : 'create';
 	}
 
-	
 	#startup = async settings => {
 		const values = settings?.values || {};
 		const createItems = item => {

@@ -7,7 +7,7 @@ import { WFSettings } from '@bgroup/wise-form/settings';
 import { ReactSelect } from 'pragmate-ui/form/react-select';
 import { EditUserForm } from './forms/edit';
 import { composedWrapper } from './forms/composed-wrapper';
-import { FormModel } from '@bgroup/wise-form/models';
+import { FormModel } from '@bgroup/wise-form/model';
 import { Wrapper } from './views/wrapper';
 import { AppInput } from './views/components/app-input';
 import { dependenciesForm } from './forms/dependencies';
@@ -81,6 +81,7 @@ export class StoreManager extends ReactiveModel<StoreManager> {
 				token: '18935170',
 			},
 		});
+		globalThis.fi = form;
 		this.#instances.set(item.name, form);
 		this.#active = form;
 		this.trigger('change');

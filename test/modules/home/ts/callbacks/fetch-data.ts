@@ -1,5 +1,4 @@
-
-import { ICallbackProps } from '@bgroup/wise-form/models';
+import { ICallbackProps } from '@bgroup/wise-form/model';
 import { countries } from '../hardcoded/countries';
 type ItemOption = {
 	value: string;
@@ -42,6 +41,5 @@ export /*bundle */ async function fetchData(specs: ICallbackProps) {
 	if (!callback) throw new Error('url to call not found');
 
 	const options = await callback(specs.fields);
-	console.log(99, options, specs.field);
 	specs.field.set({ options });
 }
