@@ -65,7 +65,6 @@ export class FormField extends ReactiveModel<IFormField> {
 	}
 
 	set value(value) {
-		console.log('VALUE SETTER => ', value);
 		this.setValue(value);
 	}
 
@@ -96,7 +95,6 @@ export class FormField extends ReactiveModel<IFormField> {
 				...properties,
 			],
 		});
-		console.log('INITIAL VALUYES => ', specs, this.getProperties());
 
 		this.__instanceID = `${specs.name}.${this.generateRandomNumber()}`;
 
