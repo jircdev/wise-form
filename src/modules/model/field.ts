@@ -58,17 +58,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			disabled: this.#disabled,
 		};
 	}
-	#value;
-	get value() {
-		return this.#value;
-	}
 
-	set value(newValue) {
-		if (newValue === this.value) return;
-		this.#value = newValue;
-		this.trigger('change');
-		this.trigger('value.change');
-	}
 	// Tracks other fields this field listens to for changes, enabling reactive behavior and allowing the cleanup of event listeners.
 	#listeningItems = new Map();
 
@@ -88,7 +78,10 @@ export class FormField extends ReactiveModel<IFormField> {
 				'required',
 				'label',
 				'variant',
-
+				/**
+				 * the value property must be setted using the setValue method
+				 */
+				'value',
 				'options',
 				'className',
 				'checked',
@@ -131,12 +124,12 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @returns
 	 */
 	setValue(value) {
-		console.log(15, value);
 		if (value === this.value) return;
 		this.value = value;
 		this.trigger('change');
 		this.trigger('value.change');
 	}
+
 	generateRandomNumber = () => {
 		return Math.floor(Math.random() * (1000000 - 10000 + 1)) + 10000;
 	};

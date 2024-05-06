@@ -88,6 +88,7 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 		field.setValue(value);
 	}
 
+	
 	/**
 	 * Examines each field for dependencies and sets up listeners to respond to changes in dependent fields. This ensures dynamic interactions within the form based on field dependencies.
 	 * @param {FormField|WrappedFormModel} instance - The field or wrapper instance to check for dependencies.

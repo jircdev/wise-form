@@ -94,7 +94,7 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 	 */
 	#startup = async settings => {
 		const values = settings.values || {};
-		this.#settings.fields.map(item => {
+		const createItems = item => {
 			const instance = this.#getInstance(item, values);
 			const onChange = () => {
 				this[item.name] = instance.value;
@@ -102,7 +102,8 @@ class WrappedFormModel extends ReactiveModel<WrappedFormModel> {
 			};
 			instance.on('change', onChange);
 			this.#fields.set(item.name, instance);
-		});
+		};
+		this.#settings.fields.map(createItems);
 
 		this.#parent.triggerEvent('wrappers.children.loaded');
 		await this.#checkReady();

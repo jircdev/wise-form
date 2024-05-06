@@ -45,6 +45,7 @@ class FormModel extends BaseWiseModel {
 		this.#mode = this.#update ? 'update' : 'create';
 	}
 
+	
 	#startup = async settings => {
 		const values = settings?.values || {};
 		const createItems = item => {
