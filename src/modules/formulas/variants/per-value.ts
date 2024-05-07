@@ -101,7 +101,6 @@ export class FormulaPerValue {
 	}
 
 	calculate(field) {
-		console.trace('FIELD => ', field);
 		if (!field) return;
 		const { form } = this.#plugin;
 		const formula = this.evaluate(field.value);
