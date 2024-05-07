@@ -17,11 +17,11 @@ export class FormulaPerValue {
 	}
 	get name() {
 		return this.#specs.name;
-	};
+	}
 
 	#observers: string[];
 	get observers() {
-		return this.#observers
+		return this.#observers;
 	}
 	/**
 	 *  Represents the fields defined in the plugin settings
@@ -45,7 +45,7 @@ export class FormulaPerValue {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
-		this.#observers = specs.formula.observers
+		this.#observers = specs.formula.observers;
 	}
 
 	initialize() {
@@ -85,8 +85,8 @@ export class FormulaPerValue {
 			const fields = this.#parent.getModels(this.#observers);
 			fields.forEach(field => {
 				if (!field) return;
-				field.on("change", this.calculateAll.bind(this))
-			})
+				field.on('change', this.calculateAll.bind(this));
+			});
 		}
 	}
 
@@ -95,12 +95,14 @@ export class FormulaPerValue {
 	}
 	listenConditionals() {
 		this.#mainFields.forEach(field => {
-			if (!field) return
+			if (!field) return;
 			field.on('change', this.calculate.bind(this));
 		});
 	}
 
 	calculate(field) {
+		console.trace('FIELD => ', field);
+		if (!field) return;
 		const { form } = this.#plugin;
 		const formula = this.evaluate(field.value);
 
@@ -113,7 +115,9 @@ export class FormulaPerValue {
 		try {
 			const keys = Object.keys(params);
 			const result = keys.length === 1 ? params[keys[0]] : parse(formula.formula as string).evaluate(params);
-			this.#value = [-Infinity, Infinity, undefined, null, NaN].includes(result) ? this.#emptyValue : Number(result.toFixed(2));;
+			this.#value = [-Infinity, Infinity, undefined, null, NaN].includes(result)
+				? this.#emptyValue
+				: Number(result.toFixed(2));
 			formulaField && formulaField.set({ value: this.#value });
 			this.#parent.trigger('change');
 		} catch (e) {

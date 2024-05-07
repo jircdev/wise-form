@@ -43,22 +43,23 @@ export class CallbackManager {
 	}
 
 	executeCallback = async settings => {
-		const params: ICallbackProps = { form: this.#model, field: this.#field, url: settings.url };
+		const params: ICallbackProps = { form: this.#model, field: this.#field, settings };
 		if (!settings) {
 			console.warn('the field does not have dependentOn settings');
 		}
 		const callback: CallbackFunction = this.#callbacks[settings.callback];
 
 		const dependency = this.#model.getField(this.#model.getFieldName(settings.field));
-		const fields = { [dependency.name]: dependency.value };
+		const fields = { [dependency.name]: dependency };
 		if (settings.hasOwnProperty('fields')) {
 			settings.fields.forEach(field => {
 				const instance = this.#model.getField(this.#model.getFieldName(field));
 				const propName = typeof field === 'string' ? field : field.alias;
-				fields[propName] = instance.value;
+				fields[propName] = instance;
 			});
 			params.fields = fields;
 		}
+		params.dependency = dependency;
 
 		//global wiseForm params
 		if (settings.hasOwnProperty('params')) {

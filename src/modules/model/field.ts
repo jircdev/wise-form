@@ -77,7 +77,6 @@ export class FormField extends ReactiveModel<IFormField> {
 	 */
 	constructor({ parent, specs }: { parent; specs: IFormFieldProps }) {
 		let { properties, disabled, ...props } = specs;
-
 		super({
 			...props,
 			properties: [
@@ -117,7 +116,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			}
 			toSet[key] = props[key];
 		});
-		//	this.#disabled = disabled
+		// this.#disabled = disabled;
 		// this.set(toSet);
 
 		this.set(specs);
@@ -138,7 +137,7 @@ export class FormField extends ReactiveModel<IFormField> {
 		if (value === this.value) return;
 		this.#value = value;
 		this.trigger('change');
-		this.trigger('value.change');
+		this.trigger('value.change', this);
 	}
 
 	generateRandomNumber = () => {
@@ -226,6 +225,8 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @returns
 	 */
 	#executeEvent(actions) {
+		if (typeof actions !== 'object' || Array.isArray(actions)) return;
+
 		for (let action in actions) {
 			const formModel = this.#parent.form;
 			if (action === 'fields') {
@@ -314,18 +315,20 @@ export class FormField extends ReactiveModel<IFormField> {
 			Object.keys(properties).forEach(prop => {
 				const currentProperties = Object.keys(this.getProperties());
 				if (!currentProperties || !currentProperties.includes(prop)) return;
+
 				const sameObject =
 					typeof properties[prop] === 'object' &&
 					JSON.stringify(properties[prop]) === JSON.stringify(this[prop]);
 
 				if (this[prop] === properties[prop] || sameObject) return;
 				const descriptor = Object.getOwnPropertyDescriptor(this, prop);
-				if (descriptor?.set) return;
 
+				if (descriptor?.set) return;
 				this[prop] = properties[prop];
 				updated = true;
 			});
 		} catch (e) {
+			console.error(`Error setting properties:`, e);
 			throw new Error(`Error setting properties: ${e}`);
 		} finally {
 			if (updated) this.trigger('change', this);
