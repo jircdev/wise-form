@@ -226,6 +226,15 @@ class FormModel extends BaseWiseModel {
 		});
 	};
 
+	reset = (fields: string[]) => {
+		fields.forEach(field => {
+			const instance = this.getField(field);
+			if (!instance) throw new Error(`Field ${field} does not exist in form ${this.name}`);
+
+			instance.clear();
+		});
+	};
+
 	static create = settings => {
 		const properties = settings.fields.map(item => item.name);
 		const values = settings.values || {};

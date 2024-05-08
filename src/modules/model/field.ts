@@ -13,7 +13,7 @@ import { IDisabled } from './types/disabled';
 export class FormField extends ReactiveModel<IFormField> {
 	// The parent model, either FormModel or WrappedFormModel, containing this field.
 	#parent: WrappedFormModel | FormModel;
-	#NATIVE_ACTIONS = ['hide', 'disable', 'enable', 'show'];
+	#NATIVE_ACTIONS = ['hide', 'disable', 'enable', 'show', 'reset'];
 	#EVENTS = ['onClick', 'onChange', 'onKeyup'];
 	setEvents(events: string[]) {
 		this.#EVENTS.concat(events);
