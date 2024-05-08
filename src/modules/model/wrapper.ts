@@ -25,7 +25,7 @@ class WrappedFormModel extends BaseWiseModel {
 		const { properties, ...props } = specs;
 		super({
 			...props,
-			properties: ['name', ...properties],
+			properties: ['name', 'className', ...properties],
 		});
 
 		this.#parent = parent;
@@ -200,4 +200,18 @@ class WrappedFormModel extends BaseWiseModel {
 	getForm() {
 		return this.#parent;
 	}
+
+	hide = () => {
+		if (!this.className) this.className = '';
+		const isHidden = this.className.includes('hidden');
+		const cls = isHidden ? this.className : `${this.className} hidden`;
+		if (cls !== this.className) this.set({ className: cls });
+	};
+
+	show = () => {
+		if (!this.className) this.className = '';
+		const isHidden = this.className.includes('hidden');
+		const cls = isHidden ? this.className.replaceAll(/\bhidden\b/g, '').trim() : this.className;
+		if (cls !== this.className) this.set({ className: cls });
+	};
 }

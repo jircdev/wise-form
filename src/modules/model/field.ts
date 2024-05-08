@@ -231,7 +231,7 @@ export class FormField extends ReactiveModel<IFormField> {
 			const formModel = this.#parent.form;
 			if (action === 'fields') {
 				for (let fieldName in actions[action]) {
-					const field = this.#parent.fields.get(fieldName);
+					const field = this.#parent.form.getField(fieldName);
 					if (!field) continue;
 					field.set(actions[action][fieldName]);
 				}
