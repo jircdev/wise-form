@@ -1,6 +1,6 @@
 import { ReactiveModel } from '@beyond-js/reactive/model';
 import type { WrappedFormModel } from './wrapper';
-import type { FormModel } from './model';
+import { FormModel } from './model';
 import { IFormField, IFormFieldProps } from './types/form-field';
 import { IDisabled } from './types/disabled';
 
@@ -150,6 +150,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	initialize = () => {
 		this.checkSettings(this.#specs);
 		this.on('change', this.listenerEvents);
+		// this.on('value.change', this.listenerEvents);
 	};
 
 	/**
@@ -227,24 +228,26 @@ export class FormField extends ReactiveModel<IFormField> {
 	#executeEvent(actions) {
 		if (typeof actions !== 'object' || Array.isArray(actions)) return;
 
-		for (let action in actions) {
-			const formModel = this.#parent.form;
+		const formModel = this.#parent.form;
+
+		const sortedKeys = Object.keys(actions).sort((a, b) => actions[a]?.__order - actions[b]?.__order);
+
+		for (let action of sortedKeys) {
 			if (action === 'fields') {
 				for (let fieldName in actions[action]) {
 					const field = this.#parent.form.getField(fieldName);
 					if (!field) continue;
 					field.set(actions[action][fieldName]);
 				}
-				return;
+				continue;
 			}
-
 			if (formModel.callbacks.hasOwnProperty(action)) {
-				formModel.callbacks[action](actions[action]);
-				return;
+				formModel.callbacks[action]({ ...actions[action], form: formModel });
+				continue;
 			}
 
 			if (this.#NATIVE_ACTIONS.includes(action) && formModel.hasOwnProperty(action)) {
-				formModel[action](actions[action]);
+				formModel[action](actions[action].target);
 			}
 		}
 	}
@@ -269,7 +272,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * hace la busqueda del evento lanzado al haber multiples
 	 * @returns
 	 */
-	listenerEvents = () => {
+	listenerEvents = event2 => {
 		if (!this.#isReady) {
 			this.#isReady = true;
 			return;
