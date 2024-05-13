@@ -1,7 +1,7 @@
 import React from 'react';
 import type { FormModel } from '@bgroup/wise-form/model';
 export interface IFormContext {
-	model?: FormModel;
+	model?: FormModel | any;
 	name?: string;
 	values?: Record<string, any>;
 	items?: any;
