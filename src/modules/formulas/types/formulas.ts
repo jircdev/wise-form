@@ -35,7 +35,7 @@ export interface IConditionalField {
 export interface IComplexCondition {
 	fields: FormulaFields;
 	base?: string;
-	conditions: IConditionalField;
+	conditions: IConditionalField[];
 	condition?: string;
 }
 

@@ -4,6 +4,7 @@
         "target": "es2021",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
         "moduleResolution": "Node",
         "jsx": "react"
     }

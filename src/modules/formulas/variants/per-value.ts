@@ -1,7 +1,7 @@
 import type { FormulaManager } from '../';
 import { EvaluationsManager } from '../helpers/evaluations';
 import { Parser } from '../helpers/parser';
-import { FormulaObserver, IComplexCondition, ParserData } from '../types/formulas';
+import { FormulaObserver, IComplexCondition, ParserData, IConditionalField } from '../types/formulas';
 import { filter, parse } from 'mathjs';
 
 export class FormulaPerValue {
