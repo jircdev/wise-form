@@ -25,8 +25,9 @@ Para cálculos directos sin condiciones:
 
 ```json
 {
-	"formula": "totalGraphic * netGraphic + 1",
-	"name": "formula1"
+    "formula": "totalGraphic * netGraphic + 1",
+    "name": "formula1",
+    "type": "basic"
 }
 ```
 
@@ -36,17 +37,29 @@ Para aplicar fórmulas específicas bajo ciertas condiciones:
 
 ```json
 {
-	"formula": "discountPercentGraphic * discountAuthorGraphic",
-	"name": "formula2",
-	"conditions": [
-		{
-			"fields": ["totalGraphic", "netGraphic", "discountPercentGraphic", "discountAuthorGraphic"],
-			"conditions": [
-				{ "condition": "hasValue", "formula": "totalGraphic * discountAuthorGraphic" },
-				{ "upper": 5, "formula": "totalGraphic * discountAuthorGraphic + 10" }
-			]
-		}
-	]
+    "formula": "discountPercentGraphic * discountAuthorGraphic",
+    "name": "formula2",
+    "type": "base-conditional",
+    "conditions": [
+        {
+            "fields": [
+                "totalGraphic",
+                "netGraphic",
+                "discountPercentGraphic",
+                "discountAuthorGraphic"
+            ],
+            "conditions": [
+                {
+                    "condition": "hasValue",
+                    "formula": "totalGraphic * discountAuthorGraphic"
+                },
+                {
+                    "upper": 5,
+                    "formula": "totalGraphic * discountAuthorGraphic + 10"
+                }
+            ]
+        }
+    ]
 }
 ```
 
@@ -56,16 +69,34 @@ Para lógicas que requieren evaluación condicional:
 
 ```json
 {
-	"name": "formula3",
-	"formula": {
-		"field": "country",
-		"conditions": [
-			{ "equal": "0", "formula": "discountPercentGraphic + netGraphic" },
-			{ "equal": "1", "formula": "totalGraphic * discountAuthorGraphic" },
-			{ "equal": "2", "formula": "totalDigital * netDigital" }
-		]
-	}
+    "name": "formula3",
+    "type": "value-conditions",
+    "formula": {
+        "field": "country",
+        "conditions": [
+            { "equal": "0", "formula": "discountPercentGraphic + netGraphic" },
+            { "equal": "1", "formula": "totalGraphic * discountAuthorGraphic" },
+            { "equal": "2", "formula": "totalDigital * netDigital" }
+        ]
+    }
 }
+```
+
+Para logicas que requieren comparacion
+
+```json
+	{
+				"fields": ["formulaInA", "inversionAnticipoDa"],
+				"name": "formulaA",
+				"type": "comparison",
+				"formula": {
+					"condition": "upper",
+					"conditions": {
+						"formulaInA": "formulaInA",
+						"inversionAnticipoDa": "inversionAnticipoDa",
+					},
+				},
+			},
 ```
 
 ### Soporte para Tipos de Condiciones
@@ -88,9 +119,10 @@ fórmula cambia, ésta se recalcula automáticamente.
 
 ### Tipos de Fórmulas
 
-1. **Fórmula Simple**: Opera directamente sobre los campos.
-2. **Fórmula Base-Conditional**: Aplica una nueva fórmula bajo ciertas condiciones.
-3. **Condición Según Valor**: Implementa una fórmula según el valor de un campo.
+1. **bacic**: Opera directamente sobre los campos.
+2. **base-conditional**: Aplica una nueva fórmula bajo ciertas condiciones.
+3. **value-conditions**: Implementa una fórmula según el valor de un campo.
+4. **comparison**: Implementa una formula de acuerdo a la comparacion de campos
 
 Cada estructura proporcionada permite a los desarrolladores crear formularios interactivos que no solo capturan
 información sino que también la procesan inteligentemente, mejorando así la experiencia del usuario.

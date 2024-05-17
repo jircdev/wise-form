@@ -4,14 +4,13 @@ import { useWiseFormContext } from '../../context';
 export function useField(model, field) {
 	const fieldModel = model.getField(field?.name);
 	const { values } = useWiseFormContext();
-
 	const value = fieldModel?.value ?? values[field?.name];
 	const [attributes, setAttributes] = React.useState(fieldModel?.attributes);
 	const onChange = event => model.setField(field.name, event.target.value);
 	React.useEffect(() => {
 		if (!fieldModel) return;
 		const onChange = () => {
-			setAttributes({ ...fieldModel.attributes });
+			setAttributes({ ...fieldModel.attributes, disabled: fieldModel.disabled });
 		};
 		fieldModel.on('change', onChange);
 		const cleanUp = () => {
@@ -25,7 +24,7 @@ export function useField(model, field) {
 	 * It's necessary to change the field spread.
 	 */
 
-	const attrs = { value, ...attributes, onChange };
+	const attrs = { value, ...attributes, onChange, disabled: fieldModel.disabled };
 
 	return { attrs };
 }

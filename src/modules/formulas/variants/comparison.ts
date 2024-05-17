@@ -1,9 +1,9 @@
-import type {FormulaManager} from "..";
-import {EvaluationsManager} from "../helpers/evaluations";
+import type { FormulaManager } from "..";
+import { EvaluationsManager } from "../helpers/evaluations";
 
-import {Token} from "../helpers/token";
-import {FormulaObserver, IComplexCondition, IConditionalField} from "../types/formulas";
-import {number, parse} from "mathjs";
+import { Token } from "../helpers/token";
+import { FormulaObserver, IComplexCondition, IConditionalField } from "../types/formulas";
+import { number, parse } from "mathjs";
 
 export class FormulaComparison {
 	#plugin: any;
@@ -58,7 +58,7 @@ export class FormulaComparison {
 		models.forEach(model => model.on("change", this.calculate.bind(this)));
 	}
 
-	start() {}
+	start() { }
 
 	evaluate() {
 		const formula = <IComplexCondition>this.#specs.formula;
@@ -70,7 +70,7 @@ export class FormulaComparison {
 		const models = this.#parent.getModels(this.#specs.fields);
 		let fieldValues = models.map(fieldModel => {
 			if (!fieldModel) return;
-			return {name: fieldModel.name, value: fieldModel ? fieldModel.value : null};
+			return { name: fieldModel.name, value: fieldModel ? fieldModel.value : null };
 		});
 
 		// Utilizar reduce para comparar cada par de valores consecutivos y determinar cuál cumple la condición
@@ -96,7 +96,7 @@ export class FormulaComparison {
 
 	calculate() {
 		let applied = this.evaluate();
-		if (!applied) {
+		if (!applied || !applied?.value) {
 			// any formula apply, so we need to reset the value
 			this.#value = 0;
 			return;
@@ -107,7 +107,7 @@ export class FormulaComparison {
 
 		const specsFormula = this.#specs.formula as IComplexCondition;
 		const formulaString = specsFormula.conditions[applied.name];
-		const formula = this.#parent.getParser({formula: formulaString});
+		const formula = this.#parent.getParser({ formula: formulaString });
 		const variables = formula.tokens.filter(token => token.type === "variable").map(item => item.value);
 		const params = this.#parent.getParams(variables);
 

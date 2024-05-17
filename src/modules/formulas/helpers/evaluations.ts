@@ -8,8 +8,8 @@ export class EvaluationsManager {
 			return numValue >= Number(min) && numValue <= Number(max);
 		},
 		different: (value, comparisonValue) => value != comparisonValue,
-		hasValue: value => ![undefined, null, ''].includes(value),
-		empty: value => [undefined, null, ''].includes(value),
+		hasValue: value => ![undefined, null, '', false].includes(value),
+		empty: value => [undefined, null, '',].includes(value),
 		lessOrEqual: (value, comparisonValue) => Number(value) <= Number(comparisonValue),
 		greaterOrEqual: (value, comparisonValue) => Number(value) >= Number(comparisonValue),
 	};

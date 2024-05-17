@@ -28,7 +28,6 @@ export class FormField extends ReactiveModel<IFormField> {
 	 */
 	get disabled() {
 		if (typeof this.#disabled !== 'object' || !this.#disabled?.fields) return this.#disabled;
-
 		const validate = field => {
 			if (typeof field !== 'object') return !this.#parent.form.getField(field).value;
 			const { name, value } = field;
@@ -209,8 +208,7 @@ export class FormField extends ReactiveModel<IFormField> {
 
 			if (!allValid) {
 				throw new Error(
-					`the field ${allValid} does not exist in the form ${
-						this.#parent.name
+					`the field ${allValid} does not exist in the form ${this.#parent.name
 					}, field passed in invalid settings of field "${this.name}"`
 				);
 			}

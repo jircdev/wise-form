@@ -191,4 +191,6 @@ export /*bundle */ class FormulaManager extends ReactiveModel<FormulaManager> {
 		// FormulaManager.instances.set(plugin.form.name, instance);
 		return instance;
 	}
+
+
 }

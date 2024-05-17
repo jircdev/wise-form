@@ -72,7 +72,6 @@ export class FormulaBasic {
 		const variables = this.#variables;
 
 		const formulaField = this.#plugin.form.getField(this.name);
-
 		let params = this.#parent.getParams(variables);
 		const models = this.#parent.getModels(variables);
 
@@ -86,7 +85,7 @@ export class FormulaBasic {
 		}
 
 		try {
-			let result = models.length === 1 ? models[0].value : parse(this.formula as string).evaluate(params);
+			let result = models.length === 1 && !['+', '-', '*', '/'].some(item => this.formula.toString().includes(item)) ? models[0].value : parse(this.formula as string).evaluate(params);
 			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
 			if (this.#round && !isInvalidResult) result = Math.round(result);
 			this.#value = isInvalidResult ? this.#emptyValue : Number(result.toFixed(2));

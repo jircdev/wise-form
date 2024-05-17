@@ -154,4 +154,6 @@ export class BaseWiseModel extends ReactiveModel<BaseWiseModel> {
 	getParams(param) {
 		return this.#params[param];
 	}
+
+
 }

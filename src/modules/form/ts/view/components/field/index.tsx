@@ -23,6 +23,7 @@ export function Control({ field, index, model }: WiseFormFieldControlProps) {
 	const { formTypes } = useWiseFormContext();
 
 	const { attrs } = useField(model, field);
+
 	const types = {
 		...{
 			checkbox: SelectionField,

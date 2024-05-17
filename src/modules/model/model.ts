@@ -5,7 +5,7 @@ import { PluginsManager } from './plugins';
 import { CallbackManager } from './callback-manager';
 
 export /*bundle*/
-class FormModel extends BaseWiseModel {
+	class FormModel extends BaseWiseModel {
 	#childWrappers: number = 0;
 	#plugins: PluginsManager;
 	get plugins() {
@@ -242,4 +242,11 @@ class FormModel extends BaseWiseModel {
 
 		return instance;
 	};
+
+	public getFormula(name: string) {
+		if (!name) return null;
+		const formula = this.#plugins.instances.get("formula").formulas.get(name);
+		if (!formula) return null;
+		return formula;
+	}
 }
