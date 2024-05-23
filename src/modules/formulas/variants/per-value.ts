@@ -40,12 +40,13 @@ export class FormulaPerValue {
 	#parent: FormulaManager;
 	#parsers: ParserData[];
 	#mainFields: any[];
-
+	#isNotListenToChanges = false
 	constructor(parent, plugin, specs) {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
 		this.#observers = specs.formula.observers;
+		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
 	initialize() {
@@ -80,8 +81,8 @@ export class FormulaPerValue {
 		});
 
 		this.listenConditionals();
-		this.#mainFields.forEach(item => item.on('change', this.calculate.bind(this)));
-		if (this.#observers && Array.isArray(this.#observers) && !!this.#observers.length) {
+		if (!this.#isNotListenToChanges) this.#mainFields.forEach(item => item.on('change', this.calculate.bind(this)));
+		if (!this.#isNotListenToChanges) if (this.#observers && Array.isArray(this.#observers) && !!this.#observers.length) {
 			const fields = this.#parent.getModels(this.#observers);
 			fields.forEach(field => {
 				if (!field) return;
@@ -100,7 +101,7 @@ export class FormulaPerValue {
 		});
 	}
 
-	calculate(field) {
+	async calculate(field) {
 		if (!field) return;
 		const { form } = this.#plugin;
 		const formula = this.evaluate(field.value);
@@ -108,7 +109,7 @@ export class FormulaPerValue {
 		if (!formula) return;
 
 		const variables = formula.tokens.filter(token => token.type === 'variable').map(item => item.value);
-		const params = this.#parent.getParams(variables);
+		const params = await this.#parent.getParams(variables);
 		const formulaField = form.getField(this.name);
 
 		try {

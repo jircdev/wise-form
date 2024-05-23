@@ -42,13 +42,16 @@ export class FormulaConditional {
 	#fields: any;
 
 	#parent: FormulaManager;
-
+	#ceil: boolean
 	#round: boolean;
+	#isNotListenToChanges = false
 	constructor(parent, plugin, specs) {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
 		this.#round = specs.round;
+		this.#ceil = specs.ceil;
+		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
 	initialize() {
@@ -61,13 +64,13 @@ export class FormulaConditional {
 			const fields = this.fields.map(name => form.getField(name));
 			this.#fields = fields;
 
-			fields.forEach(field => {
+			if (!this.#isNotListenToChanges) fields.forEach(field => {
 				if (!field) {
 					throw new Error(`Field ${this.name} not found in form ${form.name}`);
 				}
 				field.on('change', this.calculate.bind(this));
 			});
-		} catch (e) {}
+		} catch (e) { }
 	}
 
 	evaluate() {
@@ -109,7 +112,7 @@ export class FormulaConditional {
 		return evaluatedFormula;
 	}
 
-	calculate() {
+	async calculate() {
 		/**
 		 * the formula is taken from the evaluate method since the conditions are evaluated there and
 		 * can change the formula to be applied
@@ -119,13 +122,13 @@ export class FormulaConditional {
 		// todo: Review if this section can be replaced by formulaManager.variables property.
 		const { tokens } = this.#parent.getParser(formula);
 		const variables = tokens.filter(token => token.type === 'variable').map(item => item.value);
-		const params = this.#parent.getParams(variables);
+		const params = await this.#parent.getParams(variables);
 		try {
 			const keys = Object.keys(params);
 			let result = keys.length === 1 ? params[keys[0]] : parse(formula.formula as string).evaluate(params);
 			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
 			if (this.#round && !isInvalidResult) result = Math.round(result);
-
+			if (this.#ceil && !isInvalidResult) result = Math.ceil(result);
 			this.#value = isInvalidResult || typeof result === 'object' ? this.#emptyValue : Number(result.toFixed(2));
 
 			this.#parent.trigger('change');

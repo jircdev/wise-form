@@ -43,14 +43,19 @@ export class FormulaBasic {
 	}
 
 	#round: boolean;
+	#ceil: boolean
 
 	#parent: FormulaManager;
+
+	#isNotListenToChanges = false
 	constructor(parent, plugin, specs) {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
 		this.#round = specs.round;
+		this.#ceil = specs.ceil;
 		if (this.#specs.emptyValue) this.#emptyValue = this.#specs.emptyValue;
+		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
 	initialize() {
@@ -59,20 +64,21 @@ export class FormulaBasic {
 		const variables = this.#tokens.filter(token => token.type === 'variable').map(item => item.value);
 		this.#variables = variables;
 		const models = this.#parent.getModels(variables);
-		models.forEach(model => {
+		if (!this.#isNotListenToChanges) models.forEach(model => {
 			if ([undefined].includes(model)) {
 				return;
 			}
 
 			model.on('change', this.calculate.bind(this));
 		});
+
 	}
 
-	calculate() {
+	async calculate() {
 		const variables = this.#variables;
 
 		const formulaField = this.#plugin.form.getField(this.name);
-		let params = this.#parent.getParams(variables);
+		let params = await this.#parent.getParams(variables);
 		const models = this.#parent.getModels(variables);
 
 		const empty = (models as any[]).every(model => [null, undefined, ''].includes(model.value));
@@ -88,6 +94,7 @@ export class FormulaBasic {
 			let result = models.length === 1 && !['+', '-', '*', '/'].some(item => this.formula.toString().includes(item)) ? models[0].value : parse(this.formula as string).evaluate(params);
 			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
 			if (this.#round && !isInvalidResult) result = Math.round(result);
+			if (this.#ceil && !isInvalidResult) result = Math.ceil(result);
 			this.#value = isInvalidResult ? this.#emptyValue : Number(result.toFixed(2));
 			if (formulaField) formulaField.set({ value: this.#value });
 
@@ -95,7 +102,7 @@ export class FormulaBasic {
 		} catch (e) {
 			console.log('formula', this.name, this.formula, params);
 			console.trace(e);
-			throw new Error(`Error calculating the formula: ${e.message}`);
+			throw new Error(`Error calculating the formula: ${e.message} ${this.name}`);
 		}
 	}
 }

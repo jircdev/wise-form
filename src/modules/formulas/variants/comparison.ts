@@ -41,13 +41,16 @@ export class FormulaComparison {
 	#variables: string[] = [];
 	get variables() {
 		return this.#variables;
-	}
+	};
+
+	#isNotListenToChanges = false
 
 	#parent: FormulaManager;
 	constructor(parent, plugin, specs) {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
+		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
 	initialize() {
@@ -55,7 +58,7 @@ export class FormulaComparison {
 			throw new Error("The fields property must be an array");
 		}
 		const models = this.#parent.getModels(this.#specs.fields);
-		models.forEach(model => model.on("change", this.calculate.bind(this)));
+		if (!this.#isNotListenToChanges) models.forEach(model => model.on("change", this.calculate.bind(this)));
 	}
 
 	start() { }
@@ -94,8 +97,9 @@ export class FormulaComparison {
 		}
 	}
 
-	calculate() {
+	async calculate() {
 		let applied = this.evaluate();
+
 		if (!applied || !applied?.value) {
 			// any formula apply, so we need to reset the value
 			this.#value = 0;
@@ -109,7 +113,7 @@ export class FormulaComparison {
 		const formulaString = specsFormula.conditions[applied.name];
 		const formula = this.#parent.getParser({ formula: formulaString });
 		const variables = formula.tokens.filter(token => token.type === "variable").map(item => item.value);
-		const params = this.#parent.getParams(variables);
+		const params = await this.#parent.getParams(variables);
 
 		try {
 			const keys = Object.keys(params);

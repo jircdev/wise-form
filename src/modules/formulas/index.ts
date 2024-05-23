@@ -162,21 +162,20 @@ export /*bundle */ class FormulaManager extends ReactiveModel<FormulaManager> {
 		return result;
 	}
 
-	getParams(variables: string[]) {
+	async getParams(variables: string[]) {
 		const params = {};
 		const { form, formulas } = this.#plugin;
-		const build = value => {
+		const build = async (value) => {
 			/**
 			 * the value could be a formula or a field
 			 */
 			const element = formulas.has(value) ? formulas.get(value) : form.getField(value);
 			if (!element)
 				throw new Error(`Field ${value} used in formula ${this.name}, not found in form ${form.name}, `);
-
+			await element.isReady;
 			params[value] = [undefined, '', null, NaN].includes(element.value) ? 0 : element.value;
 		};
 		variables.forEach(build);
-
 		return params;
 	}
 
@@ -190,7 +189,7 @@ export /*bundle */ class FormulaManager extends ReactiveModel<FormulaManager> {
 		const instance = new FormulaManager(plugin, specs);
 		// FormulaManager.instances.set(plugin.form.name, instance);
 		return instance;
-	}
+	};
 
 
 }
