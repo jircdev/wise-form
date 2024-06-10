@@ -98,6 +98,7 @@ export class FormulaConditional {
 							? conditionsTypes[condition.type]
 							: conditionsTypes.some;
 					// Check if any of the specified fields meet the condition
+
 					conditionMet = EvaluationsManager[conditionType](condition.condition, fieldValues, condition.value);
 				}
 

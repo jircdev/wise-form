@@ -43,6 +43,11 @@ export class FormulaComparison {
 		return this.#variables;
 	};
 
+	#observers: string[];
+	get observers() {
+		return this.#observers;
+	}
+
 	#isNotListenToChanges = false
 
 	#parent: FormulaManager;
@@ -50,16 +55,25 @@ export class FormulaComparison {
 		this.#parent = parent;
 		this.#plugin = plugin;
 		this.#specs = specs;
-		this.#isNotListenToChanges = specs.isNotListenToChanges
+		this.#isNotListenToChanges = specs.isNotListenToChanges;
+		this.#observers = specs.formula.observers;
 	}
 
 	initialize() {
 		if (!Array.isArray(this.#specs.fields)) {
 			throw new Error("The fields property must be an array");
 		}
+		if (!this.#isNotListenToChanges && this.#observers && Array.isArray(this.#observers) && !!this.#observers.length) {
+			const fields = this.#parent.getModels(this.#observers);
+			fields.forEach(field => {
+				if (!field) return;
+				field.on('change', this.calculate.bind(this));
+			});
+		}
 		const models = this.#parent.getModels(this.#specs.fields);
 		if (!this.#isNotListenToChanges) models.forEach(model => model.on("change", this.calculate.bind(this)));
 	}
+
 
 	start() { }
 
