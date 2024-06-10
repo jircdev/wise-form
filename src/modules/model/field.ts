@@ -13,6 +13,10 @@ import { IDisabled } from './types/disabled';
 export class FormField extends ReactiveModel<IFormField> {
 	// The parent model, either FormModel or WrappedFormModel, containing this field.
 	#parent: WrappedFormModel | FormModel;
+	get parent() {
+		return this.#parent;
+	}
+
 	#NATIVE_ACTIONS = ['hide', 'disable', 'enable', 'show', 'reset'];
 	#EVENTS = ['onClick', 'onChange', 'onKeyup'];
 	setEvents(events: string[]) {
@@ -208,7 +212,8 @@ export class FormField extends ReactiveModel<IFormField> {
 
 			if (!allValid) {
 				throw new Error(
-					`the field ${allValid} does not exist in the form ${this.#parent.name
+					`the field ${allValid} does not exist in the form ${
+						this.#parent.name
 					}, field passed in invalid settings of field "${this.name}"`
 				);
 			}
