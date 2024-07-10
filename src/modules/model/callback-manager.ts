@@ -31,10 +31,10 @@ export class CallbackManager {
 			}
 
 			// saved in listener array to be able to remove the listener if is required.
-
+			const event = settings.event || 'value.change'
 			const caller = () => this.executeCallback(settings);
 			this.#listeners.push(caller);
-			dependency.on('value.change', caller);
+			dependency.on(event, caller);
 
 			//callback({ dependency, settings, field: instance, form: this });
 		};
