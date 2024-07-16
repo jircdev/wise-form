@@ -1,13 +1,13 @@
-import { FormField } from './field';
-import type { FormModel } from './model';
-import { IWrapperFormModelProps } from './types/wrapped-form-model-props';
-import { CallbackManager } from './callback-manager';
-import { BaseWiseModel } from './base';
+import {FormField} from "./field";
+import type {FormModel} from "./model";
+import {IWrapperFormModelProps} from "./types/wrapped-form-model-props";
+import {CallbackManager} from "./callback-manager";
+import {BaseWiseModel} from "./base";
 
 export /*bundle*/
 class WrappedFormModel extends BaseWiseModel {
 	get type() {
-		return 'wrapper';
+		return "wrapper";
 	}
 
 	get control() {
@@ -21,11 +21,11 @@ class WrappedFormModel extends BaseWiseModel {
 
 	// Reference to the parent FormModel or WrappedFormModel.
 	#parent: FormModel | WrappedFormModel;
-	constructor({ parent, settings, specs }: IWrapperFormModelProps) {
-		const { properties, ...props } = specs;
+	constructor({parent, settings, specs}: IWrapperFormModelProps) {
+		const {properties, ...props} = specs;
 		super({
 			...props,
-			properties: ['name', 'className', ...properties],
+			properties: ["name", "className", ...properties],
 		});
 
 		this.#parent = parent;
@@ -47,17 +47,18 @@ class WrappedFormModel extends BaseWiseModel {
 				this[item.name] = instance.value;
 				this.triggerEvent(); // Posible performance improvement.
 			};
-			instance.on('change', onChange);
+			instance.on("change", onChange);
 			this.fields.set(item.name, instance);
 		};
 		this.settings.fields.map(createItems);
 
-		this.#parent.triggerEvent('wrappers.children.loaded');
 		await this.#checkReady();
+		this.#parent.triggerEvent("wrappers.children.loaded");
 		this.#configFields();
 		this.ready = true;
 		this.specs = settings;
 		this.set(settings);
+		this.#parent.triggerEvent("wrappers.children.loaded");
 	};
 
 	/**
@@ -74,7 +75,7 @@ class WrappedFormModel extends BaseWiseModel {
 			item?.properties.forEach(item => (externalValues[item.name] = item.value));
 		}
 
-		if (item.type === 'wrapper') {
+		if (item.type === "wrapper") {
 			if (!item.fields) throw new Error(`Wrapper ${item.name} must have fields property`);
 			const fieldsProperties = item.fields.map(item => item.name);
 			const properties = [...fieldsProperties, ...(item?.properties || [])];
@@ -82,12 +83,12 @@ class WrappedFormModel extends BaseWiseModel {
 
 			instance = new WrappedFormModel({
 				parent: this,
-				settings: { ...item, form: this.#form },
-				specs: { properties: properties || [], ...values },
+				settings: {...item, form: this.#form},
+				specs: {properties: properties || [], ...values},
 			});
 
 			let toSet = {};
-			Object.keys(instance?.getProperties()).forEach(property => (toSet[property] = item[property] || ''));
+			Object.keys(instance?.getProperties()).forEach(property => (toSet[property] = item[property] || ""));
 			instance.set(toSet);
 
 			this.registerWrapper(instance);
@@ -105,7 +106,7 @@ class WrappedFormModel extends BaseWiseModel {
 
 		if (item?.properties) {
 			let toSet = {};
-			item?.properties.forEach(property => (toSet[property] = item[property] || ''));
+			item?.properties.forEach(property => (toSet[property] = item[property] || ""));
 			instance.set(toSet);
 		}
 
@@ -118,9 +119,9 @@ class WrappedFormModel extends BaseWiseModel {
 	 * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
 	 */
 	getField(name: string) {
-		if (!name) return console.warn('You need to provide a name to get a field in form ', this.settings.name);
+		if (!name) return console.warn("You need to provide a name to get a field in form ", this.settings.name);
 
-		if (!name.includes('.')) {
+		if (!name.includes(".")) {
 			let field = this.fields.get(name);
 
 			if (!field) {
@@ -132,10 +133,10 @@ class WrappedFormModel extends BaseWiseModel {
 			return field;
 		}
 
-		const [wrapperName, ...others] = name.split('.');
+		const [wrapperName, ...others] = name.split(".");
 		const currentWrapper = this.wrappers.get(wrapperName);
 
-		const otherWrapper = others.join('.');
+		const otherWrapper = others.join(".");
 		return currentWrapper.getField(otherWrapper);
 	}
 
@@ -148,9 +149,9 @@ class WrappedFormModel extends BaseWiseModel {
 
 			if (!areAllWrappersLoaded) return (this.childWrappersReady = this.childWrappersReady + 1);
 			this.loaded = true;
-			this.#parent.triggerEvent('wrappers.children.loaded');
+			this.#parent.triggerEvent("wrappers.children.loaded");
 			this.loadedPromise.resolve(true);
-			this.off('wrappers.children.loaded', onReady);
+			this.off("wrappers.children.loaded", onReady);
 		};
 
 		if (this.loaded) return this.loaded;
@@ -159,7 +160,7 @@ class WrappedFormModel extends BaseWiseModel {
 			return this.loaded;
 		}
 
-		this.on('wrappers.children.loaded', onReady);
+		this.on("wrappers.children.loaded", onReady);
 		return this.loadedPromise;
 	};
 
@@ -202,16 +203,16 @@ class WrappedFormModel extends BaseWiseModel {
 	}
 
 	hide = () => {
-		if (!this.className) this.className = '';
-		const isHidden = this.className.includes('hidden');
+		if (!this.className) this.className = "";
+		const isHidden = this.className.includes("hidden");
 		const cls = isHidden ? this.className : `${this.className} hidden`;
-		if (cls !== this.className) this.set({ className: cls });
+		if (cls !== this.className) this.set({className: cls});
 	};
 
 	show = () => {
-		if (!this.className) this.className = '';
-		const isHidden = this.className.includes('hidden');
-		const cls = isHidden ? this.className.replaceAll(/\bhidden\b/g, '').trim() : this.className;
-		if (cls !== this.className) this.set({ className: cls });
+		if (!this.className) this.className = "";
+		const isHidden = this.className.includes("hidden");
+		const cls = isHidden ? this.className.replaceAll(/\bhidden\b/g, "").trim() : this.className;
+		if (cls !== this.className) this.set({className: cls});
 	};
 }
