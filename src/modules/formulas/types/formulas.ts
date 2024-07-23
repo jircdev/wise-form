@@ -1,5 +1,5 @@
-import type {Parser} from "../helpers/parser";
-import type {Token} from "../helpers/token";
+import type { Parser } from "../helpers/parser";
+import type { Token } from "../helpers/token";
 
 export interface ISimpleFormula {
 	name: string;
@@ -7,6 +7,9 @@ export interface ISimpleFormula {
 	type?: FormulaType;
 	emptyValue?: string | number;
 	fields?: FormulaFields;
+	propertyValue?: string;
+	propertyToSet?: string;
+	formulas?: any[]
 }
 
 export interface IFormulaCondition {
@@ -18,8 +21,8 @@ export interface IFormulaCondition {
 }
 
 export type FormulaFields = string | string[];
-export type EvaluatedFormula = {value?: string | number; formula: string; condition?: string};
-export interface IConditionalFormula {}
+export type EvaluatedFormula = { value?: string | number; formula: string; condition?: string };
+export interface IConditionalFormula { }
 
 export interface IConditionalField {
 	field?: string | string[];
@@ -46,6 +49,9 @@ export interface IConditionalFormula {
 	formula: IComplexCondition | string;
 	conditions?: IConditionalField[];
 	emptyValue?: string | number;
+	propertyValue?: string;
+	propertyToSet?: string;
+	formulas?: any[]
 }
 
 export type ParserData = {

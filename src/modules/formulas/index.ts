@@ -9,6 +9,7 @@ import { FormulaBasic } from './variants/basic';
 import { FormulaConditional } from './variants/conditional';
 import { FormulaPerValue } from './variants/per-value';
 import { FormulaComparison } from './variants/comparison';
+import { FormulaArray } from './variants/array-formula';
 type ParserData = {
 	parser: Parser;
 	tokens: Token[];
@@ -94,6 +95,7 @@ export /*bundle */ class FormulaManager extends ReactiveModel<FormulaManager> {
 			'base-conditional': FormulaConditional,
 			'value-conditions': FormulaPerValue,
 			comparison: FormulaComparison,
+			'array': FormulaArray
 		};
 
 		if (!objects[this.type]) {
