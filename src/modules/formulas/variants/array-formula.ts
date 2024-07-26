@@ -1,4 +1,5 @@
 import type { FormulaManager } from '..';
+import { EvaluationsManager } from '../helpers/evaluations';
 import { FormulaObserver, IComplexCondition } from '../types/formulas';
 import { parse } from 'mathjs';
 
@@ -62,15 +63,35 @@ export class FormulaArray {
     evaluate = (data: { formulas: any[], values: any }) => {
         const values = {};
         for (const formula of data.formulas) {
-            let result = parse(formula.formula as string).evaluate(data.values);
+
+            let result;
+            let formulaEvaluate = formula.formula
+            try {
+                if (formula.conditions) {
+                    for (const condition of formula.conditions) {
+                        const comparisonValue = { ...data.values, ...values }[condition.property]
+                        let conditionMet = EvaluationsManager.validate(condition.condition, comparisonValue, condition.value);
+                        if (conditionMet) {
+                            formulaEvaluate = condition.formula;
+                            break
+                        }
+                    }
+                }
+                const attrs = this.sanitizeData({ ...data.values, ...values });
+                result = parse(formulaEvaluate as string).evaluate(attrs);
+            } catch (error) {
+                console.error("Error evaluating formula:", formula.formula, "Error:", error);
+                throw error;
+            }
             const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
             if (formula.round && !isInvalidResult) result = Math.round(result);
             if (formula.ceil && !isInvalidResult) result = Math.ceil(result);
-            result = isInvalidResult ? formula.emptyValue : result;
-            values[formula.propertyToSet] = result
-        };
-        return values
-    }
+            result = isInvalidResult ? formula.emptyValue : Number(result.toFixed(2));
+            values[formula.propertyToSet] = result;
+        }
+        return values;
+    };
+
     async calculate() {
         const formulaField = this.#plugin.form.getField(this.name);
         if (!formulaField) return;
@@ -79,20 +100,35 @@ export class FormulaArray {
             formulaField.set({ [this.#specs.propertyValue]: [] });
             return
         };
-        console.log("🚀 ~ FormulaArray ~ calculate ~ value:", value)
-
         const newValue = value.map(item => {
             let results = this.evaluate({ formulas: this.#specs.formulas, values: item })
-            console.log("🚀 ~ FormulaArray ~ newValue ~ results:", results)
             return {
                 ...item,
                 ...results
             }
         });
-        console.log("🚀 ~ FormulaArray ~ newValue ~ newValue:", newValue)
         this.#value = newValue
         formulaField.set({ [this.#specs.propertyValue]: newValue })
     };
 
 
+    private sanitizeData(data: any): any {
+        if (Array.isArray(data)) {
+            return data.map(item => this.sanitizeData(item));
+        } else if (typeof data === 'object' && data !== null) {
+            const sanitizedData: any = {};
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    sanitizedData[key] = this.sanitizeData(data[key]);
+                }
+            }
+            return sanitizedData;
+        } else {
+            return this.sanitizeValue(data);
+        }
+    }
+
+    private sanitizeValue(value: any, defaultValue: number = 0): number {
+        return (value === null || value === undefined || isNaN(value)) ? defaultValue : Number(value);
+    }
 }
