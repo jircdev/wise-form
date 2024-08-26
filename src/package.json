@@ -16,11 +16,6 @@
 	"modules": {
 		"path": "modules"
 	},
-	"libraries": {
-		"import": [
-			"@beyond-js/reactive"
-		]
-	},
 	"deployment": {
 		"distributions": [
 			{

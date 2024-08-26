@@ -9,7 +9,9 @@ export interface ISimpleFormula {
 	fields?: FormulaFields;
 	propertyValue?: string;
 	propertyToSet?: string;
-	formulas?: any[]
+	formulas?: any[];
+	arrayFieldProperty?: string;
+	arrayFieldName?: string
 }
 
 export interface IFormulaCondition {
@@ -40,6 +42,8 @@ export interface IComplexCondition {
 	base?: string;
 	conditions: IConditionalField;
 	condition?: string;
+	arrayFieldName?: string,
+	arrayFieldProperty?: string;
 }
 
 export interface IConditionalFormula {
@@ -51,7 +55,9 @@ export interface IConditionalFormula {
 	emptyValue?: string | number;
 	propertyValue?: string;
 	propertyToSet?: string;
-	formulas?: any[]
+	formulas?: any[];
+	arrayFieldName?: string,
+	arrayFieldProperty?: string;
 }
 
 export type ParserData = {
