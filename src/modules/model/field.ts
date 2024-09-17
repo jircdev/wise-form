@@ -1,8 +1,8 @@
-import { ReactiveModel } from '@beyond-js/reactive/model';
-import type { WrappedFormModel } from './wrapper';
-import { FormModel } from './model';
-import { IFormField, IFormFieldProps } from './types/form-field';
-import { IDisabled } from './types/disabled';
+import {ReactiveModel} from "@beyond-js/reactive/model";
+import type {WrappedFormModel} from "./wrapper";
+import {FormModel} from "./model";
+import {IFormField, IFormFieldProps} from "./types/form-field";
+import {IDisabled} from "./types/disabled";
 
 /**
  * Represents a single form field within a `FormModel` or `WrappedFormModel`, providing mechanisms for data binding, validation, and interaction.
@@ -17,8 +17,8 @@ export class FormField extends ReactiveModel<IFormField> {
 		return this.#parent;
 	}
 
-	#NATIVE_ACTIONS = ['hide', 'disable', 'enable', 'show', 'reset'];
-	#EVENTS = ['onClick', 'onChange', 'onKeyup'];
+	#NATIVE_ACTIONS = ["hide", "disable", "enable", "show", "reset"];
+	#EVENTS = ["onClick", "onChange", "onKeyup"];
 	setEvents(events: string[]) {
 		this.#EVENTS.concat(events);
 	}
@@ -31,11 +31,11 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @returns {boolean} The disabled state of the field.
 	 */
 	get disabled() {
-		if (typeof this.#disabled !== 'object' || !this.#disabled?.fields) return this.#disabled;
+		if (typeof this.#disabled !== "object" || !this.#disabled?.fields) return this.#disabled;
 		const validate = field => {
-			if (typeof field !== 'object') return !this.#parent.form.getField(field).value;
-			const { name, value } = field;
-			const { value: fieldValue } = this.#parent.getField(name);
+			if (typeof field !== "object") return !this.#parent.form.getField(field).value;
+			const {name, value} = field;
+			const {value: fieldValue} = this.#parent.getField(name);
 			return value !== fieldValue;
 		};
 
@@ -78,22 +78,22 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * Constructs a FormField instance with specified properties and parent form model.
 	 * @param {Object} params - Construction parameters including the parent form model and field specifications.
 	 */
-	constructor({ parent, specs }: { parent; specs: IFormFieldProps }) {
-		let { properties, disabled, ...props } = specs;
+	constructor({parent, specs}: {parent; specs: IFormFieldProps}) {
+		let {properties, disabled, ...props} = specs;
 		super({
 			...props,
 			properties: [
-				'name',
-				'type',
-				'placeholder',
-				'required',
-				'label',
-				'variant',
-				'options',
-				'className',
-				'checked',
-				'id',
-				'icon',
+				"name",
+				"type",
+				"placeholder",
+				"required",
+				"label",
+				"variant",
+				"options",
+				"className",
+				"checked",
+				"id",
+				"icon",
 				...properties,
 			],
 		});
@@ -109,11 +109,11 @@ export class FormField extends ReactiveModel<IFormField> {
 		 * @todo:  review this code
 		 */
 		Object.keys(props).forEach(key => {
-			if (key === 'properties') return;
+			if (key === "properties") return;
 
-			if (typeof props[key] === 'string' && props[key]?.includes('state:')) {
-				const state = props[key].split('state:')[1];
-				if (state === 'create' && !this.#parent.form.update) {
+			if (typeof props[key] === "string" && props[key]?.includes("state:")) {
+				const state = props[key].split("state:")[1];
+				if (state === "create" && !this.#parent.form.update) {
 					props[key] = true;
 				}
 			}
@@ -127,7 +127,7 @@ export class FormField extends ReactiveModel<IFormField> {
 
 	getProperties() {
 		const properties = super.getProperties();
-		return { ...properties, value: this.#value };
+		return {...properties, value: this.#value};
 	}
 
 	/**
@@ -139,8 +139,8 @@ export class FormField extends ReactiveModel<IFormField> {
 	setValue(value: string) {
 		if (value === this.value) return;
 		this.#value = value;
-		this.trigger('change');
-		this.trigger('value.change', this);
+		this.trigger("change");
+		this.trigger("value.change", this);
 	}
 
 	generateRandomNumber = () => {
@@ -152,7 +152,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	 */
 	initialize = () => {
 		this.checkSettings(this.#specs);
-		this.on('change', this.listenerEvents);
+		this.on("change", this.listenerEvents);
 		// this.on('value.change', this.listenerEvents);
 	};
 
@@ -162,15 +162,15 @@ export class FormField extends ReactiveModel<IFormField> {
 	clear = () => {
 		const initValues = this.initialValues();
 		this.set(initValues);
-		if (initValues.hasOwnProperty('disabled')) this.disabled = initValues.disabled;
-		this.triggerEvent('clear');
+		if (initValues.hasOwnProperty("disabled")) this.disabled = initValues.disabled;
+		this.triggerEvent("clear");
 	};
 
 	/**
 	 * Listens to changes in sibling fields (specified in dynamic disabling logic) and updates its state accordingly.
 	 */
 	#listenSiblings = () => {
-		this.triggerEvent('change');
+		this.triggerEvent("change");
 	};
 
 	/**
@@ -178,19 +178,17 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @param {Object} props - The field's properties and settings to check and apply.
 	 */
 	checkSettings(props) {
-		if (props.hasOwnProperty('disabled')) {
-			if (typeof props.disabled === 'boolean') {
+		if (props.hasOwnProperty("disabled")) {
+			if (typeof props.disabled === "boolean") {
 				this.#disabled = props.disabled;
 				return;
 			}
 
-			if (typeof props.disabled !== 'object') {
+			if (typeof props.disabled !== "object") {
 				throw new Error(`The disabled property of the field ${props.name} must be a boolean or an object`);
 			}
 			if (!props.disabled.fields && !props.disabled.mode) {
-				throw new Error(
-					`The disabled property of the field ${props.name} must have a fields property or a mode defined`
-				);
+				throw new Error(`The disabled property of the field ${props.name} must have a fields property or a mode defined`);
 			}
 
 			if (props.disabled.mode) {
@@ -201,20 +199,20 @@ export class FormField extends ReactiveModel<IFormField> {
 
 			let allValid;
 			props.disabled.fields.forEach(item => {
-				const name = typeof item === 'string' ? item : item.name;
+				const name = typeof item === "string" ? item : item.name;
 
 				const instance = this.#parent.form.getField(name);
 				allValid = instance;
 				if (!allValid) return;
-				instance.on('change', this.#listenSiblings);
-				this.#listeningItems.set(name, { item: instance, listener: this.#listenSiblings });
+				instance.on("change", this.#listenSiblings);
+				this.#listeningItems.set(name, {item: instance, listener: this.#listenSiblings});
 			});
 
 			if (!allValid) {
 				throw new Error(
-					`the field ${allValid} does not exist in the form ${
-						this.#parent.name
-					}, field passed in invalid settings of field "${this.name}"`
+					`the field ${allValid} does not exist in the form ${this.#parent.name}, field passed in invalid settings of field "${
+						this.name
+					}"`
 				);
 			}
 			this.#disabled = props.disabled;
@@ -229,14 +227,14 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @returns
 	 */
 	#executeEvent(actions) {
-		if (typeof actions !== 'object' || Array.isArray(actions)) return;
+		if (typeof actions !== "object" || Array.isArray(actions)) return;
 
 		const formModel = this.#parent.form;
 
 		const sortedKeys = Object.keys(actions).sort((a, b) => actions[a]?.__order - actions[b]?.__order);
 
 		for (let action of sortedKeys) {
-			if (action === 'fields') {
+			if (action === "fields") {
 				for (let fieldName in actions[action]) {
 					const field = this.#parent.form.getField(fieldName);
 					if (!field) continue;
@@ -245,7 +243,7 @@ export class FormField extends ReactiveModel<IFormField> {
 				continue;
 			}
 			if (formModel.callbacks.hasOwnProperty(action)) {
-				formModel.callbacks[action]({ ...actions[action], form: formModel });
+				formModel.callbacks[action]({...actions[action], form: formModel});
 				continue;
 			}
 
@@ -299,7 +297,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * Cleans up any established listeners and internal state when the field is removed or the form is reset, ensuring no memory leaks or stale data.
 	 */
 	cleanUp() {
-		this.#listeningItems.forEach(({ item, listener }) => item.off('change', listener));
+		this.#listeningItems.forEach(({item, listener}) => item.off("change", listener));
 		// todo: remove all events
 	}
 
@@ -322,14 +320,12 @@ export class FormField extends ReactiveModel<IFormField> {
 				const currentProperties = Object.keys(this.getProperties());
 				if (!currentProperties || !currentProperties.includes(prop)) return;
 
-				const sameObject =
-					typeof properties[prop] === 'object' &&
-					JSON.stringify(properties[prop]) === JSON.stringify(this[prop]);
+				const sameObject = typeof properties[prop] === "object" && JSON.stringify(properties[prop]) === JSON.stringify(this[prop]);
 
 				if (this[prop] === properties[prop] || sameObject) return;
 				const descriptor = Object.getOwnPropertyDescriptor(this, prop);
 
-				if (descriptor?.set) return;
+				//if (descriptor?.set) return;
 				this[prop] = properties[prop];
 				updated = true;
 			});
@@ -337,21 +333,21 @@ export class FormField extends ReactiveModel<IFormField> {
 			console.error(`Error setting properties:`, e);
 			throw new Error(`Error setting properties: ${e}`);
 		} finally {
-			if (updated) this.trigger('change', this);
+			if (updated) this.trigger("change", this);
 		}
 	}
 
 	hide = () => {
-		if (!this.className) this.className = '';
-		const isHidden = this.className.includes('hidden');
+		if (!this.className) this.className = "";
+		const isHidden = this.className.includes("hidden");
 		const cls = isHidden ? this.className : `${this.className} hidden`;
-		if (cls !== this.className) this.set({ className: cls });
+		if (cls !== this.className) this.set({className: cls});
 	};
 
 	show = () => {
-		if (!this.className) this.className = '';
-		const isHidden = this.className.includes('hidden');
-		const cls = isHidden ? this.className.replaceAll(/\bhidden\b/g, '').trim() : this.className;
-		if (cls !== this.className) this.set({ className: cls });
+		if (!this.className) this.className = "";
+		const isHidden = this.className.includes("hidden");
+		const cls = isHidden ? this.className.replaceAll(/\bhidden\b/g, "").trim() : this.className;
+		if (cls !== this.className) this.set({className: cls});
 	};
 }
