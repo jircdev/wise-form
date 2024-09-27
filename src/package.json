@@ -44,7 +44,7 @@
 		"@beyond-js/react-18-widgets": "~1.0.1",
 		"@beyond-js/reactive": "^1.1.9",
 		"mathjs": "^12.4.1",
-		"pragmate-ui": "0.1.1",
+		"pragmate-ui": "^0.1.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-select": "^5.8.0",
