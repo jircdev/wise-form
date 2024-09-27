@@ -1,4 +1,5 @@
 import type { FormulaManager } from '..';
+import { EvaluationsManager } from '../helpers/evaluations';
 import { Token } from '../helpers/token';
 import { FormulaObserver, IComplexCondition } from '../types/formulas';
 import { parse } from 'mathjs';
@@ -53,7 +54,7 @@ export class IterativeArrayFormula {
 		this.#specs = specs;
 		this.#round = specs.round;
 		this.#ceil = specs.ceil;
-		if (this.#specs.emptyValue) this.#emptyValue = this.#specs.emptyValue;
+		this.#emptyValue = this.#specs.emptyValue;
 		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
@@ -85,25 +86,40 @@ export class IterativeArrayFormula {
 		}
 
 		const empty = !entries.length;
-
+		const formula: any = this.#specs.formula;
+		let formulaEvaluate = formula?.formula || formula
 		if (empty) {
 			// If all models are empty, set the input to empty if exists.
-			if (formulaField) formulaField.set({ value: '' });
+			if (formulaField) formulaField.set({ value: this.#emptyValue !== undefined ? this.#emptyValue : '' });
 			this.#value = undefined;
+			this.#parent.trigger('change');
 			return;
 		}
 
 		try {
 			let totalResult: string | number = 0;
 			for (let item of entries) {
+				if (formula.conditions) {
+					for (const condition of formula.conditions) {
+						const comparisonValue = item[condition.property]
+						let conditionMet = EvaluationsManager.validate(condition.condition, comparisonValue, condition.value);
+						if (conditionMet) {
+							formulaEvaluate = condition.formula;
+							break
+						} else {
+							formulaEvaluate = formula.base
+						}
+					}
+				}
 				const attrs = this.sanitizeData(item);
-				let result = parse(this.formula as string).evaluate(attrs);
+				let result = parse(formulaEvaluate as string).evaluate(attrs);
 				const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
 				if (this.#round && !isInvalidResult) result = Math.round(result);
 				if (this.#ceil && !isInvalidResult) result = Math.ceil(result);
-				totalResult = isInvalidResult ? this.#emptyValue : Number(totalResult) + Number(result.toFixed(2))
+				totalResult = isInvalidResult ? totalResult : Number(totalResult) + Number(result.toFixed(2))
 			}
-			this.#value = totalResult
+			const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN, ''].includes(totalResult);
+			this.#value = isInvalidResult ? this.#emptyValue : totalResult
 			if (formulaField) formulaField.set({ value: this.#value });
 			this.#parent.trigger('change');
 		} catch (e) {

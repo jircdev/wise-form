@@ -85,7 +85,7 @@ export class FormulaBasic {
 
 		if (empty) {
 			// If all models are empty, set the input to empty if exists.
-			if (formulaField) formulaField.set({ value: '' });
+			if (formulaField) formulaField.set({ value: this.#emptyValue || '' });
 			this.#value = undefined;
 			return;
 		}
