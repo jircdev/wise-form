@@ -54,7 +54,8 @@ export class FormulaBasic {
 		this.#specs = specs;
 		this.#round = specs.round;
 		this.#ceil = specs.ceil;
-		if (this.#specs.emptyValue) this.#emptyValue = this.#specs.emptyValue;
+		this.#emptyValue = specs.emptyValue;
+
 		this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 

@@ -52,7 +52,8 @@ export class FormulaArray {
         this.#specs = specs;
         this.#round = specs.round;
         this.#ceil = specs.ceil;
-        if (this.#specs.emptyValue) this.#emptyValue = this.#specs.emptyValue;
+        this.#specs.emptyValue = specs.emptyValue;
+
         this.#formulaField = this.#plugin.form.getField(this.name);
     }
 
@@ -78,12 +79,15 @@ export class FormulaArray {
                     }
                 }
                 const attrs = this.sanitizeData({ ...data.values, ...values });
+
                 result = parse(formulaEvaluate as string).evaluate(attrs);
+
             } catch (error) {
                 console.error("Error evaluating formula:", formula.formula, "Error:", error);
                 throw error;
             }
             const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
+
             if (formula.round && !isInvalidResult) result = Math.round(result);
             if (formula.ceil && !isInvalidResult) result = Math.ceil(result);
             result = isInvalidResult ? formula.emptyValue : Number(result.toFixed(2));
