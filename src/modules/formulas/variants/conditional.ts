@@ -51,7 +51,9 @@ export class FormulaConditional {
 		this.#specs = specs;
 		this.#round = specs.round;
 		this.#ceil = specs.ceil;
-		this.#isNotListenToChanges = specs.isNotListenToChanges
+		this.#emptyValue = specs.emptyValue;
+
+		if (specs.isNotListenToChanges) this.#isNotListenToChanges = specs.isNotListenToChanges
 	}
 
 	initialize() {
@@ -61,10 +63,16 @@ export class FormulaConditional {
 			if (!this.fields) {
 				throw new Error(`Fields not found in formula ${this.name}`);
 			}
-			const fields = this.fields.map(name => form.getField(name));
+			const fields = this.fields.map(name => {
+				const formula = this.#plugin.formulas.get(name);
+				if (formula) return formula
+				const field = form.getField(name);
+				return field
+			});
 			this.#fields = fields;
 
 			if (!this.#isNotListenToChanges) fields.forEach(field => {
+
 				if (!field) {
 					throw new Error(`Field ${this.name} not found in form ${form.name}`);
 				}
@@ -90,15 +98,16 @@ export class FormulaConditional {
 					});
 				} else {
 					const fieldValues = condition.fields.map(fieldName => {
+
 						const field = this.#fields.find(f => f.name === fieldName);
 						return field ? field.value : this.#emptyValue;
 					});
 					const conditionType =
+
 						!!condition.type && conditionsTypes[condition.type]
 							? conditionsTypes[condition.type]
 							: conditionsTypes.some;
 					// Check if any of the specified fields meet the condition
-
 					conditionMet = EvaluationsManager[conditionType](condition.condition, fieldValues, condition.value);
 				}
 
@@ -109,9 +118,9 @@ export class FormulaConditional {
 				}
 			}
 		}
-
 		return evaluatedFormula;
 	}
+
 
 	async calculate() {
 		/**

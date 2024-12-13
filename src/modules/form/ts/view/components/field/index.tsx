@@ -19,7 +19,8 @@ type WiseFormFieldControlProps = {
  * @param props.model Field or Wrapper Model.
  * @returns
  */
-export function Control({ field, index, model }: WiseFormFieldControlProps) {
+export const Control = React.memo(({ field, index, model }: WiseFormFieldControlProps) => {
+
 	const { formTypes } = useWiseFormContext();
 
 	const { attrs } = useField(model, field);
@@ -45,3 +46,4 @@ export function Control({ field, index, model }: WiseFormFieldControlProps) {
 		</ControlFieldContainer>
 	);
 }
+) 

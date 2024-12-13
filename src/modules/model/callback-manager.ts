@@ -16,9 +16,9 @@ export class CallbackManager {
 
 	initialize() {
 		const instance = this.#field;
-		const checkField = settings => {
+		const checkField = async settings => {
 			const dependency = this.#model.getField(this.#model.getFieldName(settings.field));
-
+			await dependency.isReady
 			const required = ['field', 'callback'];
 			required.forEach(prop => {
 				if (!settings[prop]) throw new Error(`${settings?.field} is missing ${prop}`);
@@ -50,13 +50,16 @@ export class CallbackManager {
 		const callback: CallbackFunction = this.#callbacks[settings.callback];
 
 		const dependency = this.#model.getField(this.#model.getFieldName(settings.field));
+		await dependency.isReady
 		const fields = { [dependency.name]: dependency };
 		if (settings.hasOwnProperty('fields')) {
-			settings.fields.forEach(field => {
+			for (const field of settings.fields) {
 				const instance = this.#model.getField(this.#model.getFieldName(field));
+				if (instance) await instance.isReady
 				const propName = typeof field === 'string' ? field : field.alias;
 				fields[propName] = instance;
-			});
+			}
+
 			params.fields = fields;
 		}
 		params.dependency = dependency;

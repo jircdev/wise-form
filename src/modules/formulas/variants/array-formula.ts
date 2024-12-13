@@ -83,8 +83,7 @@ export class FormulaArray {
                 result = parse(formulaEvaluate as string).evaluate(attrs);
 
             } catch (error) {
-                console.error("Error evaluating formula:", formula.formula, "Error:", error);
-                throw error;
+                console.log("Error evaluating formula:", formula.formula, "Error:", error);
             }
             const isInvalidResult = [-Infinity, Infinity, undefined, null, NaN].includes(result);
 

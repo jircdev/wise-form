@@ -32,6 +32,8 @@ export class FormField extends ReactiveModel<IFormField> {
 	 */
 	get disabled() {
 		if (typeof this.#disabled !== 'object' || !this.#disabled?.fields) return this.#disabled;
+
+
 		const validate = field => {
 			if (typeof field !== 'object') return !this.#parent.form.getField(field).value;
 			const { name, value } = field;
@@ -171,6 +173,8 @@ export class FormField extends ReactiveModel<IFormField> {
 	 */
 	#listenSiblings = () => {
 		this.triggerEvent('change');
+		this.triggerEvent();
+		this.triggerEvent('value.change');
 	};
 
 	/**
@@ -207,13 +211,13 @@ export class FormField extends ReactiveModel<IFormField> {
 				allValid = instance;
 				if (!allValid) return;
 				instance.on('change', this.#listenSiblings);
+				instance.on('value.change', this.#listenSiblings);
 				this.#listeningItems.set(name, { item: instance, listener: this.#listenSiblings });
 			});
 
 			if (!allValid) {
 				throw new Error(
-					`the field ${allValid} does not exist in the form ${
-						this.#parent.name
+					`the field ${allValid} does not exist in the form ${this.#parent.name
 					}, field passed in invalid settings of field "${this.name}"`
 				);
 			}
@@ -228,7 +232,7 @@ export class FormField extends ReactiveModel<IFormField> {
 	 * @param actions objeto  con las acciones que se van a realizar al ejecutarse el evento asociado
 	 * @returns
 	 */
-	#executeEvent(actions) {
+	async #executeEvent(actions) {
 		if (typeof actions !== 'object' || Array.isArray(actions)) return;
 
 		const formModel = this.#parent.form;
@@ -239,7 +243,9 @@ export class FormField extends ReactiveModel<IFormField> {
 			if (action === 'fields') {
 				for (let fieldName in actions[action]) {
 					const field = this.#parent.form.getField(fieldName);
+
 					if (!field) continue;
+					await field.isReady;
 					field.set(actions[action][fieldName]);
 				}
 				continue;

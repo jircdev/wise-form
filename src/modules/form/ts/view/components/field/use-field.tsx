@@ -3,6 +3,7 @@ import { useWiseFormContext } from '../../context';
 
 export function useField(model, field) {
 	const fieldModel = model.getField(field?.name);
+
 	const { values } = useWiseFormContext();
 	const value = fieldModel?.value ?? values[field?.name];
 	const [attributes, setAttributes] = React.useState(fieldModel?.attributes);
@@ -18,7 +19,7 @@ export function useField(model, field) {
 			fieldModel.cleanUp();
 		};
 		return cleanUp;
-	}, [fieldModel]);
+	}, [fieldModel.name]);
 
 	/**
 	 * It's necessary to change the field spread.
