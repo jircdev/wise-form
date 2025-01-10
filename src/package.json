@@ -42,7 +42,7 @@
 	"dependencies": {
 		"@beyond-js/kernel": "~0.1.9",
 		"@beyond-js/react-18-widgets": "~1.0.1",
-		"@beyond-js/reactive": "~1.1.12",
+		"@beyond-js/reactive": "1.1.12",
 		"mathjs": "^12.4.1",
 		"pragmate-ui": "^0.1.2",
 		"react": "^18.2.0",
