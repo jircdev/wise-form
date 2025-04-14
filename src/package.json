@@ -40,7 +40,6 @@
 		]
 	},
 	"dependencies": {
-		"@beyond-js/kernel": "~0.1.9",
 		"@beyond-js/react-18-widgets": "~1.0.1",
 		"@beyond-js/reactive": "1.1.14",
 		"mathjs": "^12.4.1",
@@ -49,6 +48,9 @@
 		"react-dom": "^18.2.0",
 		"react-select": "^5.8.0",
 		"socket.io-client": "^4.5.4"
+	},
+	"overrides": {
+		"@beyond-js/kernel": "~0.1.12"
 	},
 	"devDependencies": {
 		"@beyond-js/local": "~0.1.3",
