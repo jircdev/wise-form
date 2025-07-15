@@ -7,6 +7,7 @@ export interface IFormField {
 	variant?: string;
 	disabled?: boolean;
 	value?: any;
+	hidden?: boolean;
 }
 
 export interface IFormFieldProps extends IFormField {

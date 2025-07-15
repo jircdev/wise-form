@@ -1,7 +1,7 @@
-import React from 'react';
-import { Control } from '../field';
-import { FormSectionWrapper } from './wrapper';
-import { IFieldContainer } from '../../../interfaces/field-container';
+import React from "react";
+import {Control} from "../field";
+import {FormSectionWrapper} from "./wrapper";
+import {IFieldContainer} from "../../../interfaces/field-container";
 
 /**
  * Represents a container for form fields within a row, organizing them according to a specified grid style.
@@ -17,16 +17,21 @@ import { IFieldContainer } from '../../../interfaces/field-container';
  * @param
 
 */
-export function RowFieldContainer({ template: [totalFields, gridStyle], items, styles, model }: IFieldContainer) {
-	const output = items.map((field, index) => {
-		if (field.type === 'wrapper') {
-			return <FormSectionWrapper key={`rf-row__item--${index}`} data={field} model={model} />;
+export function RowFieldContainer({template: [totalFields, gridStyle], items, styles, model}: IFieldContainer) {
+	let hidden = false;
+	const output = items.reduce((acc, field, index) => {
+		if (field?.hidden) hidden = true;
+		if (field.type === "wrapper") {
+			acc.push(<FormSectionWrapper key={`rf-row__item--${index}`} data={field} model={model} />);
+			return acc;
 		}
-		return <Control index={index} model={model} field={field} key={`rf-row__item--${index}`} />;
-	});
 
-	const attrs = { className: `rf-fields-container`, style: {} };
-	attrs.style = { gridTemplateColumns: `${gridStyle}`, ...styles };
+		acc.push(<Control index={index} model={model} field={field} key={`rf-row__item--${index}`} />);
+		return acc;
+	}, []);
 
+	const attrs = {className: `rf-fields-container`, style: {}};
+	attrs.style = {gridTemplateColumns: `${gridStyle}`, ...styles};
+	if (hidden) attrs.className = "hidden";
 	return <div {...attrs}>{output}</div>;
 }

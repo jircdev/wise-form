@@ -10,6 +10,7 @@ export interface IFormField {
 	label: string;
 	variant: string;
 	disabled: boolean;
+	hidden: boolean;
 }
 
 interface IProps {

@@ -25,7 +25,7 @@ class WrappedFormModel extends BaseWiseModel {
         const { properties, ...props } = specs;
         super({
             ...props,
-            properties: ['name', 'className', ...properties],
+            properties: ['name', 'className', 'hidden', ...properties],
         });
 
         this.#parent = parent;

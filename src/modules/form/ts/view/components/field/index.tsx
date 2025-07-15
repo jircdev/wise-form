@@ -1,11 +1,11 @@
-import React from 'react';
-import { Input, Textarea } from 'pragmate-ui/form';
-import { SelectionField } from './selection';
-import { ControlFieldContainer } from './container';
-import { useWiseFormContext } from '../../context';
-import { WiseFormField } from '../../../interfaces/interfaces';
-import type { FormModel, WrappedFormModel } from '@bgroup/wise-form/model';
-import { useField } from './use-field';
+import React from "react";
+import {Input, Textarea} from "pragmate-ui/form";
+import {SelectionField} from "./selection";
+import {ControlFieldContainer} from "./container";
+import {useWiseFormContext} from "../../context";
+import {WiseFormField} from "../../../interfaces/interfaces";
+import type {FormModel, WrappedFormModel} from "@bgroup/wise-form/model";
+import {useField} from "./use-field";
 
 type WiseFormFieldControlProps = {
 	field: WiseFormField;
@@ -19,12 +19,11 @@ type WiseFormFieldControlProps = {
  * @param props.model Field or Wrapper Model.
  * @returns
  */
-export const Control = React.memo(({ field, index, model }: WiseFormFieldControlProps) => {
+export const Control = React.memo(({field, index, model}: WiseFormFieldControlProps) => {
+	const {formTypes} = useWiseFormContext();
 
-	const { formTypes } = useWiseFormContext();
-
-	const { attrs } = useField(model, field);
-
+	const {attrs} = useField(model, field);
+	if (field?.hidden) return null;
 	const types = {
 		...{
 			checkbox: SelectionField,
@@ -39,11 +38,9 @@ export const Control = React.memo(({ field, index, model }: WiseFormFieldControl
 	};
 
 	const Control = types[field.type] ?? types.default;
-
 	return (
 		<ControlFieldContainer>
 			<Control {...attrs} />
 		</ControlFieldContainer>
 	);
-}
-) 
+});
