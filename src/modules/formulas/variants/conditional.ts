@@ -154,6 +154,7 @@ export class FormulaConditional {
          */
         const model = this.#plugin.form.getField(this.name);
         const formula = this.evaluate();
+
         if (!formula.formula) {
             this.#value =
                 this.#emptyValue !== undefined ? this.#emptyValue : '';
@@ -165,13 +166,16 @@ export class FormulaConditional {
         const variables = tokens
             .filter((token) => token.type === 'variable')
             .map((item) => item.value);
+
         const params = await this.#parent.getParams(variables);
+
         try {
             const keys = Object.keys(params);
             let result =
                 keys.length === 1
                     ? params[keys[0]]
                     : parse(formula.formula as string).evaluate(params);
+
             const isInvalidResult = [
                 -Infinity,
                 Infinity,
