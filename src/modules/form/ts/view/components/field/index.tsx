@@ -11,6 +11,7 @@ type WiseFormFieldControlProps = {
 	field: WiseFormField;
 	index: number;
 	model: FormModel | WrappedFormModel;
+	hidden?: boolean;
 };
 /**
  *
@@ -19,11 +20,11 @@ type WiseFormFieldControlProps = {
  * @param props.model Field or Wrapper Model.
  * @returns
  */
-export const Control = React.memo(({field, index, model}: WiseFormFieldControlProps) => {
+export const Control = React.memo(({field, index, model, hidden}: WiseFormFieldControlProps) => {
 	const {formTypes} = useWiseFormContext();
 
 	const {attrs} = useField(model, field);
-	if (field?.hidden) return null;
+	if (hidden) return null;
 	const types = {
 		...{
 			checkbox: SelectionField,
