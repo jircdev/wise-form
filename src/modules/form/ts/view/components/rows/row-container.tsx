@@ -20,18 +20,18 @@ import {IFieldContainer} from "../../../interfaces/field-container";
 export function RowFieldContainer({template: [totalFields, gridStyle], items, styles, model}: IFieldContainer) {
 	let hidden = false;
 	const output = items.reduce((acc, field, index) => {
-		if (field?.hidden) hidden = true;
 		if (field.type === "wrapper") {
+			if (field?.hidden) hidden = true;
 			acc.push(<FormSectionWrapper key={`rf-row__item--${index}`} data={field} model={model} />);
 			return acc;
 		}
 
-		acc.push(<Control index={index} model={model} field={field} key={`rf-row__item--${index}`} />);
+		if (!field.hidden) acc.push(<Control index={index} model={model} field={field} key={`rf-row__item--${index}`} hidden={field?.hidden} />);
 		return acc;
 	}, []);
 
 	const attrs = {className: `rf-fields-container`, style: {}};
 	attrs.style = {gridTemplateColumns: `${gridStyle}`, ...styles};
-	if (hidden) attrs.className = "hidden";
+	if (hidden) return null;
 	return <div {...attrs}>{output}</div>;
 }
