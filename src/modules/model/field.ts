@@ -107,6 +107,7 @@ export class FormField extends ReactiveModel<IFormField> {
                 'id',
                 'icon',
                 'hidden',
+
                 ...properties,
             ],
         });

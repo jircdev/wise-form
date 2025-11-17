@@ -1,7 +1,8 @@
 import React from "react";
-import {Control} from "../field";
-import {FormSectionWrapper} from "./wrapper";
-import {IFieldContainer} from "../../../interfaces/field-container";
+import { Control } from "../field";
+import { FormSectionWrapper } from "./wrapper";
+import { IFieldContainer } from "../../../interfaces/field-container";
+import type { FormField, WrappedFormModel } from "@bgroup/wise-form/model";
 
 /**
  * Represents a container for form fields within a row, organizing them according to a specified grid style.
@@ -17,21 +18,66 @@ import {IFieldContainer} from "../../../interfaces/field-container";
  * @param
 
 */
-export function RowFieldContainer({template: [totalFields, gridStyle], items, styles, model}: IFieldContainer) {
+export function RowFieldContainer({ template: [totalFields, gridStyle], items, styles, model }: IFieldContainer) {
+	// Estado para rastrear los valores de hidden de cada campo de forma reactiva
+	const [fieldHiddenStates, setFieldHiddenStates] = React.useState<Record<string, boolean>>(() => {
+		const initialStates: Record<string, boolean> = {};
+		items.forEach((field) => {
+			const fieldItem = field as FormField | WrappedFormModel;
+			if (fieldItem?.name) {
+				initialStates[fieldItem.name] = (fieldItem as FormField).hidden ?? false;
+			}
+		});
+		return initialStates;
+	});
+
+	// Suscribirse a los cambios de cada campo
+	React.useEffect(() => {
+		const listeners: Array<() => void> = [];
+
+		items.forEach((field) => {
+			const fieldItem = field as FormField | WrappedFormModel;
+			if (!fieldItem?.name || fieldItem.type === "wrapper") return;
+
+			const fieldModel = model.getField(fieldItem.name);
+			if (!fieldModel) return;
+
+			const onChange = () => {
+				const properties = (fieldModel as FormField).getProperties();
+				setFieldHiddenStates((prev) => ({
+					...prev,
+					[fieldItem.name]: properties.hidden ?? false,
+				}));
+			};
+
+			fieldModel.on('change', onChange);
+			listeners.push(() => fieldModel.off('change', onChange));
+		});
+
+		return () => {
+			listeners.forEach((cleanup) => cleanup());
+		};
+	}, [items, model]);
+
 	let hidden = false;
 	const output = items.reduce((acc, field, index) => {
-		if (field.type === "wrapper") {
-			if (field?.hidden) hidden = true;
-			acc.push(<FormSectionWrapper key={`rf-row__item--${index}`} data={field} model={model} />);
+		const fieldItem = field as FormField | WrappedFormModel;
+		if (fieldItem.type === "wrapper") {
+			const wrapperHidden = (fieldItem as WrappedFormModel).hidden ?? false;
+			if (wrapperHidden) hidden = true;
+			acc.push(<FormSectionWrapper key={`rf-row__item--${index}`} data={fieldItem} model={model} />);
 			return acc;
 		}
 
-		if (!field.hidden) acc.push(<Control index={index} model={model} field={field} key={`rf-row__item--${index}`} hidden={field?.hidden} />);
+		const isHidden = fieldHiddenStates[fieldItem?.name] ?? (fieldItem as FormField).hidden ?? false;
+		if (!isHidden) {
+			acc.push(<Control index={index} model={model} field={fieldItem} key={`rf-row__item--${index}`} hidden={isHidden} />);
+		}
 		return acc;
 	}, []);
 
-	const attrs = {className: `rf-fields-container`, style: {}};
-	attrs.style = {gridTemplateColumns: `${gridStyle}`, ...styles};
+	const attrs = { className: `rf-fields-container`, style: {} };
+	attrs.style = { gridTemplateColumns: `${gridStyle}`, ...styles };
 	if (hidden) return null;
 	return <div {...attrs}>{output}</div>;
 }
