@@ -159,6 +159,7 @@ export class FormulaConditional {
             this.#value =
                 this.#emptyValue !== undefined ? this.#emptyValue : '';
             model && model.set({ value: this.#value });
+            this.#parent.trigger('change');
             return this.#value;
         }
         // todo: Review if this section can be replaced by formulaManager.variables property.

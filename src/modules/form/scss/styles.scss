@@ -14,9 +14,20 @@
 		}
 
 		// Media query for mobile devices
+	}
+	:not(.not-responsive) > .rf-fields-container {
 		@media (max-width: 768px) {
 			// 768px is a common breakpoint for mobile devices
 			grid-template-columns: 1fr !important;
 		}
 	}
+	// .rf-fields-container:not(:has(&)) {
+	// 	grid-template-columns: 1fr !important;
+	// }
+	// &:not(:has(.rf-fields-container:not(:has(.not-responsive)))) {
+	// 	@media (max-width: 768px) {
+	// 		// 768px is a common breakpoint for mobile devices
+	// 		grid-template-columns: 1fr !important;
+	// 	}
+	// }
 }

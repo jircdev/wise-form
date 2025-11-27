@@ -33,7 +33,9 @@ export /*bundle */ function WiseForm({ children, settings, types, model }: IWise
 
 	return (
 		<WiseFormContext.Provider value={value}>
-			<form className="reactive-form-container" onSubmit={onSubmit}>
+			<form onKeyDown={(e) => {
+				if (e.key === 'Enter') e.preventDefault();
+			}} className="reactive-form-container" onSubmit={onSubmit}>
 				<Containers />
 				{children}
 			</form>
