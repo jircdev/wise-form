@@ -78,7 +78,9 @@ export class FormulaConditional {
                 return field;
             });
             this.#fields = fields;
-
+            if (this.name === 'costoTotalGrafico') {
+                console.log('fields', fields);
+            }
             if (!this.#isNotListenToChanges)
                 fields.forEach((field) => {
                     if (!field) {

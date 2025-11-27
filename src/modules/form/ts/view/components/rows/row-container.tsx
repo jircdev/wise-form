@@ -114,8 +114,8 @@ export function RowFieldContainer({template: [totalFields, gridStyle], items, st
 		return acc;
 	}, []);
 
-	const attrs = {className: `rf-fields-container`, style: {}};
-	attrs.style = {gridTemplateColumns: `${gridStyle}`, ...styles};
+	const attrs = { className: `rf-fields-container`, style: {} };
+	attrs.style = { gridTemplateColumns: `${gridStyle}`, ...styles };
 	if (hidden) return null;
 	return <div {...attrs}>{output}</div>;
 }

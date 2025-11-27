@@ -8,7 +8,7 @@ import type { FormModel, WrappedFormModel } from "@bgroup/wise-form/model";
 import { useField } from "./use-field";
 
 type WiseFormFieldControlProps = {
-	field: WiseFormField;
+	field: FormField | WrappedFormModel;
 	index: number;
 	model: FormModel | WrappedFormModel;
 	hidden?: boolean;
@@ -75,4 +75,4 @@ export const Control = React.memo(({ field, index, model, hidden }: WiseFormFiel
 			<Control {...attrs} />
 		</ControlFieldContainer>
 	);
-});
+};
