@@ -53,8 +53,7 @@ export class CallbackManager {
             ...settings,
             form: this.#model,
             field: this.#field,
-           
-            settings,
+            settings: settings,
         };
         if (!settings) {
             console.warn('the field does not have dependentOn settings');

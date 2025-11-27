@@ -1,8 +1,8 @@
 import React from "react";
-import { Control } from "../field";
-import { FormSectionWrapper } from "./wrapper";
-import { IFieldContainer } from "../../../interfaces/field-container";
-import type { FormField, WrappedFormModel } from "@bgroup/wise-form/model";
+import {Control} from "../field";
+import {FormSectionWrapper} from "./wrapper";
+import {IFieldContainer} from "../../../interfaces/field-container";
+import type {FormField, WrappedFormModel} from "@bgroup/wise-form/model";
 
 /**
  * Represents a container for form fields within a row, organizing them according to a specified grid style.
@@ -18,58 +18,96 @@ import type { FormField, WrappedFormModel } from "@bgroup/wise-form/model";
  * @param
 
 */
-export function RowFieldContainer({ template: [totalFields, gridStyle], items, styles, model }: IFieldContainer) {
+export function RowFieldContainer({template: [totalFields, gridStyle], items, styles, model}: IFieldContainer) {
 	// Estado para rastrear los valores de hidden de cada campo de forma reactiva
 	const [fieldHiddenStates, setFieldHiddenStates] = React.useState<Record<string, boolean>>(() => {
 		const initialStates: Record<string, boolean> = {};
 		items.forEach((field) => {
-			const fieldItem = field as FormField | WrappedFormModel;
+			const fieldItem = field as FormField | WrappedFormModel | any;
 			if (fieldItem?.name) {
-				initialStates[fieldItem.name] = (fieldItem as FormField).hidden ?? false;
+				const fieldModel = model.getField(fieldItem.name);
+				if (fieldModel) {
+					const properties = fieldModel.getProperties();
+					initialStates[fieldItem.name] = properties.hidden ?? false;
+				} else {
+					initialStates[fieldItem.name] = fieldItem.hidden ?? false;
+				}
 			}
 		});
 		return initialStates;
 	});
 
-	// Suscribirse a los cambios de cada campo
+	// Usar useRef para rastrear los listeners y evitar re-suscripciones innecesarias
+	const listenersRef = React.useRef<Array<() => void>>([]);
+	const subscribedFieldsRef = React.useRef<Set<string>>(new Set());
+
+	// Suscribirse a los cambios de cada campo para detectar cambios en hidden
 	React.useEffect(() => {
-		const listeners: Array<() => void> = [];
+		// Limpiar listeners anteriores
+		listenersRef.current.forEach((cleanup) => cleanup());
+		listenersRef.current = [];
+		subscribedFieldsRef.current.clear();
 
+		// Obtener nombres de campos actuales
+		const currentFieldNames: string[] = [];
 		items.forEach((field) => {
-			const fieldItem = field as FormField | WrappedFormModel;
-			if (!fieldItem?.name || fieldItem.type === "wrapper") return;
+			const fieldItem = field as FormField | WrappedFormModel | any;
+			if (fieldItem?.name) {
+				currentFieldNames.push(fieldItem.name);
+			}
+		});
 
-			const fieldModel = model.getField(fieldItem.name);
-			if (!fieldModel) return;
+		currentFieldNames.forEach((fieldName) => {
+			// Evitar suscribirse dos veces al mismo campo
+			if (subscribedFieldsRef.current.has(fieldName)) return;
+			subscribedFieldsRef.current.add(fieldName);
+
+			const fieldModel = model.getField(fieldName);
+			if (!fieldModel || fieldModel.type === "wrapper") return;
 
 			const onChange = () => {
-				const properties = (fieldModel as FormField).getProperties();
-				setFieldHiddenStates((prev) => ({
-					...prev,
-					[fieldItem.name]: properties.hidden ?? false,
-				}));
+				const properties = fieldModel.getProperties();
+				const newHidden = properties.hidden ?? false;
+				setFieldHiddenStates((prev) => {
+					// Solo actualizar si el valor realmente cambió
+					if (prev[fieldName] === newHidden) {
+						return prev;
+					}
+					return {
+						...prev,
+						[fieldName]: newHidden,
+					};
+				});
 			};
 
 			fieldModel.on('change', onChange);
-			listeners.push(() => fieldModel.off('change', onChange));
+			listenersRef.current.push(() => fieldModel.off('change', onChange));
 		});
 
 		return () => {
-			listeners.forEach((cleanup) => cleanup());
+			listenersRef.current.forEach((cleanup) => cleanup());
+			listenersRef.current = [];
+			subscribedFieldsRef.current.clear();
 		};
-	}, [items, model]);
+		// Usar items.length como dependencia para detectar cambios en la cantidad de campos
+		// Los nombres específicos se manejan dentro del efecto
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [items.length, model]);
 
 	let hidden = false;
 	const output = items.reduce((acc, field, index) => {
-		const fieldItem = field as FormField | WrappedFormModel;
+		const fieldItem = field as FormField | WrappedFormModel | any;
 		if (fieldItem.type === "wrapper") {
-			const wrapperHidden = (fieldItem as WrappedFormModel).hidden ?? false;
+			const wrapperModel = model.getField(fieldItem.name);
+			const wrapperHidden = wrapperModel
+				? (wrapperModel.getProperties().hidden ?? false)
+				: (fieldItem?.hidden ?? false);
 			if (wrapperHidden) hidden = true;
 			acc.push(<FormSectionWrapper key={`rf-row__item--${index}`} data={fieldItem} model={model} />);
 			return acc;
 		}
 
-		const isHidden = fieldHiddenStates[fieldItem?.name] ?? (fieldItem as FormField).hidden ?? false;
+		const isHidden = fieldHiddenStates[fieldItem?.name] ?? fieldItem.hidden ?? false;
 		if (!isHidden) {
 			acc.push(<Control index={index} model={model} field={fieldItem} key={`rf-row__item--${index}`} hidden={isHidden} />);
 		}

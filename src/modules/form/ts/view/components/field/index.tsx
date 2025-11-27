@@ -3,7 +3,8 @@ import { Input, Textarea } from "pragmate-ui/form";
 import { SelectionField } from "./selection";
 import { ControlFieldContainer } from "./container";
 import { useWiseFormContext } from "../../context";
-import type { FormModel, WrappedFormModel, FormField } from "@bgroup/wise-form/model";
+import { WiseFormField } from "../../../interfaces/interfaces";
+import type { FormModel, WrappedFormModel } from "@bgroup/wise-form/model";
 import { useField } from "./use-field";
 
 type WiseFormFieldControlProps = {
@@ -19,39 +20,42 @@ type WiseFormFieldControlProps = {
  * @param props.model Field or Wrapper Model.
  * @returns
  */
-export const Control = ({ field, index, model, hidden }: WiseFormFieldControlProps) => {
+export const Control = React.memo(({ field, index, model, hidden }: WiseFormFieldControlProps) => {
 	const { formTypes } = useWiseFormContext();
-	const fieldItem = field as FormField;
-	const { attrs } = useField(model, fieldItem);
+	const fieldItem = field as any;
+	const fieldModel = model.getField(fieldItem?.name);
 
 	// Estado reactivo para el valor de hidden del campo
 	const [isHidden, setIsHidden] = React.useState(() => {
 		if (hidden !== undefined) return hidden;
-		const fieldModel = model.getField(fieldItem?.name);
 		if (fieldModel) {
-			const properties = (fieldModel as FormField).getProperties();
+			const properties = fieldModel.getProperties();
 			return properties.hidden ?? false;
 		}
 		return fieldItem?.hidden ?? false;
 	});
 
-	// Suscribirse a los cambios del modelo del campo
+	// Suscribirse a los cambios del modelo del campo para detectar cambios en hidden
 	React.useEffect(() => {
-		const fieldModel = model.getField(fieldItem?.name);
-		if (!fieldModel) return;
+		if (!fieldModel || !fieldItem?.name) return;
 
 		const onChange = () => {
-			const properties = (fieldModel as FormField).getProperties();
-			setIsHidden(properties.hidden ?? false);
+			const properties = fieldModel.getProperties();
+			const newHidden = properties.hidden ?? false;
+			// Solo actualizar si el valor realmente cambió
+			setIsHidden(prev => prev !== newHidden ? newHidden : prev);
 		};
 
 		fieldModel.on('change', onChange);
 		return () => {
 			fieldModel.off('change', onChange);
 		};
-	}, [model, fieldItem?.name]);
+		// Usar field.name como dependencia estable
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fieldItem?.name, fieldModel?.name]);
 
-	if (isHidden) return null;
+	const { attrs } = useField(model, field);
+	if (isHidden || hidden) return null;
 	const types = {
 		...{
 			checkbox: SelectionField,
