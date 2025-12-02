@@ -1,0 +1,38 @@
+{
+	"name": "@bgroup/wise-form",
+	"version": "1.0.1",
+	"description": "Wise Form - A reactive form library",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./form": "./dist/form/index.js",
+		"./formulas": "./dist/formulas/index.js",
+		"./models": "./dist/models/index.js",
+		"./settings": "./dist/settings/index.js",
+		"./styles": "./dist/form/styles.css"
+	},
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [
+		"form",
+		"react",
+		"reactive",
+		"form-builder"
+	],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@beyond-js/reactive": "^2.2.0",
+		"mathjs": "^12.4.1"
+	},
+	"peerDependencies": {
+		"react": "^18.2.0"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.26",
+		"typescript": "^5.0.0"
+	}
+}

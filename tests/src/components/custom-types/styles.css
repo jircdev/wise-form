@@ -1,0 +1,311 @@
+/* Button Group */
+.button-group-field {
+	margin-bottom: 1rem;
+}
+
+.button-group {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.button-group-item {
+	padding: 0.5rem 1rem;
+	border: 2px solid #ddd;
+	background: white;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 0.9rem;
+}
+
+.button-group-item:hover:not(.disabled) {
+	border-color: #007bff;
+	background: #f0f8ff;
+}
+
+.button-group-item.selected {
+	background: #007bff;
+	color: white;
+	border-color: #007bff;
+}
+
+.button-group-item.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Currency */
+.currency-field {
+	margin-bottom: 1rem;
+}
+
+.currency-input-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.currency-symbol {
+	font-weight: 600;
+	color: #666;
+}
+
+.currency-input {
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+	flex: 1;
+}
+
+/* Percentage */
+.percentage-field {
+	margin-bottom: 1rem;
+}
+
+.percentage-input-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.percentage-input {
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+	flex: 1;
+}
+
+.percentage-symbol {
+	font-weight: 600;
+	color: #666;
+}
+
+/* Traffic Light */
+.traffic-light-field {
+	margin-bottom: 1rem;
+}
+
+.traffic-light-value {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	border-radius: 4px;
+}
+
+.traffic-light-indicator {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.traffic-light-value.green .traffic-light-indicator {
+	background-color: #28a745;
+}
+
+.traffic-light-value.yellow .traffic-light-indicator {
+	background-color: #ffc107;
+}
+
+.traffic-light-value.red .traffic-light-indicator {
+	background-color: #dc3545;
+}
+
+.traffic-light-value.gray .traffic-light-indicator {
+	background-color: #6c757d;
+}
+
+.traffic-light-text {
+	font-weight: 600;
+}
+
+/* Input Text */
+.input-text-field {
+	margin-bottom: 1rem;
+}
+
+.input-text {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+}
+
+/* Input Date */
+.input-date-field {
+	margin-bottom: 1rem;
+}
+
+.input-date {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+}
+
+/* Input Reference Number */
+.input-reference-number-field {
+	margin-bottom: 1rem;
+}
+
+.input-reference-number {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+	background-color: #f5f5f5;
+}
+
+/* Wise Checkbox */
+.wise-checkbox-field {
+	margin-bottom: 1rem;
+}
+
+.wise-checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+}
+
+.wise-checkbox-input {
+	cursor: pointer;
+}
+
+.wise-checkbox-text {
+	user-select: none;
+}
+
+/* JView Title */
+.jview-title {
+	margin-bottom: 1rem;
+	overflow-x: auto;
+}
+
+.jview-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9rem;
+}
+
+.jview-table th {
+	background-color: #f8f9fa;
+	padding: 0.75rem;
+	text-align: left;
+	border-bottom: 2px solid #dee2e6;
+	font-weight: 600;
+}
+
+.jview-table td {
+	padding: 0.75rem;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.jview-table tr:hover {
+	background-color: #f8f9fa;
+}
+
+.jview-table tr.selected {
+	background-color: #e7f3ff;
+}
+
+.jview-empty {
+	text-align: center;
+	color: #6c757d;
+	padding: 2rem !important;
+}
+
+.jview-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.jview-action-btn {
+	padding: 0.25rem 0.75rem;
+	border: 1px solid #ddd;
+	background: white;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: all 0.2s;
+}
+
+.jview-action-btn:hover {
+	background: #f8f9fa;
+}
+
+.jview-action-btn.delete:hover {
+	background: #dc3545;
+	color: white;
+	border-color: #dc3545;
+}
+
+.jview-action-btn.duplicate:hover {
+	background: #007bff;
+	color: white;
+	border-color: #007bff;
+}
+
+/* Button */
+.custom-button {
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: 4px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.custom-button.primary {
+	background-color: #007bff;
+	color: white;
+}
+
+.custom-button.primary:hover {
+	background-color: #0056b3;
+}
+
+.custom-button.secondary {
+	background-color: #6c757d;
+	color: white;
+}
+
+.custom-button.secondary:hover {
+	background-color: #545b62;
+}
+
+.custom-button.danger {
+	background-color: #dc3545;
+	color: white;
+}
+
+.custom-button.danger:hover {
+	background-color: #c82333;
+}
+
+/* HR */
+.form-hr {
+	border: none;
+	border-top: 1px solid #dee2e6;
+	margin: 1.5rem 0;
+}
+
+/* Field Label */
+.field-label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+	color: #333;
+	font-size: 0.9rem;
+}
+
+
+
+

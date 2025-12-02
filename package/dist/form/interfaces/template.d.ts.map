@@ -1,0 +1,1 @@
+{"version":3,"file":"template.d.ts","sourceRoot":"","sources":["../../../src/form/interfaces/template.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,OAAO,CAAC;AAEtC,MAAM,WAAW,aAAc,SAAQ,aAAa;IACnD,SAAS,CAAC,EAAE,MAAM,GAAG,CAAC,MAAM,GAAG,MAAM,GAAG,CAAC,MAAM,GAAG,MAAM,CAAC,EAAE,CAAC,EAAE,CAAC;IAC/D,GAAG,CAAC,EAAE,MAAM,CAAC;CACb"}

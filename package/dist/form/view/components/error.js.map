@@ -1,0 +1,1 @@
+{"version":3,"file":"error.js","sourceRoot":"","sources":["../../../../src/form/view/components/error.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,MAAM,UAAU,aAAa,CAAC,EAAE,KAAK,EAAE;IACtC,KAAK,CAAC,SAAS,CAAC,GAAG,EAAE;QACpB,OAAO,CAAC,KAAK,CAAC,KAAK,CAAC,CAAC;IACtB,CAAC,EAAE,EAAE,CAAC,CAAC;IACP,OAAO,6BAAK,SAAS,EAAC,8BAA8B,IAAE,KAAK,CAAO,CAAC;AACpE,CAAC"}

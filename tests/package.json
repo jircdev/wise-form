@@ -1,0 +1,25 @@
+{
+	"name": "@bgroup/wise-form-tests",
+	"version": "0.0.1",
+	"description": "Test package for @bgroup/wise-form",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@beyond-js/reactive": "^2.2.0",
+		"@bgroup/wise-form": "file:../package",
+		"mathjs": "^12.4.1",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.26",
+		"@types/react-dom": "^18.0.9",
+		"@vitejs/plugin-react": "^4.2.1",
+		"typescript": "^5.0.0",
+		"vite": "^5.0.0"
+	}
+}

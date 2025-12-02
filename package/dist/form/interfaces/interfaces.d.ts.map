@@ -1,0 +1,1 @@
+{"version":3,"file":"interfaces.d.ts","sourceRoot":"","sources":["../../../src/form/interfaces/interfaces.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,gBAAgB,EAAE,MAAM,0BAA0B,CAAC;AAG5E,MAAM,MAAM,aAAa,GAAG,CAAC,SAAS,GAAG,gBAAgB,CAAC,EAAE,CAAC;AAG7D,MAAM,WAAW,SAAS;IACzB,IAAI,EAAE,MAAM,CAAC;IACb,QAAQ,EAAE,MAAM,CAAC;IACjB,MAAM,EAAE,aAAa,CAAC;CACtB"}

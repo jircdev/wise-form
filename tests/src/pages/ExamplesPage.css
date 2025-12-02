@@ -1,0 +1,75 @@
+.examples-page {
+	padding: 2rem;
+	min-height: 100vh;
+	background-color: #f5f5f5;
+}
+
+.examples-page .container {
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+.examples-page h1 {
+	margin-bottom: 0.5rem;
+	color: #333;
+}
+
+.examples-page .subtitle {
+	color: #666;
+	margin-bottom: 2rem;
+}
+
+.forms-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	gap: 2rem;
+	margin-top: 2rem;
+}
+
+.form-section {
+	background: white;
+	padding: 2rem;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+	margin-top: 0;
+	margin-bottom: 0.5rem;
+	color: #333;
+}
+
+.form-description {
+	color: #666;
+	margin-bottom: 1.5rem;
+	font-size: 0.9rem;
+}
+
+.submit-button {
+	padding: 0.75rem 1.5rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	margin-top: 1rem;
+}
+
+.submit-button:hover {
+	background-color: #0056b3;
+}
+
+.loading {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 50vh;
+	font-size: 1.2rem;
+	color: #666;
+}
+
+
+
+

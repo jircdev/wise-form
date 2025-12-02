@@ -1,0 +1,1 @@
+{"version":3,"file":"disabled.d.ts","sourceRoot":"","sources":["../../../src/models/types/disabled.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,iBAAiB,GAAG;IAC/B,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,GAAG,CAAC;CACX,CAAC;AACF,MAAM,WAAW,SAAS;IACzB,MAAM,EAAE,MAAM,EAAE,GAAG,iBAAiB,EAAE,CAAC;CACvC"}
