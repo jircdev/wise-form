@@ -28,19 +28,19 @@ export function AfaFormPage() {
 
 	React.useEffect(() => {
 		const model = FormModel.create(afaIngresoForm);
-		
+
 		// Crear callbacks con el modelo
 		const callbacks = createAfaCallbacks(model);
-		
+
 		// Agregar callback onSubmit
 		callbacks.onSubmit = ({ form, event }) => {
 			event.preventDefault();
 			console.log('AFA Form Values:', form.values);
 			alert(`Formulario AFA enviado!\n\nValores: ${JSON.stringify(form.values, null, 2)}`);
 		};
-		
-		model.callbacks = callbacks as any;
 
+		model.callbacks = callbacks as any;
+		globalThis.fi = model;
 		setFormModel(model);
 
 		// Listen for ready state

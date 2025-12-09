@@ -300,17 +300,158 @@ export class FormField extends ReactiveModel {
         try {
             Object.keys(properties).forEach((prop) => {
                 const currentProperties = Object.keys(this.getProperties());
-                if (!currentProperties || !currentProperties.includes(prop))
+                // Verificar si la propiedad está registrada en el modelo reactivo
+                // Si no está en getProperties(), verificar si está en la lista de properties del constructor
+                const isRegisteredProperty = currentProperties.includes(prop) ||
+                    (__classPrivateFieldGet(this, _FormField_specs, "f")?.properties &&
+                        __classPrivateFieldGet(this, _FormField_specs, "f").properties.includes(prop));
+                if (!isRegisteredProperty) {
                     return;
-                const sameObject = typeof properties[prop] === 'object' &&
-                    JSON.stringify(properties[prop]) ===
-                        JSON.stringify(this[prop]);
-                if (this[prop] === properties[prop] || sameObject)
+                }
+                const newValue = properties[prop];
+                const currentValue = this[prop];
+                // Si los valores son iguales por referencia, no actualizar
+                if (currentValue === newValue)
                     return;
+                // Si ambos son arrays y tienen la misma referencia, no actualizar
+                if (Array.isArray(currentValue) &&
+                    Array.isArray(newValue) &&
+                    currentValue === newValue) {
+                    return;
+                }
+                // Si el tipo cambia (array a string, string a array, etc.), siempre actualizar
+                const currentIsArray = Array.isArray(currentValue);
+                const newIsArray = Array.isArray(newValue);
+                const currentIsObject = typeof currentValue === 'object' &&
+                    currentValue !== null &&
+                    !currentIsArray;
+                const newIsObject = typeof newValue === 'object' &&
+                    newValue !== null &&
+                    !newIsArray;
+                if ((currentIsArray && !newIsArray) ||
+                    (!currentIsArray && newIsArray) ||
+                    (currentIsObject && !newIsObject) ||
+                    (!currentIsObject && newIsObject)) {
+                    this[prop] = newValue;
+                    updated = true;
+                    return;
+                }
+                // Para arrays y objetos, hacer comparación más robusta
+                if (typeof newValue === 'object' && newValue !== null) {
+                    // Si currentValue es undefined/null, siempre actualizar
+                    if (currentValue === undefined || currentValue === null) {
+                        this[prop] = newValue;
+                        updated = true;
+                        return;
+                    }
+                    // Comparar arrays
+                    if (newIsArray && currentIsArray) {
+                        // Si las longitudes son diferentes, actualizar
+                        if (newValue.length !== currentValue.length) {
+                            this[prop] = newValue;
+                            updated = true;
+                            return;
+                        }
+                        // Si el array está vacío y ambos están vacíos, no actualizar
+                        if (newValue.length === 0 &&
+                            currentValue.length === 0) {
+                            return;
+                        }
+                        // Comparar contenido del array de forma más robusta
+                        // Primero intentar comparación rápida por referencia de todo el array usando JSON.stringify
+                        // Esto es más eficiente para detectar si el contenido es realmente diferente
+                        try {
+                            // Normalizar ambos arrays antes de comparar para evitar problemas con orden de propiedades
+                            const normalizeForComparison = (arr) => {
+                                return arr.map((item) => {
+                                    if (typeof item === 'object' &&
+                                        item !== null &&
+                                        !Array.isArray(item)) {
+                                        // Ordenar propiedades del objeto para comparación estable
+                                        const sorted = Object.keys(item)
+                                            .sort()
+                                            .reduce((acc, key) => {
+                                            acc[key] = item[key];
+                                            return acc;
+                                        }, {});
+                                        return sorted;
+                                    }
+                                    return item;
+                                });
+                            };
+                            const normalizedCurrent = normalizeForComparison(currentValue);
+                            const normalizedNew = normalizeForComparison(newValue);
+                            const currentStr = JSON.stringify(normalizedCurrent);
+                            const newStr = JSON.stringify(normalizedNew);
+                            if (currentStr === newStr) {
+                                // Si el contenido es igual, no actualizar para evitar bucles infinitos
+                                return;
+                            }
+                        }
+                        catch (e) {
+                            // Si JSON.stringify falla, hacer comparación elemento por elemento
+                            let arraysEqual = true;
+                            for (let idx = 0; idx < newValue.length; idx++) {
+                                const newVal = newValue[idx];
+                                const currentVal = currentValue[idx];
+                                // Comparación por referencia primero (más rápida)
+                                if (newVal === currentVal)
+                                    continue;
+                                // Si son objetos, comparar con JSON.stringify
+                                if (typeof newVal === 'object' &&
+                                    newVal !== null &&
+                                    typeof currentVal === 'object' &&
+                                    currentVal !== null) {
+                                    try {
+                                        const newStr = JSON.stringify(newVal);
+                                        const currentStr = JSON.stringify(currentVal);
+                                        if (newStr !== currentStr) {
+                                            arraysEqual = false;
+                                            break;
+                                        }
+                                    }
+                                    catch (e) {
+                                        // Si JSON.stringify falla, comparar por referencia
+                                        if (newVal !== currentVal) {
+                                            arraysEqual = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else {
+                                    // Para valores primitivos, comparación directa
+                                    if (newVal !== currentVal) {
+                                        arraysEqual = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (arraysEqual)
+                                return;
+                        }
+                        this[prop] = newValue;
+                        updated = true;
+                        return;
+                    }
+                    // Para objetos, comparar con JSON.stringify pero manejar undefined
+                    if (newIsObject && currentIsObject) {
+                        try {
+                            const currentStr = JSON.stringify(currentValue);
+                            const newStr = JSON.stringify(newValue);
+                            if (currentStr === newStr)
+                                return;
+                        }
+                        catch (e) {
+                            // Si JSON.stringify falla (por ejemplo, con funciones), comparar por referencia
+                            if (currentValue === newValue)
+                                return;
+                        }
+                    }
+                }
                 const descriptor = Object.getOwnPropertyDescriptor(this, prop);
                 if (descriptor?.set)
                     return;
-                this[prop] = properties[prop];
+                this[prop] = newValue;
                 updated = true;
             });
         }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useWiseFormContext } from '@bgroup/wise-form/form';
 
 interface JViewTitleProps {
 	name?: string;
@@ -25,6 +26,12 @@ export const JViewTitle: React.FC<JViewTitleProps> = ({
 	onDelete,
 	onDuplicate,
 }) => {
+	console.log("🚀 ~ JViewTitle ~ entries:", entries)
+	console.log("🚀 ~ JViewTitle ~ keys:", keys)
+	const { model } = useWiseFormContext();
+
+	// Ahora puedes usar 'model' dentro del componente
+	// Ejemplo: const field = model?.getField(name);
 	return (
 		<div className={`jview-title ${className || ''}`}>
 			<table className="jview-table">
@@ -43,43 +50,46 @@ export const JViewTitle: React.FC<JViewTitleProps> = ({
 							</td>
 						</tr>
 					) : (
-						entries.map((entry, index) => (
-							<tr
-								key={index}
-								className={selectedItem === entry ? 'selected' : ''}
-								onClick={() => onSelectItem && onSelectItem(entry)}
-							>
-								{keys.map((key) => (
-									<td key={key}>{entry[key] || ''}</td>
-								))}
-								<td className="jview-actions">
-									{onDuplicate && (
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												onDuplicate(entry);
-											}}
-											className="jview-action-btn duplicate"
-										>
-											Duplicar
-										</button>
-									)}
-									{onDelete && (
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												onDelete(entry);
-											}}
-											className="jview-action-btn delete"
-										>
-											Eliminar
-										</button>
-									)}
-								</td>
-							</tr>
-						))
+						entries.map((entry, index) => {
+							console.log("🚀 ~ JViewTitle ~ entry:", entry)
+							return (
+								<tr
+									key={index}
+									className={selectedItem === entry ? 'selected' : ''}
+									onClick={() => onSelectItem && onSelectItem(entry)}
+								>
+									{keys.map((key) => (
+										<td key={key}>{entry[key]}</td>
+									))}
+									<td className="jview-actions">
+										{onDuplicate && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													onDuplicate(entry);
+												}}
+												className="jview-action-btn duplicate"
+											>
+												Duplicar
+											</button>
+										)}
+										{onDelete && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													onDelete(entry);
+												}}
+												className="jview-action-btn delete"
+											>
+												Eliminar
+											</button>
+										)}
+									</td>
+								</tr>
+							);
+						})
 					)}
 				</tbody>
 			</table>
