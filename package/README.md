@@ -5,7 +5,7 @@ A reactive form library for React applications.
 ## Installation
 
 ```bash
-npm install @bgroup/wise-form react @beyond-js/reactive
+pnpm add @bgroup/wise-form react @beyond-js/reactive
 ```
 
 ## Usage

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files
+#.env
+#.env.local
+#.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Misc
+*.tmp
+*.temp
+
+# Test files with real credentials
+test-db.ts
+test-endpoints.ts
+
+# npm authentication (contains tokens)
+.npmrc

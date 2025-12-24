@@ -22,13 +22,12 @@ type WiseFormFieldControlProps = {
 export const Control = ({ field, index, model, hidden }: WiseFormFieldControlProps) => {
 	const { formTypes } = useWiseFormContext();
 	const fieldItem = field as any; // Using any to access dynamic properties
-	
+
 	// Early return if field doesn't have a name (except for wrapper types and special types)
 	const specialTypes = ['wrapper', 'hr', 'button'];
-	const fieldType = fieldItem?.type;
+	let fieldType = fieldItem?.type; // Use let instead of const to allow modification
 	const fieldName = fieldItem?.name;
 	if (!fieldName && !specialTypes.includes(fieldType)) {
-		console.warn('You need to provide a name to get a field in form', (model as any).name || 'unknown');
 		return null;
 	}
 
@@ -77,18 +76,54 @@ export const Control = ({ field, index, model, hidden }: WiseFormFieldControlPro
 		...formTypes,
 	};
 
+	// Handle undefined type fields - use default type instead of returning null
+	if (!fieldType && fieldName) {
+		// Check if field has className 'hide' - these are intentionally hidden fields
+		const className = (fieldItem as any).className || '';
+		if (className.includes('hide') || className === 'hide') {
+			return null;
+		}
+
+		// Check if it's a hidden field in the model
+		const fieldModel = model.getField(fieldName);
+		if (fieldModel) {
+			const properties = (fieldModel as FormField).getProperties();
+			if ((properties as any).hidden) {
+				return null;
+			}
+		}
+
+		// If no type is defined, use default - don't skip the field
+		(fieldItem as any).type = 'default';
+		fieldType = 'default'; // Update fieldType variable to use default
+	}
+
 	const ControlComponent = types[fieldType] ?? types.default;
-	
+
+	if (!ControlComponent) {
+		return null;
+	}
+
+	// Validar que ControlComponent sea realmente un componente válido (función o clase)
+	if (typeof ControlComponent !== 'function' && typeof ControlComponent !== 'object') {
+		return null;
+	}
+
+	// Si es un objeto, puede ser un componente de React (tiene render o $$typeof)
+	if (typeof ControlComponent === 'object' && !ControlComponent.$$typeof && typeof ControlComponent !== 'function') {
+		return null;
+	}
+
 	// Merge field properties with attrs to ensure custom components receive all necessary props
 	const fieldModel = fieldName ? model.getField(fieldName) : null;
 	const fieldProperties = fieldModel ? fieldModel.getProperties() : {};
-	
+
 	// Also include original field item properties (like options, label, etc.)
 	const fieldItemProps = { ...fieldItem };
 	// Remove internal properties that shouldn't be passed to components
 	delete (fieldItemProps as any).name;
 	delete (fieldItemProps as any).type;
-	
+
 	// Filter out non-HTML attributes from fieldProperties to prevent React warnings
 	const invalidAttributes = ['processing', 'processed', 'properties', 'specs', 'hidden', 'identifier'];
 	const filteredFieldProperties = Object.keys(fieldProperties).reduce((acc, key) => {
@@ -97,7 +132,7 @@ export const Control = ({ field, index, model, hidden }: WiseFormFieldControlPro
 		}
 		return acc;
 	}, {} as any);
-	
+
 	return (
 		<ControlFieldContainer>
 			<ControlComponent {...attrs} {...fieldItemProps} {...filteredFieldProperties} />

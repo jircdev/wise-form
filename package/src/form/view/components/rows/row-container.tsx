@@ -39,6 +39,15 @@ export function RowFieldContainer({ template: [totalFields, gridStyle], items, s
 	});
 
 	// Suscribirse a los cambios de cada campo
+	// Use stable references for field names to avoid unnecessary re-renders
+	const fieldNamesRef = React.useRef<string[]>([]);
+	const currentFieldNames = items.map((field: any) => field?.name).filter(Boolean);
+	const fieldNamesChanged = JSON.stringify(fieldNamesRef.current) !== JSON.stringify(currentFieldNames);
+
+	if (fieldNamesChanged) {
+		fieldNamesRef.current = currentFieldNames;
+	}
+
 	React.useEffect(() => {
 		const listeners: Array<() => void> = [];
 
@@ -53,10 +62,14 @@ export function RowFieldContainer({ template: [totalFields, gridStyle], items, s
 
 			const onChange = () => {
 				const properties = (fieldModel as FormField).getProperties();
-				setFieldHiddenStates((prev) => ({
-					...prev,
-					[fieldName]: (properties as any).hidden ?? false,
-				}));
+				setFieldHiddenStates((prev) => {
+					const newHidden = (properties as any).hidden ?? false;
+					if (prev[fieldName] === newHidden) return prev; // Avoid unnecessary state update
+					return {
+						...prev,
+						[fieldName]: newHidden,
+					};
+				});
 			};
 
 			fieldModel.on('change', onChange);
@@ -66,12 +79,15 @@ export function RowFieldContainer({ template: [totalFields, gridStyle], items, s
 		return () => {
 			listeners.forEach((cleanup) => cleanup());
 		};
-	}, [items, model]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentFieldNames.join(','), model.name]);
 
 	let hidden = false;
 	const output = items.reduce((acc: React.ReactElement[], field, index) => {
 		const fieldItem = field as any; // Using any to access dynamic properties
 		const fieldType = fieldItem?.type;
+		const fieldName = fieldItem?.name;
+
 		if (fieldType === "wrapper") {
 			const fieldModel = model.getField(fieldItem?.name);
 			const wrapperHidden = fieldModel ? ((fieldModel as WrappedFormModel).getProperties() as any).hidden ?? false : false;
@@ -80,7 +96,6 @@ export function RowFieldContainer({ template: [totalFields, gridStyle], items, s
 			return acc;
 		}
 
-		const fieldName = fieldItem?.name;
 		const isHidden = fieldName ? (fieldHiddenStates[fieldName] ?? (fieldItem as any).hidden ?? false) : false;
 		if (!isHidden) {
 			acc.push(<Control index={index} model={model} field={fieldItem} key={`rf-row__item--${index}`} hidden={isHidden} />);
@@ -88,9 +103,22 @@ export function RowFieldContainer({ template: [totalFields, gridStyle], items, s
 		return acc;
 	}, []);
 
-	const attrs = { className: `rf-fields-container`, style: {} };
-	attrs.style = { gridTemplateColumns: `${gridStyle}`, ...styles };
-	if (hidden) return null;
+	// Construir clases de Tailwind para el contenedor
+	// grid gap-2 para el layout base
+	// En mobile (< 768px), los contenedores sin .not-responsive se convierten en 1 columna
+	// Esto se maneja con CSS personalizado porque requiere el selector :not(.not-responsive) >
+	const attrs = {
+		className: `rf-fields-container grid gap-2 w-full`,
+		style: { gridTemplateColumns: `${gridStyle}`, ...styles }
+	};
+	if (hidden) {
+		return null;
+	}
+
+	if (output.length === 0) {
+		return null;
+	}
+
 	return <div {...attrs}>{output}</div>;
 }
 

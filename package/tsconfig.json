@@ -22,6 +22,8 @@
 		"noUnusedParameters": false,
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
+		"types": [],
+		"typeRoots": ["./node_modules/@types"],
 		"baseUrl": ".",
 		"paths": {
 			"@bgroup/wise-form/models": ["./src/models"],

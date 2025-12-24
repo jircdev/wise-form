@@ -1,1 +1,1 @@
-{"version":3,"file":"use-model.d.ts","sourceRoot":"","sources":["../../../../src/form/view/hooks/use-model.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAE,MAAM,0BAA0B,CAAC;AAGrD,wBAAgB,QAAQ,CAAC,QAAQ,KAAA,EAAE,IAAI,CAAC,EAAE,SAAS;;;;;;;EAgClD"}
+{"version":3,"file":"use-model.d.ts","sourceRoot":"","sources":["../../../../src/form/view/hooks/use-model.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAE,MAAM,0BAA0B,CAAC;AAGrD;;;;;;;GAOG;AACH,wBAAgB,QAAQ,CAAC,QAAQ,KAAA,EAAE,IAAI,CAAC,EAAE,SAAS;;;;;;;EA0FlD"}

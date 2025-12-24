@@ -10,10 +10,22 @@ export function WiseForm({ children, settings, types, model }: IWiseFormSpecs): 
 	const { ready, model: instance, type, styles, items } = useModel(settings, model);
 	const formTypes = useTypes(types);
 
-	if (!ready) return null;
+	// IMPORTANTE: useEffect debe estar ANTES de cualquier early return
+	// para cumplir con las reglas de hooks de React
+	React.useEffect(() => {
+		if (!ready || !instance) return;
+	}, [ready, instance?.name]);
+
+	if (!ready) {
+		return null;
+	}
 
 	if (!settings && !model) {
-		console.error('the form does not have settings or model defined', settings);
+		return null;
+	}
+
+	if (!instance) {
+		return null;
 	}
 
 	const onSubmit = (event: React.FormEvent) => {
@@ -38,7 +50,7 @@ export function WiseForm({ children, settings, types, model }: IWiseFormSpecs): 
 		<WiseFormContext.Provider value={value}>
 			<form onKeyDown={(e) => {
 				if (e.key === 'Enter') e.preventDefault();
-			}} className="reactive-form-container" onSubmit={onSubmit}>
+			}} className="reactive-form-container grid gap-4" onSubmit={onSubmit}>
 				<Containers />
 				{children}
 			</form>
