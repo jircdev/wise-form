@@ -32,9 +32,10 @@ export declare class BaseWiseModel extends ReactiveModel<IBaseWiseModel> {
     /**
      * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.
      * @param {string} name - The name of the field or nested wrapper to retrieve.
+     * @param {Set<BaseWiseModel | WrappedFormModel>} visited - Set of already visited models to prevent infinite recursion.
      * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
      */
-    getField(name: string): any;
+    getField(name: string, visited?: Set<BaseWiseModel | WrappedFormModel>): any;
     /**
      * Extracts the field name from a FieldOrAlias type. The input can either be a string directly representing
      * the field name or an object where the key is the field name and the value is an alias.

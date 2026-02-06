@@ -2,9 +2,19 @@ import React from 'react';
 import { useModel } from './hooks/use-model';
 import { WiseFormContext } from './context';
 import { useTypes } from './hooks/use-types';
+import type { FormModel } from '@bgroup/wise-form/models';
 
 import { IWiseFormSpecs } from '../interfaces/wise-form-specs';
 import { Containers } from './components/containers';
+
+/**
+ * Interfaz extendida para FormModel que puede tener el método onSubmit
+ * Esto permite que las implementaciones extendidas de FormModel (como en frontend)
+ * puedan usar el método onSubmit sin errores de tipado
+ */
+interface IFormModelWithSubmit extends FormModel {
+	onSubmit?: (event: Event | React.FormEvent) => Promise<{ status: boolean; error?: Error }> | void;
+}
 
 export function WiseForm({ children, settings, types, model }: IWiseFormSpecs): JSX.Element {
 	const { ready, model: instance, type, styles, items } = useModel(settings, model);
@@ -30,10 +40,14 @@ export function WiseForm({ children, settings, types, model }: IWiseFormSpecs): 
 
 	const onSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		// Form submission can be handled via callbacks or custom handlers
-		if (instance.callbacks?.onSubmit) {
-			instance.callbacks.onSubmit({ form: instance, event });
+
+		// Verificar si la instancia tiene el método onSubmit (implementación extendida)
+		const modelWithSubmit = instance as IFormModelWithSubmit;
+		if (typeof modelWithSubmit.onSubmit === 'function') {
+			modelWithSubmit.onSubmit(event);
+			return;
 		}
+
 	};
 
 	const value = {

@@ -131,32 +131,57 @@ class WrappedFormModel extends BaseWiseModel {
     /**
      * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.
      * @param {string} name - The name of the field or nested wrapper to retrieve.
+     * @param {Set<BaseWiseModel | WrappedFormModel>} visited - Set of already visited wrappers to prevent infinite recursion.
      * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
      */
-    getField(name: string) {
-        if (!name)
-            return console.warn(
-                'You need to provide a name to get a field in form ',
+    getField(name: string, visited: Set<BaseWiseModel | WrappedFormModel> = new Set()) {
+        if (!name) {
+            console.warn(
+                '[WiseForm.getField] Empty field name provided in wrapper',
                 this.settings.name
             );
+            return;
+        }
+
+        // Protección contra recursión circular
+        if (visited.has(this)) {
+            console.error(
+                `[WiseForm.getField] Circular reference detected in wrapper "${this.settings.name}" while searching for field "${name}". This usually indicates a configuration issue with nested wrappers.`
+            );
+            console.log(
+                `[WiseForm.getField] PROTECTION ACTIVE: Circular reference prevented. Wrapper: "${this.settings.name}", Field: "${name}", Visited wrappers count: ${visited.size}`
+            );
+            return undefined;
+        }
+        visited.add(this);
 
         if (!name.includes('.')) {
             let field = this.fields.get(name);
 
             if (!field) {
                 this.wrappers.forEach((item) => {
-                    const foundField = item.getField(name);
-                    if (foundField) field = foundField;
+                    if (!visited.has(item)) {
+                        const foundField = item.getField(name, visited);
+                        if (foundField) field = foundField;
+                    }
                 });
             }
             return field;
         }
 
+        // Dot notation path
         const [wrapperName, ...others] = name.split('.');
         const currentWrapper = this.wrappers.get(wrapperName);
 
+        if (!currentWrapper) {
+            console.warn(
+                `[WiseForm.getField] Wrapper "${wrapperName}" not found in "${this.settings.name}" while searching for "${name}". Available wrappers: ${Array.from(this.wrappers.keys()).join(', ') || 'none'}`
+            );
+            return undefined;
+        }
+
         const otherWrapper = others.join('.');
-        return currentWrapper.getField(otherWrapper);
+        return currentWrapper.getField(otherWrapper, visited);
     }
 
     /**

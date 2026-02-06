@@ -33,20 +33,78 @@ export class FormField extends ReactiveModel<IFormField> {
   get disabled() {
     if (typeof this.#disabled !== 'object' || !this.#disabled?.fields) return this.#disabled;
 
-    const validate = field => {
-      if (typeof field !== 'object') return !this.#parent.form.getField(field).value;
-      const { name, value } = field;
-      const fieldInstance = this.#parent.getField(name);
+    const { action, operator = 'or' } = this.#disabled;
+    const isEnableAction = action === 'enable';
+
+    const validate = fieldSettings => {
+      // 1. Get the target field instance
+      const name = typeof fieldSettings === 'string' ? fieldSettings : fieldSettings.name;
+      const fieldInstance = this.#parent.form.getField(name);
+
+      // If field dependency is missing, we can't evaluate. 
       if (!fieldInstance) return false;
-      if (field.hasOwnProperty('condition')) {
-        const compare = this.evaluations[field.condition](fieldInstance.value, field.value);
-        return compare;
+
+      // 2. Determine the value to check from that field
+      let currentValue;
+      if (typeof fieldSettings === 'object' && fieldSettings.property) {
+        // Access specific property (e.g. 'entries', 'length', 'value')
+        const props = fieldInstance.getProperties();
+        const propPath = fieldSettings.property.split('.');
+        
+        let val: any = props; 
+        // If property is 'value', start from fieldInstance.value
+        if (propPath[0] === 'value') {
+           val = fieldInstance.value;
+           propPath.shift(); // consume 'value'
+        }
+        
+        // Traverse path safely
+        for (const p of propPath) {
+            if (val === undefined || val === null) break;
+            val = val[p];
+        }
+        currentValue = val;
+      } else {
+        // Default: use the field's main value
+        currentValue = fieldInstance.value;
       }
-      const { value: fieldValue } = fieldInstance;
-      return value !== fieldValue;
+
+      // 3. Simple boolean check if settings is just a string
+      if (typeof fieldSettings !== 'object') {
+        return !currentValue; 
+      }
+
+      // 4. Determine comparison value
+      let comparisonValue = fieldSettings.value;
+      if (fieldSettings.valueFromField) {
+        const compareField = this.#parent.form.getField(fieldSettings.valueFromField);
+        comparisonValue = compareField ? compareField.value : undefined;
+      }
+
+      // 5. Evaluate condition
+      const condition = fieldSettings.condition;
+      if (condition && this.evaluations[condition]) {
+        return this.evaluations[condition](currentValue, comparisonValue);
+      }
+
+      // Default behavior
+      return currentValue !== comparisonValue; 
     };
 
-    return this.#disabled.fields.some(validate);
+    const results = this.#disabled.fields.map(validate);
+
+    let conditionsMet = false;
+    if (operator === 'and') {
+        conditionsMet = results.every(r => r === true);
+    } else {
+        conditionsMet = results.some(r => r === true);
+    }
+
+    if (isEnableAction) {
+        return !conditionsMet;
+    }
+
+    return conditionsMet;
   }
 
   set disabled(value) {
@@ -184,34 +242,34 @@ export class FormField extends ReactiveModel<IFormField> {
       if (typeof props.disabled !== 'object') {
         throw new Error(`The disabled property of the field ${props.name} must be a boolean or an object`);
       }
-      if (!props.disabled.fields && !props.disabled.mode) {
-        throw new Error(`The disabled property of the field ${props.name} must have a fields property or a mode defined`);
-      }
-
       if (props.disabled.mode) {
         // posible modes : create, update;
         this.#disabled = this.#parent.form.mode === props.disabled.mode;
         return;
       }
 
-      let allValid;
-      props.disabled.fields.forEach(item => {
-        const name = typeof item === 'string' ? item : item.name;
+      if (props.disabled.fields && Array.isArray(props.disabled.fields)) {
+        props.disabled.fields.forEach(item => {
+          const namesToListen: string[] = [];
+          if (typeof item === 'string') {
+            namesToListen.push(item);
+          } else {
+            if (item.name) namesToListen.push(item.name);
+            if (item.valueFromField) namesToListen.push(item.valueFromField);
+          }
 
-        const instance = this.#parent.form.getField(name);
-        allValid = instance;
-        if (!allValid) return;
-        instance.on('change', this.#listenSiblings);
-        instance.on('value.change', this.#listenSiblings);
-        this.#listeningItems.set(name, {
-          item: instance,
-          listener: this.#listenSiblings,
+          namesToListen.forEach(name => {
+            const instance = this.#parent.form.getField(name);
+            if (!instance) return;
+            
+            instance.on('change', this.#listenSiblings);
+            instance.on('value.change', this.#listenSiblings);
+            this.#listeningItems.set(name, {
+              item: instance,
+              listener: this.#listenSiblings,
+            });
+          });
         });
-      });
-
-      if (!allValid) {
-        const fieldName = this.getProperties().name || 'unknown';
-        throw new Error(`the field ${allValid} does not exist in the form ${(this.#parent as any).name}, field passed in invalid settings of field "${fieldName}"`);
       }
       this.#disabled = props.disabled;
     }

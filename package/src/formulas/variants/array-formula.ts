@@ -97,7 +97,12 @@ export class FormulaArray {
 
     async calculate() {
         const formulaField = this.#plugin.form.getField(this.name);
-        if (!formulaField) return;
+        if (!formulaField) {
+            console.warn(
+                `[WiseForm.FormulaArray] Formula field "${this.name}" not found. Check that the field exists in the form configuration.`
+            );
+            return;
+        }
         const value = formulaField[this.#specs.propertyValue || 'entries']
         if (!value || !Array.isArray(value) || !value.length) {
             formulaField.set({ [this.#specs.propertyValue]: [] });

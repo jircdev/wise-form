@@ -10,9 +10,10 @@ export declare class WrappedFormModel extends BaseWiseModel {
     /**
      * Retrieves a field or nested wrapper by name. Supports dot notation for accessing deeply nested fields.
      * @param {string} name - The name of the field or nested wrapper to retrieve.
+     * @param {Set<BaseWiseModel | WrappedFormModel>} visited - Set of already visited wrappers to prevent infinite recursion.
      * @returns {FormField | WrappedFormModel | undefined} The requested instance, or undefined if not found.
      */
-    getField(name: string): any;
+    getField(name: string, visited?: Set<BaseWiseModel | WrappedFormModel>): any;
     /**
      * Initializes all fields within the wrapper, preparing them for user interaction. Its used to know when the fields can start to listen for events or dependencies
      */
